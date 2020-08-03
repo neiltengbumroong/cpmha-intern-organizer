@@ -104,9 +104,9 @@ class TaskForm extends Component {
           contentLabel="Create Task Modal">
           <form>
             <h1>New Task</h1>
-            <label htmlFor="name">
+            <label htmlFor="task">
               Task: &nbsp;
-              <input id="name" type="text" onChange={this.handleTaskChange}/><br/>
+              <input id="task" type="text" onChange={this.handleTaskChange}/><br/>
             </label>            
             <label htmlFor="deadline">
               Deadline: &nbsp;

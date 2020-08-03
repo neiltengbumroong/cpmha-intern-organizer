@@ -4,28 +4,38 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 
 import TaskForm from './TaskForm';
+import EventForm from './EventForm';
 
 const TASK_URL = 'http://localhost:5000/tasks';
+const EVENT_URL = 'http://localhost:5000/events';
 
 class Calendar extends Component {
   constructor(props) {
     super(props);
     this.state = {
       tasks: [],
+      events: []
     }
 
-    this.loadTasks = this.loadTasks.bind(this);
+    this.loadData = this.loadData.bind(this);
   }
 
-  loadTasks() {
-    axios.get(TASK_URL)
+  loadData() {
+    axios.all([
+      axios.get(TASK_URL),
+      axios.get(EVENT_URL)
+    ])
     .then(res => {
-      this.setState({ tasks: res.data })
+      this.setState({ 
+        tasks: res[0].data,
+        events: res[1].data
+      })
     })
   }
 
+
   componentDidMount() {
-    this.loadTasks();
+    this.loadData();
   }
 
   render() {
@@ -33,19 +43,33 @@ class Calendar extends Component {
     let tasks = this.state.tasks;
     for (let i = 0; i < tasks.length; i++) {
       tasksArr.push({
-        title: tasks[i].name,
+        title: tasks[i].task,
         date: tasks[i].deadline.substring(0, 10)
       })
     }
+
+    let eventsArr = [];
+    let events = this.state.events;
+    for (let i = 0; i < events.length; i++) {
+      eventsArr.push({
+        title: events[i].event,
+        start: events[i].start,
+        end: events[i].end
+      })
+    }
+
+    let dataArr = tasksArr.concat(eventsArr);
+    console.log(dataArr);
     
     return (
       <>
         <TaskForm/>
+        <EventForm/>
         <div style={{padding: "3% 8% 5%"}}>
           <FullCalendar
             plugins={[ dayGridPlugin ]}
             initialView="dayGridMonth"
-            events={tasksArr}
+            events={dataArr}
           />
         </div>
       </>         
