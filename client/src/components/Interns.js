@@ -36,6 +36,7 @@ class Interns extends Component {
               right: '20%',
               top: '15%',
               bottom: '15%',
+              backgroundColor: "blue"
             },
             overlay: {}
           }}

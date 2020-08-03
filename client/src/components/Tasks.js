@@ -3,6 +3,8 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import TaskForm from './TaskForm';
 
+import '../css/Tasks.css';
+
 class Tasks extends Component {
   constructor(props) {
     super(props);
@@ -26,25 +28,9 @@ class Tasks extends Component {
   }
 
   render() {
-    Modal.setAppElement('body');
+     Modal.setAppElement('body');
     return (
       <>
-      <button onClick={this.handleOpenModal}>Create Task</button>
-      <Modal
-          style={{
-            content: {
-              left: '20%',
-              right: '20%',
-              top: '15%',
-              bottom: '15%',
-            },
-            overlay: {}
-          }}
-          isOpen={this.state.showModal}
-          contentLabel="Create Task Modal"
-        >
-          <TaskForm close={this.handleCloseModal}/>
-        </Modal>
       </>
     )
   }
