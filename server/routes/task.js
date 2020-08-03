@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.post('/tasks', (req, res) => {
   const task = new Task({
-    name: req.body.task,
+    task: req.body.task,
     deadline: req.body.deadline,
     priority: req.body.priority,
     dateAssigned: req.body.dateAssigned,
@@ -12,10 +12,16 @@ router.post('/tasks', (req, res) => {
     completed: req.body.completed,
   });
   
-  task.save()
-  .then(doc => console.log(doc))
+  task.save();
   
 });
+
+router.get('/tasks', (req, res) => {
+  Task.find()
+  .then(tasks => {
+    res.json(tasks);
+  })
+})
 
 
 module.exports = router;

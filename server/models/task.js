@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const taskSchema = mongoose.Schema({
-  name: String,
+  task: String,
   deadline: Date,
   priority: String,
   dateAssigned: Date,
