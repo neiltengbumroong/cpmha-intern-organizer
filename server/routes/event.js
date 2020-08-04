@@ -10,10 +10,12 @@ router.post('/events', (req, res) => {
     description: req.body.description
   });
   
-  event.save()
-    .then(doc => {
-      console.log(doc);
+  event
+    .save()
+    .then(newEvent => {
+      res.send(newEvent);
     })
+    
   
 });
 

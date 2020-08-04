@@ -22,5 +22,14 @@ router.post('/interns', (req, res) => {
   
 });
 
+router.get('/interns', (req, res) => {
+  Intern.find()
+  .then(interns => {
+    res.json(interns);
+  })
+})
+
+
+
 
 module.exports = router;

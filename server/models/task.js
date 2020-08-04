@@ -5,7 +5,7 @@ const taskSchema = mongoose.Schema({
   deadline: Date,
   priority: String,
   dateAssigned: Date,
-  assignedTo: String, // array of ids from intern collection
+  assignedTo: [String], 
   completed: Boolean,
   links: [String]
 });
