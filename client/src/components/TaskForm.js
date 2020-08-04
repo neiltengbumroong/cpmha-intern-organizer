@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
+import Select from 'react-select';
 
 const TASK_URL = 'http://localhost:5000/tasks';
+const INTERN_URL = 'http://localhost:5000/interns';
 
 class TaskForm extends Component {
   constructor(props) {
@@ -17,6 +19,7 @@ class TaskForm extends Component {
       completed: false,
       error: false,
       showModal: false,
+      interns: []
     }
 
     this.handleTaskChange = this.handleTaskChange.bind(this);
@@ -28,6 +31,7 @@ class TaskForm extends Component {
     this.handleLinkChange = this.handleLinkChange.bind(this);
 
     this.createTask = this.createTask.bind(this);
+    this.loadInterns = this.loadInterns.bind(this);
     this.handleOpenModal = this.handleOpenModal.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
 
@@ -46,7 +50,7 @@ class TaskForm extends Component {
     this.setState({ dateAssigned: event.target.value });
   }
   handleAssignedToChange(event) {
-    this.setState({ assignedTo: event.target.value });
+    this.setState({ assignedTo: event ? event.map(x => x.value) : [] });
   }
   handleCompletedChange() {
     this.setState({ completed: !this.state.completed });
@@ -63,6 +67,15 @@ class TaskForm extends Component {
     this.setState({ showModal: false });
   }
 
+  loadInterns() {
+    axios.get(INTERN_URL)
+    .then(res => {
+      this.setState({ 
+        interns: res.data
+      })
+    })
+  }
+
   createTask() {
     const taskToCreate = {
       task: this.state.task,
@@ -74,16 +87,31 @@ class TaskForm extends Component {
     }
 
     axios.post(TASK_URL, taskToCreate)
+      .then(() => {
+        this.props.updateData();
+      })
       .catch(error => {
         this.setState({ error: true })
       })
       
-    window.location.reload();
-    this.handleCloseModal();
-    
+    this.handleCloseModal(); 
+  }
+
+  componentDidMount() {
+    this.loadInterns();
   }
 
   render() {
+    console.log(this.state.assignedTo);
+    let options = [];
+    let interns = this.state.interns;
+    for (let i = 0; i < interns.length; i++) {
+      options.push({
+        value: interns[i].name,
+        label: interns[i].name
+      })
+    }
+
     Modal.setAppElement('body');
     return (
       <>
@@ -121,11 +149,14 @@ class TaskForm extends Component {
                 <option>N/A</option>
               </select><br/>
             </label>       
-            <label htmlFor="assign-to">
-              Assign to: &nbsp;
-              {/* get all interns and perform mapping with select and options */}
-              <input id="assign-to" type="text" onChange={this.handleAssignedToChange}/><br/>
-            </label>
+            <label htmlFor="assign-to">Assign to: &nbsp;</label>     
+              <Select 
+                options={options} 
+                isMulti={true} 
+                onChange={this.handleAssignedToChange}
+              />
+            <br/>
+            
             <label htmlFor="completed">
               Completed? &nbsp;
               <input id="completed" type="checkbox" onChange={this.handleCompletedChange}/><br/>
@@ -135,8 +166,8 @@ class TaskForm extends Component {
               <input id="link" type="text" onChange={this.handleLinkChange}/><br/>
             </label>   
             
-            <button onClick={this.createTask}>Create Task</button>
-            <button onClick={this.handleCloseModal}>Close</button>
+            <button type="button" onClick={() => this.createTask()}>Create Task</button>
+            <button type="button" onClick={() => this.handleCloseModal()}>Close</button>
           </form>
         </Modal>
       </>   

@@ -59,12 +59,11 @@ class Calendar extends Component {
     }
 
     let dataArr = tasksArr.concat(eventsArr);
-    console.log(dataArr);
     
     return (
       <>
-        <TaskForm/>
-        <EventForm/>
+        <TaskForm updateData={this.loadData.bind(this)}/>
+        <EventForm updateData={this.loadData}/>
         <div style={{padding: "3% 8% 5%"}}>
           <FullCalendar
             plugins={[ dayGridPlugin ]}

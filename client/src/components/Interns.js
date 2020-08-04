@@ -36,12 +36,11 @@ class Interns extends Component {
               right: '20%',
               top: '15%',
               bottom: '15%',
-              backgroundColor: "blue"
             },
             overlay: {}
           }}
           isOpen={this.state.showModal}
-          contentLabel="Create Task Modal"
+          contentLabel="Create Intern Modal"
         >
           <InternForm close={this.handleCloseModal}/>
         </Modal>

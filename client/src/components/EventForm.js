@@ -57,11 +57,13 @@ class EventForm extends Component {
     }
 
     axios.post(EVENT_URL, eventToCreate)
+      .then(() => {
+        this.props.updateData();
+      })
       .catch(error => {
         this.setState({ error: true })
       })
       
-    window.location.reload();
     this.handleCloseModal();
     
   }
@@ -95,12 +97,14 @@ class EventForm extends Component {
               <DateTimePicker
                 onChange={this.handleStartChange}
                 value={this.state.start}
+                disableClock={true}
               />
             </label>
             <label htmlFor="end">
               <DateTimePicker
                 onChange={this.handleEndChange}
                 value={this.state.end}
+                disableClock={true}
               />
             </label>           
             <label htmlFor="description">
@@ -108,8 +112,8 @@ class EventForm extends Component {
               <textarea id="description" onChange={this.handleDescriptionChange}/><br/>
             </label>          
             
-            <button onClick={this.createEvent}>Create Event</button>
-            <button onClick={this.handleCloseModal}>Close</button>
+            <button onClick={() => this.createEvent()}>Create Event</button>
+            <button onClick={() => this.handleCloseModal()}>Close</button>
           </form>
         </Modal>
       </>   
