@@ -2,7 +2,7 @@ const Task = require('../models/Task');
 const express = require('express');
 const router = express.Router();
 
-router.post('/tasks', (req, res) => {
+router.post('/api/tasks/post', (req, res) => {
   console.log(req.body.assignedTo);
   const task = new Task({
     task: req.body.task,
@@ -21,7 +21,7 @@ router.post('/tasks', (req, res) => {
     }) 
 });
 
-router.get('/tasks', (req, res) => {
+router.get('/api/tasks/get', (req, res) => {
   Task.find()
   .then(tasks => {
     res.json(tasks);

@@ -31,6 +31,7 @@ class Tasks extends Component {
      Modal.setAppElement('body');
     return (
       <>
+      <TaskForm/>
       </>
     )
   }

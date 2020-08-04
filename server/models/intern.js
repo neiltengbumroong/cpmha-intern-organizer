@@ -6,8 +6,7 @@ const internSchema = mongoose.Schema({
   school: String,
   major: String,
   joined: Date,
-  pendingTasks: [String], // array of IDs from task collection
-  completedTasks: [String], // array of IDs from task collection
+  tasks: [String],
   weeklyHours: Number,
   totalHours: Number,
   teams: [String]

@@ -6,8 +6,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import TaskForm from './TaskForm';
 import EventForm from './EventForm';
 
-const TASK_URL = 'http://localhost:5000/tasks';
-const EVENT_URL = 'http://localhost:5000/events';
+const TASK_GET_API = 'http://localhost:5000/api/tasks/get';
+const EVENT_GET_API = 'http://localhost:5000/api/events/get';
 
 class Calendar extends Component {
   constructor(props) {
@@ -22,8 +22,8 @@ class Calendar extends Component {
 
   loadData() {
     axios.all([
-      axios.get(TASK_URL),
-      axios.get(EVENT_URL)
+      axios.get(TASK_GET_API),
+      axios.get(EVENT_GET_API)
     ])
     .then(res => {
       this.setState({ 
@@ -32,7 +32,6 @@ class Calendar extends Component {
       })
     })
   }
-
 
   componentDidMount() {
     this.loadData();

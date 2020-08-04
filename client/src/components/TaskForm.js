@@ -3,8 +3,9 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import Select from 'react-select';
 
-const TASK_URL = 'http://localhost:5000/tasks';
-const INTERN_URL = 'http://localhost:5000/interns';
+const TASK_POST_API = 'http://localhost:5000/api/tasks/post';
+const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
+const INTERN_UPDATE_TASK_API = 'http://localhost:5000/api/interns/update/task';
 
 class TaskForm extends Component {
   constructor(props) {
@@ -32,6 +33,7 @@ class TaskForm extends Component {
 
     this.createTask = this.createTask.bind(this);
     this.loadInterns = this.loadInterns.bind(this);
+    this.addTaskToInterns = this.addTaskToInterns.bind(this);
     this.handleOpenModal = this.handleOpenModal.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
 
@@ -68,12 +70,22 @@ class TaskForm extends Component {
   }
 
   loadInterns() {
-    axios.get(INTERN_URL)
+    axios.get(INTERN_GET_API)
     .then(res => {
       this.setState({ 
         interns: res.data
       })
     })
+  }
+
+  addTaskToInterns(data) {
+    for (let i = 0; i < data.assignedTo.length; i++) {
+      let taskToUpdate = {
+        id: data.assignedTo[i],
+        taskId: data._id
+      }
+      axios.post(INTERN_UPDATE_TASK_API, taskToUpdate);
+    }
   }
 
   createTask() {
@@ -86,8 +98,9 @@ class TaskForm extends Component {
       completed: this.state.completed,
     }
 
-    axios.post(TASK_URL, taskToCreate)
-      .then(() => {
+    axios.post(TASK_POST_API, taskToCreate)
+      .then((res) => {
+        this.addTaskToInterns(res.data); 
         this.props.updateData();
       })
       .catch(error => {
@@ -102,12 +115,11 @@ class TaskForm extends Component {
   }
 
   render() {
-    console.log(this.state.assignedTo);
     let options = [];
     let interns = this.state.interns;
     for (let i = 0; i < interns.length; i++) {
       options.push({
-        value: interns[i].name,
+        value: interns[i]._id,
         label: interns[i].name
       })
     }
@@ -150,11 +162,11 @@ class TaskForm extends Component {
               </select><br/>
             </label>       
             <label htmlFor="assign-to">Assign to: &nbsp;</label>     
-              <Select 
-                options={options} 
-                isMulti={true} 
-                onChange={this.handleAssignedToChange}
-              />
+            <Select 
+              options={options} 
+              isMulti={true} 
+              onChange={this.handleAssignedToChange}
+            />
             <br/>
             
             <label htmlFor="completed">
@@ -166,8 +178,8 @@ class TaskForm extends Component {
               <input id="link" type="text" onChange={this.handleLinkChange}/><br/>
             </label>   
             
-            <button type="button" onClick={() => this.createTask()}>Create Task</button>
-            <button type="button" onClick={() => this.handleCloseModal()}>Close</button>
+            <button type="button" onClick={this.createTask}>Create Task</button>
+            <button type="button" onClick={this.handleCloseModal}>Close</button>
           </form>
         </Modal>
       </>   

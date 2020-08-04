@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 
 import DateTimePicker from 'react-datetime-picker';
 
-const EVENT_URL = 'http://localhost:5000/events';
+const EVENT_POST_API = 'http://localhost:5000/api/events/post';
 
 class EventForm extends Component {
   constructor(props) {
@@ -56,7 +56,7 @@ class EventForm extends Component {
       description: this.state.description,
     }
 
-    axios.post(EVENT_URL, eventToCreate)
+    axios.post(EVENT_POST_API, eventToCreate)
       .then(() => {
         this.props.updateData();
       })
@@ -86,7 +86,7 @@ class EventForm extends Component {
             } 
           }}
           isOpen={this.state.showModal}
-          contentLabel="Create Task Modal">
+          contentLabel="Create Event Modal">
           <form>
             <h1>New Event</h1>
             <label htmlFor="event">
@@ -112,8 +112,8 @@ class EventForm extends Component {
               <textarea id="description" onChange={this.handleDescriptionChange}/><br/>
             </label>          
             
-            <button onClick={() => this.createEvent()}>Create Event</button>
-            <button onClick={() => this.handleCloseModal()}>Close</button>
+            <button onClick={this.createEvent}>Create Event</button>
+            <button onClick={this.handleCloseModal}>Close</button>
           </form>
         </Modal>
       </>   

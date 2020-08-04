@@ -28,22 +28,7 @@ class Teams extends Component {
     Modal.setAppElement('body');
     return (
       <>
-      <button onClick={this.handleOpenModal}>Create Team</button>
-      <Modal
-          style={{
-            content: {
-              left: '20%',
-              right: '20%',
-              top: '15%',
-              bottom: '15%',
-            },
-            overlay: {}
-          }}
-          isOpen={this.state.showModal}
-          contentLabel="Create Team Modal"
-        >
-          <TeamForm close={this.handleCloseModal}/>
-        </Modal>
+        <TeamForm/>
       </>
     )
   }

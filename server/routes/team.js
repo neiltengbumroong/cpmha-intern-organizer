@@ -2,7 +2,7 @@ const Team = require('../models/team');
 const express = require('express');
 const router = express.Router();
 
-router.post('/teams', (req, res) => {
+router.post('/api/teams/post', (req, res) => {
   const team = new Team({
     name: req.body.name,
     members: req.body.members,
@@ -17,7 +17,7 @@ router.post('/teams', (req, res) => {
     })
 });
 
-router.get('/teams', (req, res) => {
+router.get('/api/teams/get', (req, res) => {
   Team.find()
   .then(team => {
     res.json(team);

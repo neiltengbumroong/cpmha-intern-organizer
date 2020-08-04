@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Tasks from './Tasks';
 import Interns from './Interns';
 import Calendar from './Calendar';
+import Teams from './Teams';
 
 
 class Home extends Component {
@@ -24,12 +25,12 @@ class Home extends Component {
       <button onClick={() => this.changeMode('calendar')}>Calendar</button>
       <button onClick={() => this.changeMode('tasks')}>Tasks</button>
       <button onClick={() => this.changeMode('interns')}>Interns</button>
-      <button onClick={() => this.changeMode('teams')}>Groups</button>
+      <button onClick={() => this.changeMode('teams')}>Teams</button>
       <div>
         {this.state.display  === 'calendar' ? <Calendar/> :
          this.state.display === 'tasks' ? <Tasks/> :
          this.state.display === 'interns' ? <Interns/> :
-         this.state.display === 'teams' ? <Interns/> : null}
+         this.state.display === 'teams' ? <Teams/> : null}
       </div>
       </>
     )

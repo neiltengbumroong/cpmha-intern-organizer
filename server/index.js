@@ -19,6 +19,7 @@ mongoose.connect(connection, { useNewUrlParser: true, useUnifiedTopology: true }
     console.log(error)
 });
 
+mongoose.set('useFindAndModify', false);
 const db = mongoose.connection;
 
 db.once('open', _ => {
