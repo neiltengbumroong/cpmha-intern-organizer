@@ -6,6 +6,7 @@ import Select from 'react-select';
 
 const TEAM_POST_API = 'http://localhost:5000/api/teams/post';
 const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
+const INTERN_UPDATE_TEAM_API = 'http://localhost:5000/api/interns/update-team';
 
 class TeamForm extends Component {
   constructor(props) {
@@ -13,6 +14,7 @@ class TeamForm extends Component {
     this.state = {
       name: '',
       members: [],
+      tempMembers: [],
       leader: '',
       description: '',
       interns: [],
@@ -26,6 +28,7 @@ class TeamForm extends Component {
 
     this.createTeam = this.createTeam.bind(this);
     this.loadInterns = this.loadInterns.bind(this);
+    this.addTeamToInterns = this.addTeamToInterns.bind(this);
     this.handleOpenModal = this.handleOpenModal.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
 
@@ -36,6 +39,7 @@ class TeamForm extends Component {
   }
   handleMembersChange(event) {
     this.setState({ members: event ? event.map(x => x.value) : [] });
+    this.setState({ tempMembers: event });
   }
   handleLeaderChange(data) {
     this.setState({ leader: data.value });
@@ -61,6 +65,18 @@ class TeamForm extends Component {
     })
   }
 
+  addTeamToInterns(data) {
+    for (let i = 0; i < data.members.length; i++) {
+      let teamToUpdate = {
+        id: data.members[i],
+        teamId: data._id
+      }
+      axios.post(INTERN_UPDATE_TEAM_API, teamToUpdate);
+    }
+
+    
+  }
+
   createTeam() {
     const teamToCreate = {
       name: this.state.name,
@@ -69,7 +85,10 @@ class TeamForm extends Component {
       description: this.state.description,
     }
 
-    axios.post(TEAM_POST_API, teamToCreate);  
+    axios.post(TEAM_POST_API, teamToCreate)
+      .then(res => {
+        this.addTeamToInterns(res.data);
+      })
     this.handleCloseModal();  
   }
 
@@ -81,18 +100,18 @@ class TeamForm extends Component {
     let options = [];
     let interns = this.state.interns;
     let leaderOptions = [];
-    let members = this.state.members;
+    let members = this.state.tempMembers;
     for (let i = 0; i < interns.length; i++) {
       options.push({
-        value: interns[i].name,
+        value: interns[i]._id,
         label: interns[i].name
       })
     }
 
     for (let i = 0; i < members.length; i++) {
       leaderOptions.push({
-        value: members[i],
-        label: members[i]
+        value: members[i].value,
+        label: members[i].label
       })
     }
 
@@ -126,6 +145,7 @@ class TeamForm extends Component {
               options={options} 
               isMulti={true} 
               onChange={this.handleMembersChange}
+              isSearchable={true}
             />
             <br/>
 
@@ -135,6 +155,7 @@ class TeamForm extends Component {
               options={leaderOptions} 
               isMulti={false} 
               onChange={this.handleLeaderChange}
+              isSearchable={true}
               />
               
             <label htmlFor="description">

@@ -15,7 +15,10 @@ router.post('/api/interns/post', (req, res) => {
     teams: req.body.teams
   });
   
-  intern.save();
+  intern.save()
+    .then(newIntern =>{
+      res.send(newIntern);
+    })
   
 });
 
@@ -28,10 +31,21 @@ router.get('/api/interns/get', (req, res) => {
 })
 
 // push task onto tasks array for intern
-router.post('/api/interns/update/task', (req, res) => {
+router.post('/api/interns/update-task', (req, res) => {
   Intern.findOneAndUpdate(
     { _id: req.body.id },
     { $push: { tasks: req.body.taskId } },
+    (err, intern) => {
+      res.send(intern);
+    }
+  )
+})
+
+// push team onto teams array for intern
+router.post('/api/interns/update-team', (req, res) => {
+  Intern.findOneAndUpdate(
+    { _id: req.body.id },
+    { $push: { teams: req.body.teamId } },
     (err, intern) => {
       res.send(intern);
     }

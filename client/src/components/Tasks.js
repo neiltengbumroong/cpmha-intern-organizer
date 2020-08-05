@@ -5,33 +5,53 @@ import TaskForm from './TaskForm';
 
 import '../css/Tasks.css';
 
+const TASKS_GET_API = 'http://localhost:5000/api/tasks/get';
+
 class Tasks extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false,
+      tasks: [],
+      isLoading: false
     }
 
-    this.handleOpenModal = this.handleOpenModal.bind(this);
-    this.handleCloseModal = this.handleCloseModal.bind(this);
+    this.loadTasks = this.loadTasks.bind(this);
   }
 
-
-
-  handleOpenModal() {
-    this.setState({ showModal: true });
+  loadTasks() {
+    axios.get(TASKS_GET_API)
+      .then(res => {
+        this.setState({ 
+          isLoading: true,
+          tasks: res.data
+        });
+      })
+      .then(() => {
+        this.setState({ isLoading: false });
+      })
   }
-  
-  handleCloseModal(event) {
-    event.preventDefault();
-    this.setState({ showModal: false });
+
+  componentDidMount() {
+    this.loadTasks();
   }
+
 
   render() {
+    let tasks = null;
+    if (!this.state.isLoading) {
+      tasks = this.state.tasks.map((task, i) => 
+        <div key={i}>
+          <h3>{task.task}</h3>
+          <p>{task.deadline}</p>
+        </div>
+
+      )
+    }
      Modal.setAppElement('body');
     return (
       <>
       <TaskForm/>
+      {tasks}
       </>
     )
   }

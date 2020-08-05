@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import axios from 'axios';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid'
+
 
 import TaskForm from './TaskForm';
 import EventForm from './EventForm';
@@ -63,10 +65,15 @@ class Calendar extends Component {
       <>
         <TaskForm updateData={this.loadData.bind(this)}/>
         <EventForm updateData={this.loadData}/>
-        <div style={{padding: "3% 8% 5%"}}>
+        <div style={{padding: "5%"}}>
           <FullCalendar
-            plugins={[ dayGridPlugin ]}
+            plugins={[ dayGridPlugin, timeGridPlugin ]}
             initialView="dayGridMonth"
+            headerToolbar={{
+              left: "dayGridMonth,timeGridWeek,timeGridDay",
+              center: "title",
+              right: "prev,next today"
+            }}
             events={dataArr}
           />
         </div>

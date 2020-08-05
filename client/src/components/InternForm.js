@@ -2,9 +2,13 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import Select from 'react-select';
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 const INTERN_POST_API = 'http://localhost:5000/api/interns/post';
 const TEAM_GET_API = 'http://localhost:5000/api/teams/get';
+const TEAM_UPDATE_MEMBERS_API = 'http://localhost:5000/api/team/update-members';
 
 class InternForm extends Component {
   constructor(props) {
@@ -28,6 +32,7 @@ class InternForm extends Component {
     this.handleTeamsChange = this.handleTeamsChange.bind(this);
     this.createIntern = this.createIntern.bind(this);
     this.loadTeams = this.loadTeams.bind(this);
+    this.addInternToTeams = this.addInternToTeams.bind(this);
 
     this.handleOpenModal = this.handleOpenModal.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
@@ -45,8 +50,8 @@ class InternForm extends Component {
   handleEmailChange(event) {
     this.setState({ email: event.target.value });
   }
-  handleDateJoinedChange(event) {
-    this.setState({ dateJoined: event.target.value });
+  handleDateJoinedChange(date) {
+    this.setState({ dateJoined: date });
   }
   handleTeamsChange(event) {
     this.setState({ teams: event ? event.map(x => x.value) : [] });
@@ -67,6 +72,17 @@ class InternForm extends Component {
       })
   }
 
+  addInternToTeams(data) {
+    console.log(data);
+    for (let i = 0; i < data.teams.length; i++) {
+      let internToUpdate = {
+        id: data.teams[i],
+        internId: data._id
+      }
+      axios.post(TEAM_UPDATE_MEMBERS_API, internToUpdate);
+    }
+  }
+
   createIntern(event) {
     event.preventDefault();
     const internToCreate = {
@@ -79,6 +95,9 @@ class InternForm extends Component {
     }
 
     axios.post(INTERN_POST_API, internToCreate)
+      .then(res => {
+        this.addInternToTeams(res.data);
+      })
       .catch(error => {
         this.setState({ error: true })
       })
@@ -95,7 +114,7 @@ class InternForm extends Component {
     let teams = this.state.teamsOptions;
     for (let i = 0; i < teams.length; i++) {
       options.push({
-        value: teams[i].name,
+        value: teams[i]._id,
         label: teams[i].name,
       })
     }
@@ -135,8 +154,11 @@ class InternForm extends Component {
             </label>       
             <label htmlFor="date-joined">
               Date Joined: &nbsp;
-              <input id="date-joined" type="date" onChange={this.handelDateJoinedChange}/><br/>
-            </label>
+              <DatePicker
+                selected={new Date()}
+                onChange={this.handleDateJoinedChange}
+              />
+            </label> <br/>
             <label htmlFor="teams">Teams:</label>
               <Select 
                 options={options} 

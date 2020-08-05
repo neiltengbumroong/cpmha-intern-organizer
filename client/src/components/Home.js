@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import Tasks from './Tasks';
-import Interns from './Interns';
 import Calendar from './Calendar';
-import Teams from './Teams';
-
+import Main from './Main';
 
 class Home extends Component {
   constructor(props) {
@@ -23,14 +20,9 @@ class Home extends Component {
     return (
       <>
       <button onClick={() => this.changeMode('calendar')}>Calendar</button>
-      <button onClick={() => this.changeMode('tasks')}>Tasks</button>
-      <button onClick={() => this.changeMode('interns')}>Interns</button>
-      <button onClick={() => this.changeMode('teams')}>Teams</button>
+      <button onClick={() => this.changeMode('main')}>Home</button>
       <div>
-        {this.state.display  === 'calendar' ? <Calendar/> :
-         this.state.display === 'tasks' ? <Tasks/> :
-         this.state.display === 'interns' ? <Interns/> :
-         this.state.display === 'teams' ? <Teams/> : null}
+        {this.state.display  === 'calendar' ? <Calendar/> : <Main/>}
       </div>
       </>
     )

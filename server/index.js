@@ -6,10 +6,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use(require('./routes/task'));
-app.use(require('./routes/intern'));
-app.use(require('./routes/event'));
-app.use(require('./routes/team'));
+app.use(require('./api/task'));
+app.use(require('./api/intern'));
+app.use(require('./api/event'));
+app.use(require('./api/team'));
 
 const port = process.env.PORT || 5000;
 const connection = process.env.MONGO_URI || 'mongodb://localhost:27017/cpmha';

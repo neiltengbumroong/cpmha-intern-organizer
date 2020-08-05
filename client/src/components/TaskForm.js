@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import Select from 'react-select';
+import DateTimePicker from 'react-datetime-picker';
 
 const TASK_POST_API = 'http://localhost:5000/api/tasks/post';
 const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
-const INTERN_UPDATE_TASK_API = 'http://localhost:5000/api/interns/update/task';
+const INTERN_UPDATE_TASK_API = 'http://localhost:5000/api/interns/update-task';
 
 class TaskForm extends Component {
   constructor(props) {
@@ -42,8 +43,8 @@ class TaskForm extends Component {
   handleTaskChange(event) {
     this.setState({ task: event.target.value });
   }
-  handleDeadlineChange(event) {
-    this.setState({ deadline: event.target.value });
+  handleDeadlineChange(date) {
+    this.setState({ deadline: date });
   }
   handlePriorityChange(event) {
     this.setState({ priority: event.target.value });
@@ -150,7 +151,11 @@ class TaskForm extends Component {
             </label>            
             <label htmlFor="deadline">
               Deadline: &nbsp;
-              <input id="deadline" type="date" onChange={this.handleDeadlineChange}/><br/>
+              <DateTimePicker
+                onChange={this.handleDeadlineChange}
+                value={this.state.deadline}
+                disableClock={true}
+              />
             </label>          
             <label htmlFor="priority"> 
               Priority: &nbsp;

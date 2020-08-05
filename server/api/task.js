@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/api/tasks/post', (req, res) => {
-  console.log(req.body.assignedTo);
   const task = new Task({
     task: req.body.task,
     deadline: req.body.deadline,
