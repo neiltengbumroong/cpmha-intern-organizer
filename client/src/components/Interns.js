@@ -45,8 +45,9 @@ class Interns extends Component {
     }
     return (
       <div>
-      <InternForm updateData={this.loadInterns}/>
-      {interns}
+        <h1>Interns</h1>
+        <InternForm updateData={this.loadInterns}/>
+        {interns}
       </div>
     )
   }

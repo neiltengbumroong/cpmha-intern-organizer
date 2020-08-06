@@ -15,7 +15,7 @@ class TaskForm extends Component {
     super(props);
     this.state = {
       task: '',
-      deadline: '',
+      deadline: new Date(),
       priority: '',
       dateAssigned: new Date(),
       assignedTo: [],
@@ -190,6 +190,7 @@ class TaskForm extends Component {
                 onChange={this.handleDeadlineChange}
                 value={this.state.deadline}
                 disableClock={true}
+                
               />
             </label>          
             <label htmlFor="priority"> 

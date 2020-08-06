@@ -47,6 +47,7 @@ class Teams extends Component {
     }
     return (
       <>
+        <h1>Teams</h1>
         <TeamForm updateData={this.loadTeams}/>
         {teams}
       </>

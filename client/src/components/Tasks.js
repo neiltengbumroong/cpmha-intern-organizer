@@ -50,8 +50,9 @@ class Tasks extends Component {
     }
     return (
       <>
-      <TaskForm updateData={this.loadTasks}/>
-      {tasks}
+        <h1>Tasks</h1>
+        <TaskForm updateData={this.loadTasks}/>
+        {tasks}
       </>
     )
   }

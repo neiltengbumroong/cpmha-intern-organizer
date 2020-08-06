@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Calendar from './Calendar';
 import Main from './Main';
 
+import '../css/Home.css';
+
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -18,13 +20,13 @@ class Home extends Component {
 
   render() {
     return (
-      <>
+      <div className="home-wrapper">
       <button onClick={() => this.changeMode('calendar')}>Calendar</button>
       <button onClick={() => this.changeMode('main')}>Home</button>
       <div>
-        {this.state.display  === 'calendar' ? <Main/> : <Calendar/>}
+        {this.state.display  === 'calendar' ? <Calendar/> : <Main/>}
       </div>
-      </>
+      </div>
     )
   }
 }

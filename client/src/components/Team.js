@@ -29,13 +29,13 @@ class Team extends Component {
   }
 
   deleteTeamFromTasks(teamId) {
-    console.log("1");
+    console.log(this.state.team);
+    console.log(this.state.team.tasks);
     for (let i = 0; i < this.state.team.tasks.length; i++) {
       const id = {
         teamId: teamId,
         taskId: this.state.team.tasks[i]
       }
-      console.log(id);
       axios.post(TEAMS_DELETE_FROM_TASK_API, id);
     } 
   }
@@ -58,6 +58,7 @@ class Team extends Component {
   }
 
   deleteTeamFull(teamId) {
+    window.location.reload();
     this.deleteTeamFromTasks(teamId);
     this.deleteTeamFromInterns(teamId);
     this.deleteTeam(teamId);
@@ -76,7 +77,8 @@ class Team extends Component {
       <div>
         <h3>{teamData.name}</h3>
         <p>{teamData.members}</p>
-        <button type="button" onClick={() => this.deleteTeamFull(teamData._id)}>Delete Team</button>
+        {this.state.isLoading ? null : 
+        <button type="button" onClick={() => this.deleteTeamFull(teamData._id)}>Delete Team</button>}
       </div>)
     }
 

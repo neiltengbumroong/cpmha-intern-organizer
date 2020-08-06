@@ -3,13 +3,17 @@ import axios from 'axios';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid'
-
-
+import listPlugin from '@fullcalendar/list';
+import moment from 'moment';
 import TaskForm from './TaskForm';
 import EventForm from './EventForm';
 
+import '../css/Calendar.css';
+
 const TASK_GET_API = 'http://localhost:5000/api/tasks/get';
 const EVENT_GET_API = 'http://localhost:5000/api/events/get';
+
+const EVENT_FORMAT = 'YYYY-MM-DD';
 
 class Calendar extends Component {
   constructor(props) {
@@ -45,7 +49,10 @@ class Calendar extends Component {
     for (let i = 0; i < tasks.length; i++) {
       tasksArr.push({
         title: tasks[i].task,
-        date: tasks[i].deadline.substring(0, 10)
+        date: moment(tasks[i].deadline).format(EVENT_FORMAT),
+        extendedProps: {
+          type: 'task'
+        }
       })
     }
 
@@ -55,29 +62,32 @@ class Calendar extends Component {
       eventsArr.push({
         title: events[i].event,
         start: events[i].start,
-        end: events[i].end
+        end: events[i].end,
+        extendedProps: {
+          type: 'event'
+        }
       })
     }
 
     let dataArr = tasksArr.concat(eventsArr);
     
     return (
-      <>
+      <div className="calendar-wrapper">
         <TaskForm updateData={this.loadData.bind(this)}/>
         <EventForm updateData={this.loadData}/>
         <div style={{padding: "5%"}}>
           <FullCalendar
-            plugins={[ dayGridPlugin, timeGridPlugin ]}
+            plugins={[ dayGridPlugin, timeGridPlugin, listPlugin ]}
             initialView="dayGridMonth"
             headerToolbar={{
-              left: "dayGridMonth,timeGridWeek,timeGridDay",
+              left: "prev,next today",
               center: "title",
-              right: "prev,next today"
+              right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
             }}
             events={dataArr}
           />
         </div>
-      </>         
+      </div>         
     )
   }
 }

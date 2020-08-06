@@ -1,0 +1,13 @@
+* {
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.main-wrapper {
+  padding: 5%;
+  display: flex;
+  justify-content: center;
+}
+
+.section-wrapper {
+  padding: 0 5%;
+}

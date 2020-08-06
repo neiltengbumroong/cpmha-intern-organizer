@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
-
+import moment from 'moment';
 import DateTimePicker from 'react-datetime-picker';
 
 const EVENT_POST_API = 'http://localhost:5000/api/events/post';
@@ -65,7 +65,15 @@ class EventForm extends Component {
       })
       
     this.handleCloseModal();
-    
+  }
+
+  componentDidMount() {
+    var newEnd = new Date();
+    newEnd.setHours(newEnd.getHours() + 1);
+    this.setState({
+      start: new Date(),
+      end: newEnd 
+    });
   }
 
   render() {
