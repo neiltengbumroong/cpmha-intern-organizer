@@ -6,7 +6,7 @@ import Select from 'react-select';
 
 const TEAM_POST_API = 'http://localhost:5000/api/teams/post';
 const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
-const INTERN_UPDATE_TEAM_API = 'http://localhost:5000/api/interns/update-team';
+const INTERN_UPDATE_TEAM_API = 'http://localhost:5000/api/interns/add-team';
 
 class TeamForm extends Component {
   constructor(props) {
@@ -68,7 +68,7 @@ class TeamForm extends Component {
   addTeamToInterns(data) {
     for (let i = 0; i < data.members.length; i++) {
       let teamToUpdate = {
-        id: data.members[i],
+        internId: data.members[i],
         teamId: data._id
       }
       axios.post(INTERN_UPDATE_TEAM_API, teamToUpdate);
@@ -88,6 +88,7 @@ class TeamForm extends Component {
     axios.post(TEAM_POST_API, teamToCreate)
       .then(res => {
         this.addTeamToInterns(res.data);
+        this.props.updateData();
       })
     this.handleCloseModal();  
   }

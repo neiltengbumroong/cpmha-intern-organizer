@@ -8,7 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const INTERN_POST_API = 'http://localhost:5000/api/interns/post';
 const TEAM_GET_API = 'http://localhost:5000/api/teams/get';
-const TEAM_UPDATE_MEMBERS_API = 'http://localhost:5000/api/team/update-members';
+const TEAM_UPDATE_MEMBERS_API = 'http://localhost:5000/api/team/add-members';
 
 class InternForm extends Component {
   constructor(props) {
@@ -73,7 +73,6 @@ class InternForm extends Component {
   }
 
   addInternToTeams(data) {
-    console.log(data);
     for (let i = 0; i < data.teams.length; i++) {
       let internToUpdate = {
         id: data.teams[i],
@@ -97,6 +96,7 @@ class InternForm extends Component {
     axios.post(INTERN_POST_API, internToCreate)
       .then(res => {
         this.addInternToTeams(res.data);
+        this.props.updateData();
       })
       .catch(error => {
         this.setState({ error: true })

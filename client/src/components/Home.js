@@ -22,7 +22,7 @@ class Home extends Component {
       <button onClick={() => this.changeMode('calendar')}>Calendar</button>
       <button onClick={() => this.changeMode('main')}>Home</button>
       <div>
-        {this.state.display  === 'calendar' ? <Calendar/> : <Main/>}
+        {this.state.display  === 'calendar' ? <Main/> : <Calendar/>}
       </div>
       </>
     )

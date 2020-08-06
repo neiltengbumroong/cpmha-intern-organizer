@@ -1,7 +1,7 @@
 import React from 'react';
 import Home from './components/Home';
 // import Intern from './components/Intern';
-import { BrowserRouter as Router, Route, Link, browserHistory, Switch} from 'react-router-dom';
+import { BrowserRouter as Router, Route} from 'react-router-dom';
 
 
 function App() {

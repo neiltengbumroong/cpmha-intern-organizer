@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import InternForm from './InternForm';
+import Intern from './Intern';
 
 const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
 
@@ -17,8 +18,10 @@ class Interns extends Component {
   loadInterns() {
     axios.get(INTERN_GET_API)
       .then(res => {
-        this.setState({ interns: res.data });
-        this.setState({ isLoading: true });
+        this.setState({ 
+          interns: res.data,
+          isLoading: true
+        });
       })
       .then(() => {
         this.setState({ isLoading: false });
@@ -35,17 +38,14 @@ class Interns extends Component {
     if (!this.state.isLoading) {
       interns = this.state.interns.map((intern, i) => 
       <div key={i}>
-        <h3>{intern.name}</h3>
-        <p>{intern.email}</p>
-        <span>School: {intern.school} &nbsp; Major: {intern.major}</span>
-        <p>Weekly Hours Worked: {intern.weeklyHours}</p>
-        <p>Total Hours Worked: {intern.totalHours}</p>
+        <Intern id={intern._id} updateData={this.loadInterns}/>
+        
       </div>
       )
     }
     return (
       <div>
-      <InternForm/>
+      <InternForm updateData={this.loadInterns}/>
       {interns}
       </div>
     )

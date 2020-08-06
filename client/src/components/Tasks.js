@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import TaskForm from './TaskForm';
+import Task from './Task';
 
 import '../css/Tasks.css';
 
 const TASKS_GET_API = 'http://localhost:5000/api/tasks/get';
+
 
 class Tasks extends Component {
   constructor(props) {
@@ -16,6 +18,7 @@ class Tasks extends Component {
     }
 
     this.loadTasks = this.loadTasks.bind(this);
+   
   }
 
   loadTasks() {
@@ -35,22 +38,19 @@ class Tasks extends Component {
     this.loadTasks();
   }
 
-
   render() {
     let tasks = null;
     if (!this.state.isLoading) {
       tasks = this.state.tasks.map((task, i) => 
-        <div key={i}>
-          <h3>{task.task}</h3>
-          <p>{task.deadline}</p>
-        </div>
-
+      <div key={i}>
+        <Task id={task._id} updateData={this.loadTasks}/>
+        
+      </div>
       )
     }
-     Modal.setAppElement('body');
     return (
       <>
-      <TaskForm/>
+      <TaskForm updateData={this.loadTasks}/>
       {tasks}
       </>
     )
