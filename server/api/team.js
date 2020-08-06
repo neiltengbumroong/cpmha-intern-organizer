@@ -24,10 +24,18 @@ router.get('/api/teams/get', (req, res) => {
   .then(team => {
     res.json(team);
   })
-})
+});
+
+// standard get for a single task
+router.post('/api/teams/get/single', (req, res) => {
+  Team.findById(req.body.id)
+  .then(team => {
+    res.json(team);
+  })
+});
 
 // push intern onto members array for intern
-router.post('/api/team/update-members', (req, res) => {
+router.post('/api/team/add-members', (req, res) => {
   Team.findOneAndUpdate(
     { _id: req.body.id },
     { $push: { members: req.body.internId } },
@@ -35,7 +43,48 @@ router.post('/api/team/update-members', (req, res) => {
       res.send(intern);
     }
   )
-})
+});
+
+// delete team by id
+router.post('/api/teams/delete', (req, res) => {
+  Team.findByIdAndDelete(req.body.id)
+    .then(deleted => {
+      res.json(deleted);
+    })
+});
+
+// push task onto tasks array for team
+router.post('/api/teams/add-task', (req, res) => {
+  Team.findOneAndUpdate(
+    { _id: req.body.teamId },
+    { $push: { tasks: req.body.taskId } },
+    (err, team) => {
+      res.send(team);
+    }
+  )
+});
+
+// remove single intern from team 
+router.post('/api/teams/delete-intern', (req, res) => {
+  Team.findByIdAndUpdate(
+    { _id: req.body.teamId },
+    { $pull: { members: req.body.internId } },
+    (err, task) => {
+      res.send(task);
+    }
+  )
+});
+
+// remove single task from team
+router.post('/api/teams/delete-task', (req, res) => {
+  Team.findByIdAndUpdate(
+    { _id: req.body.teamId },
+    { $pull: { tasks: req.body.taskId } },
+    (err, team) => {
+      res.send(team);
+    }
+  )
+});
 
 
 module.exports = router;
