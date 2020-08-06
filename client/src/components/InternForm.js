@@ -96,6 +96,7 @@ class InternForm extends Component {
     axios.post(INTERN_POST_API, internToCreate)
       .then(res => {
         this.addInternToTeams(res.data);
+        this.props.updateMain();
         this.props.updateData();
       })
       .catch(error => {

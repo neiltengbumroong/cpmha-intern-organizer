@@ -43,7 +43,7 @@ class Tasks extends Component {
     if (!this.state.isLoading) {
       tasks = this.state.tasks.map((task, i) => 
       <div key={i}>
-        <Task id={task._id} updateData={this.loadTasks}/>
+        <Task id={task._id} updateData={this.loadTasks} updateMain={this.props.updateMain}/>
         
       </div>
       )
@@ -51,7 +51,7 @@ class Tasks extends Component {
     return (
       <>
         <h1>Tasks</h1>
-        <TaskForm updateData={this.loadTasks}/>
+        <TaskForm updateData={this.loadTasks} updateMain={this.props.updateMain}/>
         {tasks}
       </>
     )

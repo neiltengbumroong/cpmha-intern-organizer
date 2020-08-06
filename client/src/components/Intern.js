@@ -57,6 +57,7 @@ class Intern extends Component {
   deleteIntern(internId) {
     axios.post(INTERNS_DELETE_API, { id: internId })
       .then(() => {
+        this.props.updateMain();
         this.props.updateData();
       })
   }

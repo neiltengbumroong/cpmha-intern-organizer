@@ -88,6 +88,7 @@ class TeamForm extends Component {
     axios.post(TEAM_POST_API, teamToCreate)
       .then(res => {
         this.addTeamToInterns(res.data);
+        this.props.updateMain();
         this.props.updateData();
       })
     this.handleCloseModal();  

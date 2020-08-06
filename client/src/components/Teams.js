@@ -41,14 +41,14 @@ class Teams extends Component {
     if (!this.state.isLoading) {
       teams = this.state.teams.map((team, i) => 
       <div key={i}>
-        <Team id={team._id} updateData={this.loadTeams}/>
+        <Team id={team._id} updateData={this.loadTeams} updateMain={this.props.updateMain}/>
       </div>
       )
     }
     return (
       <>
         <h1>Teams</h1>
-        <TeamForm updateData={this.loadTeams}/>
+        <TeamForm updateData={this.loadTeams} updateMain={this.props.updateMain}/>
         {teams}
       </>
     )

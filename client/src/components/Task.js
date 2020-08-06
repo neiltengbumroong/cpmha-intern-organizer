@@ -55,6 +55,7 @@ class Task extends Component {
     const id = { id: taskId };
     axios.post(TASKS_DELETE_API, id)
       .then(() => {
+        this.props.updateMain();
         this.props.updateData();
       })
   }

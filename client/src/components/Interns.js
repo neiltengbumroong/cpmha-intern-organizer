@@ -38,7 +38,7 @@ class Interns extends Component {
     if (!this.state.isLoading) {
       interns = this.state.interns.map((intern, i) => 
       <div key={i}>
-        <Intern id={intern._id} updateData={this.loadInterns}/>
+        <Intern id={intern._id} updateData={this.loadInterns} updateMain={this.props.updateMain}/>
         
       </div>
       )
@@ -46,7 +46,7 @@ class Interns extends Component {
     return (
       <div>
         <h1>Interns</h1>
-        <InternForm updateData={this.loadInterns}/>
+        <InternForm updateData={this.loadInterns} updateMain={this.props.updateMain}/>
         {interns}
       </div>
     )

@@ -128,6 +128,7 @@ class TaskForm extends Component {
       .then((res) => {
         this.addTaskToInterns(res.data);
         this.addTaskToTeams(res.data);
+        this.props.updateMain();
         this.props.updateData();
       })
       .catch(error => {

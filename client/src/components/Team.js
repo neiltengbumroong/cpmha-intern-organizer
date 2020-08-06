@@ -29,8 +29,6 @@ class Team extends Component {
   }
 
   deleteTeamFromTasks(teamId) {
-    console.log(this.state.team);
-    console.log(this.state.team.tasks);
     for (let i = 0; i < this.state.team.tasks.length; i++) {
       const id = {
         teamId: teamId,
@@ -54,14 +52,15 @@ class Team extends Component {
     axios.post(TEAMS_DELETE_API, { id: teamId })
       .then(() => {
         this.props.updateData();
+        this.props.updateMain();
       })
   }
 
   deleteTeamFull(teamId) {
-    window.location.reload();
     this.deleteTeamFromTasks(teamId);
     this.deleteTeamFromInterns(teamId);
     this.deleteTeam(teamId);
+    
   }
 
   componentDidMount() {
