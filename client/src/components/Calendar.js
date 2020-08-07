@@ -13,7 +13,7 @@ import '../css/Calendar.css';
 const TASK_GET_API = 'http://localhost:5000/api/tasks/get';
 const EVENT_GET_API = 'http://localhost:5000/api/events/get';
 
-const EVENT_FORMAT = 'YYYY-MM-DD';
+const EVENT_FORMAT = 'YYYY-MM-DD HH:MM';
 
 class Calendar extends Component {
   constructor(props) {
@@ -49,7 +49,8 @@ class Calendar extends Component {
     for (let i = 0; i < tasks.length; i++) {
       tasksArr.push({
         title: tasks[i].task,
-        date: moment(tasks[i].deadline).format(EVENT_FORMAT),
+        start: moment(tasks[i].deadline).format(EVENT_FORMAT),
+        end: moment(tasks[i].deadline).format(EVENT_FORMAT),
         extendedProps: {
           type: 'task'
         }

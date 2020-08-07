@@ -8,7 +8,7 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      display: 'calendar'
+      display: 'main'
     }
 
     this.changeMode = this.changeMode.bind(this);

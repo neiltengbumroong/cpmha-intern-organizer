@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import InternForm from './InternForm';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useParams
+} from "react-router-dom";
 
 const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
 const INTERNS_DELETE_API = 'http://localhost:5000/api/interns/delete';
@@ -12,7 +19,8 @@ class Intern extends Component {
     super(props);
     this.state = {
       intern: [],
-      isLoading: true
+      isLoading: true,
+      internId: props.location.state.id
     }
     this.getIntern = this.getIntern.bind(this);
     this.deleteInternFull = this.deleteInternFull.bind(this);
@@ -22,7 +30,7 @@ class Intern extends Component {
   }
 
   getIntern() {
-    axios.post(INTERN_GET_SINGLE_API, { id: this.props.id })
+    axios.post(INTERN_GET_SINGLE_API, { id: this.state.internId })
       .then(res => {
         this.setState({ 
           intern: res.data,
@@ -76,7 +84,7 @@ class Intern extends Component {
     let internData = this.state.intern;
     let intern = null;
 
-    if (!this.state.isLoading) {
+    if (this.state.intern) {
       intern = (
       <div>
         <h3>{internData.name}</h3>
@@ -87,6 +95,7 @@ class Intern extends Component {
         <button type="button" onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</button>
       </div>)
     }
+
     return (
       <div>
         {intern}

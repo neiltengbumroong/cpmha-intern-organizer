@@ -1,15 +1,17 @@
 import React from 'react';
 import Home from './components/Home';
-// import Intern from './components/Intern';
-import { BrowserRouter as Router, Route} from 'react-router-dom';
+import Intern from './components/Intern';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 
 function App() {
   return (
     <div>
       <Router>
-        <Route path='/' component={Home}/>
-        {/* <Route path='/:internId' component={Intern}/> */}
+        <Switch>
+          <Route exact path='/' component={Home}/>
+          <Route path='/:internId' exact component={Intern}/>
+        </Switch>
       </Router>
     </div>
   );

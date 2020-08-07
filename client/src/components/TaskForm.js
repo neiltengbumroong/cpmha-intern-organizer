@@ -73,6 +73,7 @@ class TaskForm extends Component {
 
   handleOpenModal() {
     this.setState({ showModal: true });
+    this.loadData();
   }
   
   handleCloseModal() {

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import InternForm from './InternForm';
 import Intern from './Intern';
+import { Link } from 'react-router-dom';
 
 const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
 
@@ -38,7 +39,14 @@ class Interns extends Component {
     if (!this.state.isLoading) {
       interns = this.state.interns.map((intern, i) => 
       <div key={i}>
-        <Intern id={intern._id} updateData={this.loadInterns} updateMain={this.props.updateMain}/>
+        <Link to={{
+          pathname: '/' + intern.name,
+          state: { id: intern._id }
+        }}>
+          {intern.name}
+          {/* <Intern id={intern._id} updateData={this.loadInterns} updateMain={this.props.updateMain}/> */}
+        </Link>
+        
         
       </div>
       )

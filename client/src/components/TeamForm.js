@@ -50,6 +50,7 @@ class TeamForm extends Component {
 
   handleOpenModal() {
     this.setState({ showModal: true });
+    this.loadInterns();
   }
   
   handleCloseModal() {
