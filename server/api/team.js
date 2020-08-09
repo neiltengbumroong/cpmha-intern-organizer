@@ -36,6 +36,7 @@ router.post('/api/teams/get/single', (req, res) => {
 
 // push intern onto members array for intern
 router.post('/api/team/add-members', (req, res) => {
+  console.log("adding member: ", req.body.internId);
   Team.findOneAndUpdate(
     { _id: req.body.id },
     { $push: { members: req.body.internId } },
@@ -52,6 +53,25 @@ router.post('/api/teams/delete', (req, res) => {
       res.json(deleted);
     })
 });
+
+// edit team
+router.post('/api/teams/update', (req, res) => {
+  console.log("setting members: ", req.body.members);
+  Team.updateOne(
+    { _id: req.body.id },
+    { $set:
+      {
+        name: req.body.name,
+        members: req.body.members,
+        leader: req.body.leader,
+        description: req.body.description
+      }
+    }
+  )
+  .then(newTeam => {
+    res.send(newTeam);
+  })
+})
 
 // push task onto tasks array for team
 router.post('/api/teams/add-task', (req, res) => {

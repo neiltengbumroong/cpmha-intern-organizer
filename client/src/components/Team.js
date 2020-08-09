@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Link } from "react-router-dom";
+import TeamForm from './TeamForm';
 
 const TEAMS_GET_SINGLE_API = 'http://localhost:5000/api/teams/get/single';
 const TEAMS_DELETE_API = 'http://localhost:5000/api/teams/delete';
@@ -11,16 +13,24 @@ class Team extends Component {
     super(props);
     this.state = {
       team: [],
+      teamId: props.location.state.id,
+      showEditModal: false,
       isLoading: true
     }
+
+    this.updateData = this.updateData.bind(this);
+  }
+
+  updateData() {
+    this.setState({ isLoading: this.state.isLoading });
   }
 
   getTeam() {
-    axios.post(TEAMS_GET_SINGLE_API, { id: this.props.id })
+    this.setState({ isLoading: true });
+    axios.post(TEAMS_GET_SINGLE_API, { id: this.state.teamId })
       .then(res => {
         this.setState({ 
           team: res.data,
-          isLoading: true
          });
       })
       .then(() => {
@@ -49,11 +59,7 @@ class Team extends Component {
   }
 
   deleteTeam(teamId) {
-    axios.post(TEAMS_DELETE_API, { id: teamId })
-      .then(() => {
-        this.props.updateData();
-        this.props.updateMain();
-      })
+    axios.post(TEAMS_DELETE_API, { id: teamId });
   }
 
   deleteTeamFull(teamId) {
@@ -76,8 +82,13 @@ class Team extends Component {
       <div>
         <h3>{teamData.name}</h3>
         <p>{teamData.members}</p>
-        {this.state.isLoading ? null : 
-        <button type="button" onClick={() => this.deleteTeamFull(teamData._id)}>Delete Team</button>}
+        <TeamForm
+          type={"edit"}
+          id={teamData._id}
+          updateData={this.updateData}
+          updateMain={this.props.updateMain}
+        />
+        <Link to="/"><button type="button" onClick={() => this.deleteTeamFull(teamData._id)}>Delete Team</button></Link>
       </div>)
     }
 

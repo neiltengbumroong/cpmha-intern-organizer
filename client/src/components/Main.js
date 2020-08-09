@@ -16,6 +16,7 @@ class Main extends Component {
   }
 
   updateMain() {
+    console.log("main updated");
     this.setState({ update: true });
   }
 

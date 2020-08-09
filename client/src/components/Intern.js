@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import InternForm from './InternForm';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  useParams
-} from "react-router-dom";
+import { Link } from "react-router-dom";
+import moment from 'moment';
 
 const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
 const INTERNS_DELETE_API = 'http://localhost:5000/api/interns/delete';
@@ -20,13 +15,25 @@ class Intern extends Component {
     this.state = {
       intern: [],
       isLoading: true,
-      internId: props.location.state.id
+      internId: props.location.state.id,
+      showEditModal: false
     }
     this.getIntern = this.getIntern.bind(this);
     this.deleteInternFull = this.deleteInternFull.bind(this);
     this.deleteIntern = this.deleteIntern.bind(this);
     this.deleteInternFromTask = this.deleteInternFromTask.bind(this);
     this.deleteInternFromTeam = this.deleteInternFromTeam.bind(this);
+
+    this.handleOpenModal = this.handleOpenModal.bind(this);
+    this.handleCloseModal = this.handleCloseModal.bind(this);
+  }
+
+  handleOpenModal() {
+    this.setState({ showModal: true });
+  }
+  
+  handleCloseModal() {
+    this.setState({ showModal: false });
   }
 
   getIntern() {
@@ -64,10 +71,6 @@ class Intern extends Component {
 
   deleteIntern(internId) {
     axios.post(INTERNS_DELETE_API, { id: internId })
-      .then(() => {
-        this.props.updateMain();
-        this.props.updateData();
-      })
   }
 
   deleteInternFull(internId) {
@@ -84,16 +87,27 @@ class Intern extends Component {
     let internData = this.state.intern;
     let intern = null;
 
-    if (this.state.intern) {
+    
+    if (internData) {
       intern = (
-      <div>
-        <h3>{internData.name}</h3>
-        <p>{internData.email}</p>
-        <span>School: {internData.school} &nbsp; Major: {internData.major}</span>
-        <p>Weekly Hours Worked: {internData.weeklyHours}</p>
-        <p>Total Hours Worked: {internData.totalHours}</p>
-        <button type="button" onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</button>
-      </div>)
+        <div>
+          <h3>{internData.name}</h3>
+          <p>{internData.email}</p>
+          <span>School: {internData.school} &nbsp; Major: {internData.major}</span>
+          <p>Weekly Hours Worked: {internData.weeklyHours}</p>
+          <p>Total Hours Worked: {internData.totalHours}</p>
+          <InternForm 
+            type={"edit"}
+            id={internData._id}
+            name={internData.name}
+            email={internData.email}
+            school={internData.school}
+            major={internData.major}
+            dateJoined={moment(internData.joined).toDate()}
+          />
+          <Link to="/"><button type="button" onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</button></Link>
+        </div>
+      )
     }
 
     return (

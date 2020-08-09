@@ -40,6 +40,24 @@ router.post('/api/interns/get/single', (req, res) => {
   })
 })
 
+router.post('/api/interns/update', (req, res) => {
+  console.log(req.body);
+  Intern.updateOne(
+    { _id : req.body.id },
+    { $set: 
+      { name: req.body.name,
+        school: req.body.school,
+        major: req.body.major,
+        email: req.body.email,
+        joined: req.body.joined
+      }
+    }
+  )
+  .then(newIntern => {
+    res.send(newIntern);
+  })
+})
+
 // push task onto tasks array for intern
 router.post('/api/interns/add-task', (req, res) => {
   Intern.findOneAndUpdate(

@@ -3,6 +3,7 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import TeamForm from './TeamForm';
 import Team from './Team';
+import { Link } from 'react-router-dom';
 
 const TEAM_GET_API = 'http://localhost:5000/api/teams/get';
 
@@ -41,14 +42,23 @@ class Teams extends Component {
     if (!this.state.isLoading) {
       teams = this.state.teams.map((team, i) => 
       <div key={i}>
-        <Team id={team._id} updateData={this.loadTeams} updateMain={this.props.updateMain}/>
+        <Link to={{
+          pathname: '/teams/' + team.name,
+          state: { id: team._id }
+        }}>
+          {team.name}
+        </Link>
       </div>
       )
     }
     return (
       <>
         <h1>Teams</h1>
-        <TeamForm updateData={this.loadTeams} updateMain={this.props.updateMain}/>
+        <TeamForm 
+          type={"create"}
+          updateData={this.loadTeams} 
+          updateMain={this.props.updateMain}
+        />
         {teams}
       </>
     )

@@ -5,6 +5,10 @@ import Select from 'react-select';
 
 
 const TEAM_POST_API = 'http://localhost:5000/api/teams/post';
+const TEAM_UPDATE_API = 'http://localhost:5000/api/teams/update';
+const TEAM_ADD_MEMBERS_API = 'http://localhost:5000/api/team/add-members';
+const TEAM_GET_SINGLE_API = 'http://localhost:5000/api/teams/get/single';
+const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
 const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
 const INTERN_UPDATE_TEAM_API = 'http://localhost:5000/api/interns/add-team';
 
@@ -12,13 +16,15 @@ class TeamForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: this.props.id,
       name: '',
-      members: [],
-      tempMembers: [],
+      members: [], //stores current members by ID
+      currentMembers: [],
       leader: '',
       description: '',
       interns: [],
-      showModal: false
+      showModal: false,
+      isLoading: true
     }
 
     this.handleNameChange = this.handleNameChange.bind(this);
@@ -27,19 +33,20 @@ class TeamForm extends Component {
     this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
 
     this.createTeam = this.createTeam.bind(this);
+    this.editTeam = this.editTeam.bind(this);
+    this.getTeamData = this.getTeamData.bind(this);
     this.loadInterns = this.loadInterns.bind(this);
+    this.removeCurrentMember = this.removeCurrentMember.bind(this);
     this.addTeamToInterns = this.addTeamToInterns.bind(this);
     this.handleOpenModal = this.handleOpenModal.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
-
   }
 
   handleNameChange(event) {
     this.setState({ name: event.target.value });
   }
   handleMembersChange(event) {
-    this.setState({ members: event ? event.map(x => x.value) : [] });
-    this.setState({ tempMembers: event });
+    this.setState({ members: event ? event.map(x => x) : [] });
   }
   handleLeaderChange(data) {
     this.setState({ leader: data.value });
@@ -50,22 +57,57 @@ class TeamForm extends Component {
 
   handleOpenModal() {
     this.setState({ showModal: true });
-    this.loadInterns();
   }
   
   handleCloseModal() {
     this.setState({ showModal: false });
   }
 
+  // get basic team data and set states accordingly
+  getTeamData() {
+    this.setState({ isLoading: true });
+    axios.post(TEAM_GET_SINGLE_API, { id: this.props.id })
+      .then(res => {
+        this.setState({
+          name: res.data.name,
+          currentMembers: res.data.members,
+          leader: res.data.leader,
+          description: res.data.description,
+          tasks: res.data.tasks
+        })
+      })
+      .then(() => {
+        this.setState({ isLoading: false });
+      })
+  }
+
+  // get possible interns to be added to team
   loadInterns() {
+    this.setState({ isLoading: true });
     axios.get(INTERN_GET_API)
     .then(res => {
       this.setState({ 
         interns: res.data
       })
     })
+    .then(() => {
+      if (this.props.type === 'create') {
+        this.setState({ isLoading: false });
+      }
+    })
   }
 
+  // remove a current member from react-select
+  removeCurrentMember(id) {
+    let array = [...this.state.currentMembers];
+    let index = array.indexOf(id);
+    if (index !== -1) {
+      array.splice(index, 1);
+      this.setState({ currentMembers: array });
+    }
+  }
+
+  // add team to interns' "teams" attribute
   addTeamToInterns(data) {
     for (let i = 0; i < data.members.length; i++) {
       let teamToUpdate = {
@@ -73,56 +115,117 @@ class TeamForm extends Component {
         teamId: data._id
       }
       axios.post(INTERN_UPDATE_TEAM_API, teamToUpdate);
-    }
-
-    
+    }    
   }
 
+  // create a team 
   createTeam() {
     const teamToCreate = {
       name: this.state.name,
-      members: this.state.members,
+      members: this.state.members ? this.state.members.map(x => x.value) : [],
       leader: this.state.leader,
       description: this.state.description,
     }
 
+    // post to team api 
     axios.post(TEAM_POST_API, teamToCreate)
       .then(res => {
         this.addTeamToInterns(res.data);
-        this.props.updateMain();
         this.props.updateData();
       })
     this.handleCloseModal();  
   }
 
+  // edit a team
+  editTeam() {
+    const teamToUpdate = {
+      id: this.state.id,
+      name: this.state.name,
+      members: this.state.members.map(x => x.value).concat(this.state.currentMembers),
+      leader: this.state.leader,
+      description: this.state.description
+    }
+
+    // post the basic data to the team update API
+    axios.post(TEAM_UPDATE_API, teamToUpdate)
+      .then(res => {
+        this.props.updateData();
+      })
+    this.handleCloseModal();
+    // "illusion" of change happening
+    window.location.reload();
+  }
+
   componentDidMount() {
     this.loadInterns();
+    // only load team data if we are editing
+    if (this.props.type === 'edit') {
+      this.getTeamData();
+    }
   }
 
   render() {
+    
     let options = [];
-    let interns = this.state.interns;
+    let interns = null;
     let leaderOptions = [];
-    let members = this.state.tempMembers;
-    for (let i = 0; i < interns.length; i++) {
-      options.push({
-        value: interns[i]._id,
-        label: interns[i].name
-      })
+    let members = [];
+    let currentMembers = null;
+    let currentMembersDisplay = [];
+
+    if (!this.state.isLoading) {
+      // switch for creating a team
+      if (this.props.type === 'create') {
+        interns = this.state.interns; // get interns from state
+        members = this.state.members || [];
+        for (let i = 0; i < interns.length; i++) {
+          options.push({
+            value: interns[i]._id,
+            label: interns[i].name
+          })
+        }
+    
+        for (let i = 0; i < members.length; i++) {
+          leaderOptions.push({
+            value: this.state.members[i].value,
+            label: this.state.members[i].label
+          })
+        }
+        // else use this switch for editing
+      } else {
+        interns = this.state.interns; // get interns from state
+        for (let i = 0; i < interns.length; i++) {
+          if (!this.state.currentMembers.includes(interns[i]._id)) {
+            options.push({
+              value: interns[i]._id,
+              label: interns[i].name
+            })
+          } else {
+            currentMembersDisplay.push({
+              label: interns[i].name,
+              value: interns[i]._id
+            })
+          }    
+        }
+        leaderOptions = [...currentMembersDisplay];
+      }
+      
+      currentMembers = currentMembersDisplay.map((member, i) => 
+        <div key={i}>
+          <p>{member.label}</p>
+          <p>{member.value}</p>
+          <button type="button" onClick={() => this.removeCurrentMember(member.value)}>X</button>
+        </div>  
+      )
+
+      
     }
-
-    for (let i = 0; i < members.length; i++) {
-      leaderOptions.push({
-        value: members[i].value,
-        label: members[i].label
-      })
-    }
-
-
+    
     Modal.setAppElement('body');
+
     return (
       <>
-        <button onClick={this.handleOpenModal}>Create Team</button>
+        <button onClick={this.handleOpenModal}>{this.props.type === 'edit' ? 'Edit Team' : 'Create Team'}</button>
         <Modal
           style={{
             content: {
@@ -138,12 +241,15 @@ class TeamForm extends Component {
           isOpen={this.state.showModal}
           contentLabel="Create Team Modal">
           <form>
-            <h1>New Team</h1>
+            <h1>{this.props.type === 'edit' ? 'Edit Team' : 'New Team'}</h1>
             <label htmlFor="team">
               Team: &nbsp;
-              <input id="team" type="text" onChange={this.handleNameChange}/><br/>
+              <input id="team" type="text" defaultValue={this.props.type === 'edit' ? this.state.name : ''} onChange={this.handleNameChange}/><br/>
             </label>          
-            <label htmlFor="members">Members: &nbsp;</label>
+            <label htmlFor="members">
+              Members: &nbsp;
+            </label><br/>
+            {currentMembers}
             <Select 
               options={options} 
               isMulti={true} 
@@ -151,7 +257,6 @@ class TeamForm extends Component {
               isSearchable={true}
             />
             <br/>
-
             <label htmlFor="leader"></label>
               Leader: &nbsp;
               <Select 
@@ -163,10 +268,14 @@ class TeamForm extends Component {
               
             <label htmlFor="description">
               Description: &nbsp;
-              <textarea id="description" type="text" onChange={this.handleDescriptionChange}/><br/>
+              <textarea id="description" type="text" defaultValue={this.props.type === 'edit' ? this.state.description : ''} onChange={this.handleDescriptionChange}/><br/>
             </label>          
             
-            <button type="button" onClick={this.createTeam}>Create Team</button>
+            {this.props.type === 'edit' ?
+              <button type="button" onClick={this.editTeam}>Save Changes</button>
+              :
+              <button type="button" onClick={this.createTeam}>Create Team</button>
+            }    
             <button type="button" onClick={this.handleCloseModal}>Close</button>
           </form>
         </Modal>

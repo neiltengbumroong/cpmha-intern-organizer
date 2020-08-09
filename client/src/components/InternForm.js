@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const INTERN_POST_API = 'http://localhost:5000/api/interns/post';
+const INTERN_UPDATE_API = 'http://localhost:5000/api/interns/update';
 const TEAM_GET_API = 'http://localhost:5000/api/teams/get';
 const TEAM_UPDATE_MEMBERS_API = 'http://localhost:5000/api/team/add-members';
 
@@ -14,6 +15,7 @@ class InternForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: '',
       name: '',
       school: '',
       major: '',
@@ -33,6 +35,7 @@ class InternForm extends Component {
     this.createIntern = this.createIntern.bind(this);
     this.loadTeams = this.loadTeams.bind(this);
     this.addInternToTeams = this.addInternToTeams.bind(this);
+    this.editIntern = this.editIntern.bind(this);
 
     this.handleOpenModal = this.handleOpenModal.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
@@ -57,8 +60,16 @@ class InternForm extends Component {
     this.setState({ teams: event ? event.map(x => x.value) : [] });
   }
 
+  // set state with props here because for some reason they don't show up in constructor
   handleOpenModal() {
-    this.setState({ showModal: true });
+    this.setState({ 
+      showModal: true,
+      id: this.props.id,
+      name: this.props.name,
+      email: this.props.email,
+      school: this.props.school,
+      major: this.props.major
+    });
   }
   
   handleCloseModal() {
@@ -85,6 +96,7 @@ class InternForm extends Component {
   createIntern(event) {
     event.preventDefault();
     const internToCreate = {
+      id: this.state.id,
       name: this.state.name,
       school: this.state.school,
       major: this.state.major,
@@ -106,11 +118,38 @@ class InternForm extends Component {
     this.handleCloseModal(); 
   }
 
+  editIntern(event) {
+    event.preventDefault();
+    const internToEdit = {
+      id: this.state.id,
+      name: this.state.name,
+      school: this.state.school,
+      major: this.state.major,
+      email: this.state.email,
+      joined: this.state.dateJoined,
+      teams: this.state.teams
+    }
+
+
+    axios.post(INTERN_UPDATE_API, internToEdit)
+      .then(res => {
+        this.props.updateMain();
+        this.props.updateData();
+      })
+      .catch(error => {
+        this.setState({ error: true })
+      })
+    this.handleCloseModal();
+    // "illusion" that something changed
+    window.location.reload();
+  }
+
   componentDidMount() {
     this.loadTeams();
   }
 
   render() {
+    Modal.setAppElement("body");
     let options = [];
     let teams = this.state.teamsOptions;
     for (let i = 0; i < teams.length; i++) {
@@ -121,7 +160,7 @@ class InternForm extends Component {
     }
     return (
       <>
-        <button onClick={this.handleOpenModal}>Create Intern</button>
+        <button onClick={this.handleOpenModal}>{this.props.type === 'create' ? "Create Intern" : "Edit Profile"}</button>
         <Modal
           style={{
             content: {
@@ -133,43 +172,72 @@ class InternForm extends Component {
             overlay: {}
           }}
           isOpen={this.state.showModal}
-          contentLabel="Create Intern Modal"
+          contentLabel="Intern Modal"
         >
           <form>
-            <h1>New Intern</h1>
+            <h1>{this.props.type === 'edit' ? "Edit Profile" : "New Intern"}</h1>
             <label htmlFor="name">
               Name: &nbsp;
-              <input id="name" type="text" onChange={this.handleNameChange}/><br/>
-            </label>            
+              <input 
+                id="name" 
+                type="text" 
+                defaultValue={this.props.type === 'edit' ? this.props.name : ''} 
+                onChange={this.handleNameChange}
+              /><br/>  
+            </label>         
             <label htmlFor="email">
               Email: &nbsp;
-              <input id="email" type="email" onChange={this.handleEmailChange}/><br/>
+              <input 
+                id="email" 
+                type="email" 
+                defaultValue={this.props.type === 'edit' ? this.props.email : ''} 
+                onChange={this.handleEmailChange}
+              /><br/>
             </label>
             <label htmlFor="school">
               School: &nbsp;
-              <input id="school" type="text" onChange={this.handleSchoolChange}/><br/>
+              <input 
+                id="school" 
+                type="text" 
+                defaultValue={this.props.type === 'edit' ? this.props.school : ''} 
+                onChange={this.handleSchoolChange}
+              /><br/>
             </label>          
             <label htmlFor="major">
               Major: &nbsp;
-              <input id="major" type="text" onChange={this.handleMajorChange}/><br/>
+              <input 
+                id="major" 
+                type="text" 
+                defaultValue={this.props.type === 'edit' ? this.props.major : ''} 
+                onChange={this.handleMajorChange}
+              /><br/>
             </label>       
             <label htmlFor="date-joined">
               Date Joined: &nbsp;
               <DatePicker
-                selected={new Date()}
+                selected={this.props.type === 'edit' ? this.props.dateJoined : new Date()}
                 onChange={this.handleDateJoinedChange}
               />
             </label> <br/>
-            <label htmlFor="teams">Teams:</label>
-              <Select 
-                options={options} 
-                isMulti={true} 
-                onChange={this.handleTeamsChange}
-              />
+            {this.props.type === 'create' ? 
+              <label htmlFor="teams">Teams:
+                <Select 
+                  options={options} 
+                  isMulti={true} 
+                  onChange={this.handleTeamsChange}
+                />
+              </label>
+              :
+                null
+            }
             
-            <button type="button" onClick={this.createIntern}>Create Intern</button>
+            {this.props.type === 'edit' ? 
+              <button type="button" onClick={this.editIntern}>Save Changes</button>
+              :
+              <button type="button" onClick={this.createIntern}>Create Intern</button>
+            }
             <button type="button" onClick={this.handleCloseModal}>Close</button>
-          </form>
+          </form>   
         </Modal>
       </>
     )
