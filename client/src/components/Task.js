@@ -79,7 +79,11 @@ class Task extends Component {
         <div>
           <h3>{taskData.task}</h3>
           <p>{taskData.deadline}</p>
-          <button onClick={() => this.deleteTaskFull(taskData._id)}>Delete Task</button>
+          <TaskForm
+            type={"edit"}
+            id={taskData._id}
+          />
+          <button type="button" onClick={() => this.deleteTaskFull(taskData._id)}>Delete Task</button>
       </div>)
     }
     return (

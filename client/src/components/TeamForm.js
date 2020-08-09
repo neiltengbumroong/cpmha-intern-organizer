@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import Select from 'react-select';
+import Form from 'react-bootstrap/Form';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 
 
 const TEAM_POST_API = 'http://localhost:5000/api/teams/post';
@@ -11,6 +14,7 @@ const TEAM_GET_SINGLE_API = 'http://localhost:5000/api/teams/get/single';
 const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
 const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
 const INTERN_UPDATE_TEAM_API = 'http://localhost:5000/api/interns/add-team';
+const INTERN_DELETE_TEAM_API = 'http://localhost:5000/api/interns/delete-team';
 
 class TeamForm extends Component {
   constructor(props) {
@@ -18,8 +22,9 @@ class TeamForm extends Component {
     this.state = {
       id: this.props.id,
       name: '',
-      members: [], //stores current members by ID
-      currentMembers: [],
+      members: [], //stores new members by ID
+      currentMembers: [], //stores currently selected members 
+      oldMembers: [], //stores initial members (retrieved upon mounting)
       leader: '',
       description: '',
       interns: [],
@@ -71,6 +76,7 @@ class TeamForm extends Component {
         this.setState({
           name: res.data.name,
           currentMembers: res.data.members,
+          oldMembers: res.data.members,
           leader: res.data.leader,
           description: res.data.description,
           tasks: res.data.tasks
@@ -118,6 +124,17 @@ class TeamForm extends Component {
     }    
   }
 
+  // remove team from interns' team attribute if they are no longer in it
+  removeTeamFromInterns(data) {
+    for (let i = 0; i < data.members.length; i++) {
+      let teamToUpdate = {
+        internId: data.members[i],
+        teamId: data._id
+      }
+      axios.post(INTERN_DELETE_TEAM_API, teamToUpdate);
+    }
+  }
+
   // create a team 
   createTeam() {
     const teamToCreate = {
@@ -149,11 +166,28 @@ class TeamForm extends Component {
     // post the basic data to the team update API
     axios.post(TEAM_UPDATE_API, teamToUpdate)
       .then(res => {
+        const addData = {
+          members: this.state.members.map(x => x.value),
+          _id: this.state.id
+        }
+        this.addTeamToInterns(addData);
+        let diffArray = this.state.oldMembers.filter(x => !this.state.currentMembers.includes(x));    
+        const deleteData = {
+          members: diffArray,
+          _id: this.state.id
+        }
+
+        this.removeTeamFromInterns(deleteData);
+        
+      })
+      .then(() => {
         this.props.updateData();
       })
+
+    
     this.handleCloseModal();
     // "illusion" of change happening
-    window.location.reload();
+    // window.location.reload();
   }
 
   componentDidMount() {
@@ -240,36 +274,51 @@ class TeamForm extends Component {
           }}
           isOpen={this.state.showModal}
           contentLabel="Create Team Modal">
-          <form>
+          <Form>
             <h1>{this.props.type === 'edit' ? 'Edit Team' : 'New Team'}</h1>
-            <label htmlFor="team">
-              Team: &nbsp;
-              <input id="team" type="text" defaultValue={this.props.type === 'edit' ? this.state.name : ''} onChange={this.handleNameChange}/><br/>
-            </label>          
-            <label htmlFor="members">
-              Members: &nbsp;
-            </label><br/>
-            {currentMembers}
-            <Select 
-              options={options} 
-              isMulti={true} 
-              onChange={this.handleMembersChange}
-              isSearchable={true}
-            />
-            <br/>
-            <label htmlFor="leader"></label>
-              Leader: &nbsp;
-              <Select 
-              options={leaderOptions} 
-              isMulti={false} 
-              onChange={this.handleLeaderChange}
-              isSearchable={true}
+            <Form.Group>
+              <Form.Label>Team Name</Form.Label>
+              <Form.Control 
+                size="md"
+                type="text" 
+                placeholder="Ex. Marketing"
+                defaultValue={this.props.type === 'edit' ? this.props.name : ''}  
+                onChange={this.handleNameChange}
               />
-              
-            <label htmlFor="description">
-              Description: &nbsp;
-              <textarea id="description" type="text" defaultValue={this.props.type === 'edit' ? this.state.description : ''} onChange={this.handleDescriptionChange}/><br/>
-            </label>          
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Add Members</Form.Label>
+              {currentMembers}
+              <Select 
+                options={options} 
+                isMulti={true} 
+                onChange={this.handleMembersChange}
+                isSearchable={true}
+              />
+            </Form.Group>
+            
+            <Form.Group>
+              <Form.Label>Leader</Form.Label>
+              <Select 
+                options={leaderOptions} 
+                isMulti={false} 
+                onChange={this.handleLeaderChange}
+                isSearchable={true}
+              />
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Description</Form.Label>
+              <Form.Control 
+                size="md"
+                type="text" 
+                placeholder="Ex. Tasked with expanding CPMHA connections"
+                defaultValue={this.props.type === 'edit' ? this.props.description : ''}  
+                onChange={this.handleDescriptionChange}
+              />
+            </Form.Group>
+                      
             
             {this.props.type === 'edit' ?
               <button type="button" onClick={this.editTeam}>Save Changes</button>
@@ -277,7 +326,7 @@ class TeamForm extends Component {
               <button type="button" onClick={this.createTeam}>Create Team</button>
             }    
             <button type="button" onClick={this.handleCloseModal}>Close</button>
-          </form>
+          </Form>
         </Modal>
       </>   
     )

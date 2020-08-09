@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import Select from 'react-select';
-import DatePicker from "react-datepicker";
-
+// import DatePicker from "react-bootstrap-date-picker";
+import DatePicker from 'react-datepicker';
+import Form from 'react-bootstrap/Form';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 import "react-datepicker/dist/react-datepicker.css";
 
 const INTERN_POST_API = 'http://localhost:5000/api/interns/post';
@@ -174,59 +177,74 @@ class InternForm extends Component {
           isOpen={this.state.showModal}
           contentLabel="Intern Modal"
         >
-          <form>
+          <Form>
             <h1>{this.props.type === 'edit' ? "Edit Profile" : "New Intern"}</h1>
-            <label htmlFor="name">
-              Name: &nbsp;
-              <input 
-                id="name" 
+            <Form.Group>
+              <Form.Label>Name</Form.Label>
+              <Form.Control 
+                size="md"
                 type="text" 
-                defaultValue={this.props.type === 'edit' ? this.props.name : ''} 
+                placeholder="John Doe"
+                defaultValue={this.props.type === 'edit' ? this.props.name : ''}  
                 onChange={this.handleNameChange}
-              /><br/>  
-            </label>         
-            <label htmlFor="email">
-              Email: &nbsp;
-              <input 
-                id="email" 
+              />
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Email</Form.Label>
+              <Form.Control 
+                size="md"
                 type="email" 
-                defaultValue={this.props.type === 'edit' ? this.props.email : ''} 
+                placeholder="example@cpmha.com"
+                defaultValue={this.props.type === 'edit' ? this.props.email : ''}  
                 onChange={this.handleEmailChange}
-              /><br/>
-            </label>
-            <label htmlFor="school">
-              School: &nbsp;
-              <input 
-                id="school" 
-                type="text" 
-                defaultValue={this.props.type === 'edit' ? this.props.school : ''} 
-                onChange={this.handleSchoolChange}
-              /><br/>
-            </label>          
-            <label htmlFor="major">
-              Major: &nbsp;
-              <input 
-                id="major" 
-                type="text" 
-                defaultValue={this.props.type === 'edit' ? this.props.major : ''} 
-                onChange={this.handleMajorChange}
-              /><br/>
-            </label>       
-            <label htmlFor="date-joined">
-              Date Joined: &nbsp;
+              />
+            </Form.Group>
+
+            <Form.Row>
+              <Col>
+                <Form.Group>
+                  <Form.Label>School</Form.Label>
+                  <Form.Control 
+                    size="md"
+                    type="text" 
+                    placeholder="School"
+                    defaultValue={this.props.type === 'edit' ? this.props.school : ''}  
+                    onChange={this.handleSchoolChange}
+                  />
+              </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group>
+                  <Form.Label>Major</Form.Label>
+                  <Form.Control 
+                    size="md"
+                    type="text" 
+                    placeholder="Major"
+                    defaultValue={this.props.type === 'edit' ? this.props.major : ''}  
+                    onChange={this.handleMajorChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Form.Row>
+
+            <Form.Group>
+              <Form.Label>Date Joined </Form.Label>
               <DatePicker
                 selected={this.props.type === 'edit' ? this.props.dateJoined : new Date()}
                 onChange={this.handleDateJoinedChange}
               />
-            </label> <br/>
+            </Form.Group>
+
             {this.props.type === 'create' ? 
-              <label htmlFor="teams">Teams:
+              <Form.Group>
+                <Form.Label>Add Teams </Form.Label>
                 <Select 
                   options={options} 
                   isMulti={true} 
                   onChange={this.handleTeamsChange}
                 />
-              </label>
+              </Form.Group>       
               :
                 null
             }
@@ -237,7 +255,7 @@ class InternForm extends Component {
               <button type="button" onClick={this.createIntern}>Create Intern</button>
             }
             <button type="button" onClick={this.handleCloseModal}>Close</button>
-          </form>   
+          </Form>   
         </Modal>
       </>
     )

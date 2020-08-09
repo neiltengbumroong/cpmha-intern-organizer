@@ -2,9 +2,14 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import Select from 'react-select';
+import Form from 'react-bootstrap/Form';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 import DateTimePicker from 'react-datetime-picker';
+import DateTimeField from 'react-datetimepicker-bootstrap';
 
 const TASK_POST_API = 'http://localhost:5000/api/tasks/post';
+const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
 const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
 const TEAM_GET_API = 'http://localhost:5000/api/teams/get';
 const INTERN_UPDATE_TASK_API = 'http://localhost:5000/api/interns/add-task';
@@ -19,8 +24,10 @@ class TaskForm extends Component {
       priority: '',
       dateAssigned: new Date(),
       assignedTo: [],
+      assignedToOld: [],
       assignedToTeam: [],
-      link: '',
+      assignedToTeamOld: [],
+      links: '',
       completed: false,
       error: false,
       showModal: false,
@@ -35,7 +42,7 @@ class TaskForm extends Component {
     this.handleAssignedToChange = this.handleAssignedToChange.bind(this);
     this.handleAssignedToTeamChange = this.handleAssignedToTeamChange.bind(this);
     this.handleCompletedChange = this.handleCompletedChange.bind(this);
-    this.handleLinkChange = this.handleLinkChange.bind(this);
+    this.handleLinksChange = this.handleLinksChange.bind(this);
 
     this.createTask = this.createTask.bind(this);
     this.loadData = this.loadData.bind(this);
@@ -67,8 +74,8 @@ class TaskForm extends Component {
   handleCompletedChange() {
     this.setState({ completed: !this.state.completed });
   }
-  handleLinkChange(event) {
-    this.setState({ link: event.target.value });
+  handleLinksChange(event) {
+    this.setState({ links: event.target.value });
   }
 
   handleOpenModal() {
@@ -80,6 +87,7 @@ class TaskForm extends Component {
     this.setState({ showModal: false });
   }
 
+  // load data from teams and inters
   loadData() {
     axios.all([
       axios.get(INTERN_GET_API),
@@ -91,6 +99,25 @@ class TaskForm extends Component {
         teams: res[1].data
       })
     })
+  }
+
+  // load task data (for editing)
+  getTaskData() {
+    axios.post(TASK_GET_SINGLE_API, { id: this.props.id })
+      .then(res => {
+        this.setState({
+          task: res.data.task,
+          deadline: res.data.deadline,
+          priority: res.data.priority,
+          assignedToOld: res.data.assignedTo,
+          assignedToTeamOld: res.data.assignedToTeam,
+          links: res.data.links,
+          completed: res.data.completed
+        })
+      })
+      .then(() => {
+        this.setState({ isLoading: false });
+      })
   }
 
   // find all interns selected and add task
@@ -141,6 +168,9 @@ class TaskForm extends Component {
 
   componentDidMount() {
     this.loadData();
+    if (this.props.type === 'edit') {
+      this.getTaskData();
+    }
   }
 
   render() {
@@ -165,7 +195,7 @@ class TaskForm extends Component {
     Modal.setAppElement('body');
     return (
       <>
-        <button onClick={this.handleOpenModal}>Create Task</button>
+        <button onClick={this.handleOpenModal}>{this.props.type === 'edit' ? "Edit Task" : "Create Task"}</button>
         <Modal
           style={{
             content: {
@@ -180,35 +210,33 @@ class TaskForm extends Component {
           }}
           isOpen={this.state.showModal}
           contentLabel="Create Task Modal">
-          <form>
-            <h1>New Task</h1>
-            <label htmlFor="task">
-              Task: &nbsp;
-              <input id="task" type="text" onChange={this.handleTaskChange}/><br/>
-            </label>            
+          <Form>
+            <h1>{this.props.type === 'edit' ? 'Edit Task' : 'New Task'}</h1>
+            <Form.Group>
+              <Form.Label>Name</Form.Label>
+              <Form.Control 
+                size="md"
+                type="text" 
+                placeholder="John Doe"
+                defaultValue={this.props.type === 'edit' ? this.props.task : ''}  
+                onChange={this.handleTaskChange}
+              />
+            </Form.Group>      
             <label htmlFor="deadline">
               Deadline: &nbsp;
               <DateTimePicker
                 onChange={this.handleDeadlineChange}
                 value={this.state.deadline}
-                disableClock={true}
-                
+                disableClock={true}       
               />
-            </label>          
-            <label htmlFor="priority"> 
-              Priority: &nbsp;
-              <select onChange={this.handlePriorityChange}>
-                <option>High</option>
-                <option>Medium</option>
-                <option>Low</option>
-                <option>N/A</option>
-              </select><br/>
-            </label>       
+              <DateTimeField/>
+            </label><br/>             
             <label>Assign to (Individual): &nbsp;</label>     
             <Select 
               options={internOptions} 
               isMulti={true} 
               onChange={this.handleAssignedToChange}
+              isSearchable={true}
             />
             <br/>
             <label>Assign to (Team): &nbsp;</label>     
@@ -216,6 +244,7 @@ class TaskForm extends Component {
               options={teamOptions} 
               isMulti={true} 
               onChange={this.handleAssignedToTeamChange}
+              isSearchable={true}
             />
             <br/>
             
@@ -224,13 +253,13 @@ class TaskForm extends Component {
               <input id="completed" type="checkbox" onChange={this.handleCompletedChange}/><br/>
             </label>
             <label htmlFor="link">
-              Link: &nbsp;
-              <input id="link" type="text" onChange={this.handleLinkChange}/><br/>
+              Links: &nbsp;
+              <input id="link" type="text" onChange={this.handleLinksChange}/><br/>
             </label>   
             
             <button type="button" onClick={this.createTask}>Create Task</button>
             <button type="button" onClick={this.handleCloseModal}>Close</button>
-          </form>
+          </Form>
         </Modal>
       </>   
     )
