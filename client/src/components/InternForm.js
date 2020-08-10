@@ -10,6 +10,7 @@ import Button from 'react-bootstrap/Button';
 import "react-datepicker/dist/react-datepicker.css";
 
 const INTERN_POST_API = 'http://localhost:5000/api/interns/post';
+const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
 const INTERN_UPDATE_API = 'http://localhost:5000/api/interns/update';
 const TEAM_GET_API = 'http://localhost:5000/api/teams/get';
 const TEAM_UPDATE_MEMBERS_API = 'http://localhost:5000/api/team/add-members';
@@ -18,14 +19,14 @@ class InternForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: '',
+      id: this.props.id,
       name: '',
       school: '',
       major: '',
       email: '',
       dateJoined: new Date(),
-      teams: [],
-      teamsOptions: [],
+      // teams: [],
+      // teamsOptions: [],
       showModal: false
     }
 
@@ -34,11 +35,12 @@ class InternForm extends Component {
     this.handleMajorChange = this.handleMajorChange.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
     this.handleDateJoinedChange = this.handleDateJoinedChange.bind(this);
-    this.handleTeamsChange = this.handleTeamsChange.bind(this);
     this.createIntern = this.createIntern.bind(this);
-    this.loadTeams = this.loadTeams.bind(this);
-    this.addInternToTeams = this.addInternToTeams.bind(this);
+    // this.loadTeams = this.loadTeams.bind(this);
+    // this.addInternToTeams = this.addInternToTeams.bind(this);
+    // this.handleTeamsChange = this.handleTeamsChange.bind(this);
     this.editIntern = this.editIntern.bind(this);
+    this.getInternData = this.getInternData.bind(this);
 
     this.handleOpenModal = this.handleOpenModal.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
@@ -59,42 +61,51 @@ class InternForm extends Component {
   handleDateJoinedChange(date) {
     this.setState({ dateJoined: date });
   }
-  handleTeamsChange(event) {
-    this.setState({ teams: event ? event.map(x => x.value) : [] });
-  }
+  // handleTeamsChange(event) {
+  //   this.setState({ teams: event ? event.map(x => x.value) : [] });
+  // }
 
   // set state with props here because for some reason they don't show up in constructor
   handleOpenModal() {
-    this.setState({ 
-      showModal: true,
-      id: this.props.id,
-      name: this.props.name,
-      email: this.props.email,
-      school: this.props.school,
-      major: this.props.major
-    });
+    this.setState({ showModal: true });
   }
   
   handleCloseModal() {
     this.setState({ showModal: false });
   }
 
-  loadTeams() {
-    axios.get(TEAM_GET_API)
-      .then(res => {
-        this.setState({ teamsOptions: res.data })
+  getInternData() {
+    this.setState({ isLoading: true });
+    axios.post(INTERN_GET_SINGLE_API, { id: this.props.id })
+      .then((res) => {
+        this.setState({
+          name: res.data.name,
+          email: res.data.email,
+          school: res.data.school,
+          major: res.data.major
+        })
+      })
+      .then(() => {
+        this.setState({ isLoading: false });
       })
   }
 
-  addInternToTeams(data) {
-    for (let i = 0; i < data.teams.length; i++) {
-      let internToUpdate = {
-        id: data.teams[i],
-        internId: data._id
-      }
-      axios.post(TEAM_UPDATE_MEMBERS_API, internToUpdate);
-    }
-  }
+  // loadTeams() {
+  //   axios.get(TEAM_GET_API)
+  //     .then(res => {
+  //       this.setState({ teamsOptions: res.data })
+  //     })
+  // }
+
+  // addInternToTeams(data) {
+  //   for (let i = 0; i < data.teams.length; i++) {
+  //     let internToUpdate = {
+  //       id: data.teams[i],
+  //       internId: data._id
+  //     }
+  //     axios.post(TEAM_UPDATE_MEMBERS_API, internToUpdate);
+  //   }
+  // }
 
   createIntern(event) {
     event.preventDefault();
@@ -110,7 +121,7 @@ class InternForm extends Component {
 
     axios.post(INTERN_POST_API, internToCreate)
       .then(res => {
-        this.addInternToTeams(res.data);
+        // this.addInternToTeams(res.data);
         this.props.updateMain();
         this.props.updateData();
       })
@@ -130,7 +141,7 @@ class InternForm extends Component {
       major: this.state.major,
       email: this.state.email,
       joined: this.state.dateJoined,
-      teams: this.state.teams
+      // teams: this.state.teams
     }
 
 
@@ -148,19 +159,21 @@ class InternForm extends Component {
   }
 
   componentDidMount() {
-    this.loadTeams();
+    if (this.props.type === 'edit') {
+      this.getInternData();
+    }
   }
 
   render() {
     Modal.setAppElement("body");
-    let options = [];
-    let teams = this.state.teamsOptions;
-    for (let i = 0; i < teams.length; i++) {
-      options.push({
-        value: teams[i]._id,
-        label: teams[i].name,
-      })
-    }
+    // let options = [];
+    // let teams = this.state.teamsOptions;
+    // for (let i = 0; i < teams.length; i++) {
+    //   options.push({
+    //     value: teams[i]._id,
+    //     label: teams[i].name,
+    //   })
+    // }
     return (
       <>
         <button onClick={this.handleOpenModal}>{this.props.type === 'create' ? "Create Intern" : "Edit Profile"}</button>
@@ -185,7 +198,7 @@ class InternForm extends Component {
                 size="md"
                 type="text" 
                 placeholder="John Doe"
-                defaultValue={this.props.type === 'edit' ? this.props.name : ''}  
+                defaultValue={this.props.type === 'edit' ? this.state.name : ''}  
                 onChange={this.handleNameChange}
               />
             </Form.Group>
@@ -196,7 +209,7 @@ class InternForm extends Component {
                 size="md"
                 type="email" 
                 placeholder="example@cpmha.com"
-                defaultValue={this.props.type === 'edit' ? this.props.email : ''}  
+                defaultValue={this.props.type === 'edit' ? this.state.email : ''}  
                 onChange={this.handleEmailChange}
               />
             </Form.Group>
@@ -209,7 +222,7 @@ class InternForm extends Component {
                     size="md"
                     type="text" 
                     placeholder="School"
-                    defaultValue={this.props.type === 'edit' ? this.props.school : ''}  
+                    defaultValue={this.props.type === 'edit' ? this.state.school : ''}  
                     onChange={this.handleSchoolChange}
                   />
               </Form.Group>
@@ -221,7 +234,7 @@ class InternForm extends Component {
                     size="md"
                     type="text" 
                     placeholder="Major"
-                    defaultValue={this.props.type === 'edit' ? this.props.major : ''}  
+                    defaultValue={this.props.type === 'edit' ? this.state.major : ''}  
                     onChange={this.handleMajorChange}
                   />
                 </Form.Group>
@@ -231,11 +244,11 @@ class InternForm extends Component {
             <Form.Group>
               <Form.Label>Date Joined </Form.Label>
               <DatePicker
-                selected={this.props.type === 'edit' ? this.props.dateJoined : new Date()}
+                selected={this.props.type === 'edit' ? this.state.dateJoined : new Date()}
                 onChange={this.handleDateJoinedChange}
               />
             </Form.Group>
-
+{/* 
             {this.props.type === 'create' ? 
               <Form.Group>
                 <Form.Label>Add Teams </Form.Label>
@@ -247,7 +260,7 @@ class InternForm extends Component {
               </Form.Group>       
               :
                 null
-            }
+            } */}
             
             {this.props.type === 'edit' ? 
               <button type="button" onClick={this.editIntern}>Save Changes</button>

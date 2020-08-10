@@ -37,12 +37,10 @@ class Intern extends Component {
   }
 
   getIntern() {
+    this.setState({ isLoading: true });
     axios.post(INTERN_GET_SINGLE_API, { id: this.state.internId })
       .then(res => {
-        this.setState({ 
-          intern: res.data,
-          isLoading: true
-         });
+        this.setState({ intern: res.data });
       })
       .then(() => {
         this.setState({ isLoading: false });
@@ -88,7 +86,7 @@ class Intern extends Component {
     let intern = null;
 
     
-    if (internData) {
+    if (!this.state.isLoading) {
       intern = (
         <div>
           <h3>{internData.name}</h3>
@@ -99,11 +97,6 @@ class Intern extends Component {
           <InternForm 
             type={"edit"}
             id={internData._id}
-            name={internData.name}
-            email={internData.email}
-            school={internData.school}
-            major={internData.major}
-            dateJoined={moment(internData.joined).toDate()}
           />
           <Link to="/"><button type="button" onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</button></Link>
         </div>

@@ -74,7 +74,6 @@ class Task extends Component {
   }
 
   toggleCompleted() {
-    console.log(this.state.task._id);
     this.setState({ completed: !this.state.completed }, () => {
       axios.post(TASK_TOGGLE_COMPLETE_API, { taskId: this.state.task._id, completed: this.state.completed });
     });
