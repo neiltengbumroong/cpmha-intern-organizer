@@ -3,6 +3,7 @@ import axios from 'axios';
 import TaskForm from './TaskForm';
 
 const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
+const TASK_TOGGLE_COMPLETE_API = 'http://localhost:5000/api/tasks/toggle-completed';
 const TASKS_DELETE_API = 'http://localhost:5000/api/tasks/delete';
 const TASKS_DELETE_FROM_TEAM_API = 'http://localhost:5000/api/teams/delete-task';
 const TASKS_DELETE_FROM_INTERN_API = 'http://localhost:5000/api/interns/delete-task';
@@ -12,19 +13,25 @@ class Task extends Component {
     super(props);
     this.state = {
       task: [],
+      completed: false,
       isLoading: true
     }
     this.getTask = this.getTask.bind(this);
+    this.toggleCompleted = this.toggleCompleted.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
     this.deleteTaskFromTeam = this.deleteTaskFromTeam.bind(this);
     this.deleteTaskFromIntern = this.deleteTaskFromIntern.bind(this);
   }
 
   getTask() {
+    this.setState({ isLoading: true });
     axios.post(TASK_GET_SINGLE_API, { id: this.props.id })
       .then(res => {
-        this.setState({ task: res.data });
-        this.setState({ isLoading: true });
+        this.setState({ 
+          task: res.data,
+          completed: res.data.completed
+        });
+        
       })
       .then(() => {
         this.setState({ isLoading: false });
@@ -66,6 +73,13 @@ class Task extends Component {
     this.deleteTask(taskId);
   }
 
+  toggleCompleted() {
+    console.log(this.state.task._id);
+    this.setState({ completed: !this.state.completed }, () => {
+      axios.post(TASK_TOGGLE_COMPLETE_API, { taskId: this.state.task._id, completed: this.state.completed });
+    });
+  }
+
   componentDidMount() {
     this.getTask();
   }
@@ -85,6 +99,7 @@ class Task extends Component {
             type={"edit"}
             id={taskData._id}
           />
+          <button onClick={this.toggleCompleted}>Complete</button>
           <button type="button" onClick={() => this.deleteTaskFull(taskData._id)}>Delete Task</button>
       </div>)
     }

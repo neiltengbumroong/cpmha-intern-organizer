@@ -117,24 +117,24 @@ class TeamForm extends Component {
 
   // add team to interns' "teams" attribute
   addTeamToInterns(data) {
-    for (let i = 0; i < data.members.length; i++) {
+    data.forEach(intern => {
       let teamToUpdate = {
-        internId: data.members[i],
-        teamId: data._id
+        internId: intern,
+        teamId: this.state.id
       }
       axios.post(INTERN_UPDATE_TEAM_API, teamToUpdate);
-    }    
+    })   
   }
 
   // remove team from interns' team attribute if they are no longer in it
   removeTeamFromInterns(data) {
-    for (let i = 0; i < data.members.length; i++) {
+    data.forEach(intern => {
       let teamToUpdate = {
-        internId: data.members[i],
-        teamId: data._id
+        internId: intern,
+        teamId: this.state.id
       }
       axios.post(INTERN_DELETE_TEAM_API, teamToUpdate);
-    }
+    })
   }
 
   // create a team 
@@ -168,17 +168,12 @@ class TeamForm extends Component {
     // post the basic data to the team update API
     axios.post(TEAM_UPDATE_API, teamToUpdate)
       .then(res => {
-        const addData = {
-          members: this.state.members.map(x => x.value),
-          _id: this.state.id
-        }
+        // add newly attached team members 
+        const addData = this.state.members.map(x => x.value);
         this.addTeamToInterns(addData);
+        // remove team members no longer attached
         let diffArray = this.state.oldMembers.filter(x => !this.state.currentMembers.includes(x));    
-        const deleteData = {
-          members: diffArray,
-          _id: this.state.id
-        }
-        this.removeTeamFromInterns(deleteData);    
+        this.removeTeamFromInterns(diffArray);    
       })
       .then(() => {
         this.props.updateData();
@@ -187,7 +182,7 @@ class TeamForm extends Component {
     
     this.handleCloseModal();
     // "illusion" of change happening
-    window.location.reload();
+    // window.location.reload();
   }
 
   componentDidMount() {

@@ -4,6 +4,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list';
+import interactionPlugin from "@fullcalendar/interaction";
 import moment from 'moment';
 import TaskForm from './TaskForm';
 import EventForm from './EventForm';
@@ -43,32 +44,41 @@ class Calendar extends Component {
     this.loadData();
   }
 
+  alertEvent = () => {
+    alert("hello");
+  }
+
+  showEvent = () => {
+
+  }
+
   render() {
     let tasksArr = [];
     let tasks = this.state.tasks;
-    for (let i = 0; i < tasks.length; i++) {
+    tasks.forEach(task => {
       tasksArr.push({
-        title: tasks[i].task,
-        start: moment(tasks[i].deadline).format(EVENT_FORMAT),
-        end: moment(tasks[i].deadline).format(EVENT_FORMAT),
+        id: task._id,
+        title: task.task,
+        start: moment(task.deadline).format(EVENT_FORMAT),
+        end: moment(task.deadline).format(EVENT_FORMAT),
         extendedProps: {
           type: 'task'
         }
       })
-    }
+    })
 
     let eventsArr = [];
     let events = this.state.events;
-    for (let i = 0; i < events.length; i++) {
+    events.forEach(event =>  {
       eventsArr.push({
-        title: events[i].event,
-        start: events[i].start,
-        end: events[i].end,
+        title: event.event,
+        start: event.start,
+        end: event.end,
         extendedProps: {
           type: 'event'
         }
       })
-    }
+    })
 
     let dataArr = tasksArr.concat(eventsArr);
     
@@ -78,7 +88,7 @@ class Calendar extends Component {
         <EventForm updateData={this.loadData}/>
         <div style={{padding: "5%"}}>
           <FullCalendar
-            plugins={[ dayGridPlugin, timeGridPlugin, listPlugin ]}
+            plugins={[ interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin ]}
             initialView="dayGridMonth"
             headerToolbar={{
               left: "prev,next today",
@@ -86,6 +96,8 @@ class Calendar extends Component {
               right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
             }}
             events={dataArr}
+            eventClick={this.alertEvent}
+            eventDidMount={this.showEvent}
           />
         </div>
       </div>         

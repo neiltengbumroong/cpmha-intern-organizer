@@ -261,7 +261,7 @@ class TaskForm extends Component {
       })
       
     this.handleCloseModal(); 
-    window.location.reload();
+    // window.location.reload();
   }
 
   componentDidMount() {
