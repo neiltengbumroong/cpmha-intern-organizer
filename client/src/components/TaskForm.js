@@ -6,33 +6,37 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import DateTimePicker from 'react-datetime-picker';
-import DateTimeField from 'react-datetimepicker-bootstrap';
 
 const TASK_POST_API = 'http://localhost:5000/api/tasks/post';
+const TASK_UPDATE_API = 'http://localhost:5000/api/tasks/update';
 const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
 const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
 const TEAM_GET_API = 'http://localhost:5000/api/teams/get';
 const INTERN_UPDATE_TASK_API = 'http://localhost:5000/api/interns/add-task';
 const TEAM_UPDATE_TASK_API = 'http://localhost:5000/api/teams/add-task';
+const TASKS_DELETE_FROM_INTERN_API = 'http://localhost:5000/api/interns/delete-task';
+const TASKS_DELETE_FROM_TEAM_API = 'http://localhost:5000/api/teams/delete-task';
 
 class TaskForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: this.props.id,
       task: '',
       deadline: new Date(),
-      priority: '',
       dateAssigned: new Date(),
-      assignedTo: [],
-      assignedToOld: [],
-      assignedToTeam: [],
-      assignedToTeamOld: [],
+      assignedTo: [], // store new by id
+      assignedToOld: [], // store initial
+      assignedToCurrent: [], // store currently selected
+      assignedToTeam: [], // store new by id
+      assignedToTeamOld: [], // store initial
+      assignedToTeamCurrent: [], // store new by id
       links: '',
-      completed: false,
       error: false,
       showModal: false,
       interns: [],
-      teams: []
+      teams: [],
+      isLoading: true
     }
 
     this.handleTaskChange = this.handleTaskChange.bind(this);
@@ -45,7 +49,10 @@ class TaskForm extends Component {
     this.handleLinksChange = this.handleLinksChange.bind(this);
 
     this.createTask = this.createTask.bind(this);
+    this.editTask = this.editTask.bind(this);
     this.loadData = this.loadData.bind(this);
+    this.removeCurrentAssigned = this.removeCurrentAssigned.bind(this);
+    this.removeCurrentTeam = this.removeCurrentTeam.bind(this);
     this.addTaskToInterns = this.addTaskToInterns.bind(this);
     this.addTaskToTeams = this.addTaskToTeams.bind(this);
     this.handleOpenModal = this.handleOpenModal.bind(this);
@@ -66,10 +73,10 @@ class TaskForm extends Component {
     this.setState({ dateAssigned: event.target.value });
   }
   handleAssignedToChange(event) {
-    this.setState({ assignedTo: event ? event.map(x => x.value) : [] });
+    this.setState({ assignedTo: event ? event.map(x => x) : [] });
   }
   handleAssignedToTeamChange(event) {
-    this.setState({ assignedToTeam: event ? event.map(x => x.value) : [] });
+    this.setState({ assignedToTeam: event ? event.map(x => x) : [] });
   }
   handleCompletedChange() {
     this.setState({ completed: !this.state.completed });
@@ -80,7 +87,6 @@ class TaskForm extends Component {
 
   handleOpenModal() {
     this.setState({ showModal: true });
-    this.loadData();
   }
   
   handleCloseModal() {
@@ -89,6 +95,7 @@ class TaskForm extends Component {
 
   // load data from teams and inters
   loadData() {
+    this.setState({ isLoading: true });
     axios.all([
       axios.get(INTERN_GET_API),
       axios.get(TEAM_GET_API)
@@ -99,6 +106,31 @@ class TaskForm extends Component {
         teams: res[1].data
       })
     })
+    .then(() => {
+      // if we are only creating, then we are done 
+      if (this.props.type === 'create') {
+        this.setState({ isLoading: false });
+      }
+    })
+  }
+
+  // remove a current member from react-select
+  removeCurrentAssigned(id) {
+    let array = [...this.state.assignedToCurrent];
+    let index = array.indexOf(id);
+    if (index !== -1) {
+      array.splice(index, 1);
+      this.setState({ assignedToCurrent: array });
+    }
+  }
+
+  removeCurrentTeam(id) {
+    let array = [...this.state.assignedToTeamCurrent];
+    let index = array.indexOf(id);
+    if (index !== -1) {
+      array.splice(index, 1);
+      this.setState({ assignedToTeamCurrent: array });
+    }
   }
 
   // load task data (for editing)
@@ -108,8 +140,9 @@ class TaskForm extends Component {
         this.setState({
           task: res.data.task,
           deadline: res.data.deadline,
-          priority: res.data.priority,
+          assignedToCurrent: res.data.assignedTo,
           assignedToOld: res.data.assignedTo,
+          assignedToTeamCurrent: res.data.assignedToTeam,
           assignedToTeamOld: res.data.assignedToTeam,
           links: res.data.links,
           completed: res.data.completed
@@ -118,6 +151,45 @@ class TaskForm extends Component {
       .then(() => {
         this.setState({ isLoading: false });
       })
+  }
+
+  editTask() {
+    const taskToUpdate = {
+      id: this.props.id,
+      task: this.state.task,
+      deadline: this.state.deadline,
+      assignedTo: this.state.assignedTo.map(x => x.value).concat(this.state.assignedToCurrent),
+      assignedToTeam: this.state.assignedToTeam.map(x => x.value).concat(this.state.assignedToTeamCurrent),
+      description: this.state.description,
+      links: this.state.links
+    }
+    axios.post(TASK_UPDATE_API, taskToUpdate)
+      .then(res => {
+        // add any extra people to the task
+        const addDataIndividual = {
+          assignedTo: this.state.assignedTo.map(x => x.value),
+          _id: this.state.id
+        }
+        this.addTaskToInterns(addDataIndividual);
+
+        // remove people no longer attached to the task
+        const diffArrayIndividual = this.state.assignedToOld.filter(x => !this.state.assignedToCurrent.includes(x));
+        this.removeTaskFromInterns(diffArrayIndividual);
+
+        // add any extra teams to the task
+        const addDataTeam = {
+          assignedToTeam: this.state.assignedToTeam.map(x => x.value),
+          _id: this.state.id
+        }
+        this.addTaskToTeams(addDataTeam);
+
+        // remove teams no longer attached to the task
+        const diffArrayTeam = this.state.assignedToTeamOld.filter(x => !this.state.assignedToTeamCurrent.includes(x));
+        this.removeTaskFromTeams(diffArrayTeam);
+      })
+
+    this.handleCloseModal();
+    window.location.reload();
   }
 
   // find all interns selected and add task
@@ -131,6 +203,30 @@ class TaskForm extends Component {
     }
   }
 
+  // method for removing a singular task from interns
+  removeTaskFromInterns(data) {
+    data.forEach(element => {
+      let taskToUpdate = {
+        taskId: this.state.id,
+        internId: element 
+      }
+      axios.post(TASKS_DELETE_FROM_INTERN_API, taskToUpdate);
+    })
+  }
+
+  // method for removing a singular task from teams
+  removeTaskFromTeams(data) {
+    data.forEach(element => {
+      let taskToUpdate = {
+        taskId: this.state.id,
+        teamId: element
+      }
+
+      axios.post(TASKS_DELETE_FROM_TEAM_API, taskToUpdate);
+    })
+  }
+
+  // method for adding a singular task to many teams
   addTaskToTeams(data) {
     for (let i = 0; i < data.assignedToTeam.length; i++) {
       let taskToUpdate = {
@@ -141,15 +237,16 @@ class TaskForm extends Component {
     }
   }
 
+  // standard task creation
   createTask() {
     const taskToCreate = {
       task: this.state.task,
       deadline: this.state.deadline,
       priority: this.state.priority,
       dateAssigned: this.state.dateAssigned,
-      assignedTo: this.state.assignedTo,
-      assignedToTeam: this.state.assignedToTeam,
-      completed: this.state.completed,
+      assignedTo: this.state.assignedTo.map(x => x.value),
+      assignedToTeam: this.state.assignedToTeam.map(x => x.value),
+      links: this.state.links
     }
 
     axios.post(TASK_POST_API, taskToCreate)
@@ -164,6 +261,7 @@ class TaskForm extends Component {
       })
       
     this.handleCloseModal(); 
+    window.location.reload();
   }
 
   componentDidMount() {
@@ -176,21 +274,77 @@ class TaskForm extends Component {
   render() {
     let internOptions = [];
     let interns = this.state.interns;
-    for (let i = 0; i < interns.length; i++) {
-      internOptions.push({
-        value: interns[i]._id,
-        label: interns[i].name
-      })
-    }
-
     let teamOptions = [];
     let teams = this.state.teams;
-    for (let i = 0; i < teams.length; i++) {
-      teamOptions.push({
-        value: teams[i]._id,
-        label: teams[i].name
-      })
+    let currentAssigned = null;
+    let currentAssignedDisplay = [];
+    let currentTeams = null;
+    let currentTeamsDisplay = [];
+
+    if (!this.state.isLoading) {
+      // if form is used for creation
+      if (this.props.type === 'create') {
+        // list intern options
+        interns.forEach(intern => {
+          internOptions.push({
+            value: intern._id,
+            label: intern.name
+          })
+        })  
+        // list team options
+        teams.forEach(team => {
+          teamOptions.push({
+            value: team._id,
+            label: team.name
+          })
+        })
+      } else {
+        // if the intern is not assigned, add it to possibilities
+        interns.forEach(intern => {
+          if (!this.state.assignedToCurrent.includes(intern._id)) {
+            internOptions.push({
+              value: intern._id,
+              label: intern.name
+            })
+          } else {
+            currentAssignedDisplay.push({
+              value: intern._id,
+              label: intern.name
+            })
+          }
+        })
+
+        teams.forEach(team => {
+          if (!this.state.assignedToTeamCurrent.includes(team._id)) {
+            teamOptions.push({
+              value: team._id,
+              label: team.name
+            })
+          } else {
+            currentTeamsDisplay.push({
+              value: team._id,
+              label: team.name
+            })
+          }
+        })
+      }
+
+      currentAssigned = currentAssignedDisplay.map((intern, i) => 
+        <div key={i}>
+          <p>{intern.label}</p>
+          <button type="button" onClick={() => this.removeCurrentAssigned(intern.value)}>X</button>
+        </div>
+      )
+
+      currentTeams = currentTeamsDisplay.map((team, i) => 
+      <div key={i}>
+         <p>{team.label}</p>
+          <button type="button" onClick={() => this.removeCurrentTeam(team.value)}>X</button>
+      </div>
+      )
+      
     }
+    
 
     Modal.setAppElement('body');
     return (
@@ -217,47 +371,55 @@ class TaskForm extends Component {
               <Form.Control 
                 size="md"
                 type="text" 
-                placeholder="John Doe"
-                defaultValue={this.props.type === 'edit' ? this.props.task : ''}  
+                placeholder="Ex. Reach out to school counselors"
+                defaultValue={this.props.type === 'edit' ? this.state.task : ''}  
                 onChange={this.handleTaskChange}
               />
-            </Form.Group>      
-            <label htmlFor="deadline">
-              Deadline: &nbsp;
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Deadline</Form.Label>
               <DateTimePicker
                 onChange={this.handleDeadlineChange}
                 value={this.state.deadline}
                 disableClock={true}       
               />
-              <DateTimeField/>
-            </label><br/>             
-            <label>Assign to (Individual): &nbsp;</label>     
-            <Select 
-              options={internOptions} 
-              isMulti={true} 
-              onChange={this.handleAssignedToChange}
-              isSearchable={true}
-            />
-            <br/>
-            <label>Assign to (Team): &nbsp;</label>     
-            <Select 
-              options={teamOptions} 
-              isMulti={true} 
-              onChange={this.handleAssignedToTeamChange}
-              isSearchable={true}
-            />
-            <br/>
+            </Form.Group>   
+            <Form.Group>
+              <Form.Label>Assign to (Individual)</Form.Label>
+              {currentAssigned}   
+              <Select 
+                options={internOptions} 
+                isMulti={true} 
+                onChange={this.handleAssignedToChange}
+                isSearchable={true}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Assign to (Team)</Form.Label>
+              {currentTeams}   
+              <Select 
+                options={teamOptions} 
+                isMulti={true} 
+                onChange={this.handleAssignedToTeamChange}
+                isSearchable={true}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Link</Form.Label>
+              <Form.Control 
+                size="md"
+                type="text" 
+                placeholder="Google Drive, Website, etc..."
+                defaultValue={this.props.type === 'edit' ? this.state.links : ''}  
+                onChange={this.handleLinksChange}
+              />
+            </Form.Group>   
             
-            <label htmlFor="completed">
-              Completed? &nbsp;
-              <input id="completed" type="checkbox" onChange={this.handleCompletedChange}/><br/>
-            </label>
-            <label htmlFor="link">
-              Links: &nbsp;
-              <input id="link" type="text" onChange={this.handleLinksChange}/><br/>
-            </label>   
-            
-            <button type="button" onClick={this.createTask}>Create Task</button>
+            {this.props.type === 'edit' ? 
+              <button type="button" onClick={this.editTask}>Save Changes</button>
+              :
+              <button type="button" onClick={this.createTask}>Create Task</button>
+            }  
             <button type="button" onClick={this.handleCloseModal}>Close</button>
           </Form>
         </Modal>

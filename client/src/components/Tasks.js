@@ -51,7 +51,10 @@ class Tasks extends Component {
     return (
       <>
         <h1>Tasks</h1>
-        <TaskForm updateData={this.loadTasks} updateMain={this.props.updateMain}/>
+        <TaskForm 
+          type={"create"}
+          updateData={this.loadTasks} 
+          updateMain={this.props.updateMain}/>
         {tasks}
       </>
     )

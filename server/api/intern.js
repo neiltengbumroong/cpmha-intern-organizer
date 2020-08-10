@@ -62,7 +62,7 @@ router.post('/api/interns/update', (req, res) => {
 router.post('/api/interns/add-task', (req, res) => {
   Intern.findOneAndUpdate(
     { _id: req.body.internId },
-    { $push: { tasks: req.body.taskId } },
+    { $addToSet: { tasks: req.body.taskId } },
     (err, intern) => {
       res.send(intern);
     }
@@ -81,7 +81,7 @@ router.post('/api/interns/delete', (req, res) => {
 router.post('/api/interns/add-team', (req, res) => {
   Intern.findOneAndUpdate(
     { _id: req.body.internId },
-    { $push: { teams: req.body.teamId } },
+    { $addToSet: { teams: req.body.teamId } },
     (err, intern) => {
       res.send(intern);
     }

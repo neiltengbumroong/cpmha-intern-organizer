@@ -39,7 +39,7 @@ router.post('/api/team/add-members', (req, res) => {
   console.log("adding member: ", req.body.internId);
   Team.findOneAndUpdate(
     { _id: req.body.id },
-    { $push: { members: req.body.internId } },
+    { $addToSet: { members: req.body.internId } },
     (err, intern) => {
       res.send(intern);
     }
@@ -56,7 +56,6 @@ router.post('/api/teams/delete', (req, res) => {
 
 // edit team
 router.post('/api/teams/update', (req, res) => {
-  console.log("setting members: ", req.body.members);
   Team.updateOne(
     { _id: req.body.id },
     { $set:

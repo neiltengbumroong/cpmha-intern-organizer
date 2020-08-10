@@ -7,7 +7,6 @@ router.post('/api/tasks/post', (req, res) => {
   const task = new Task({
     task: req.body.task,
     deadline: req.body.deadline,
-    priority: req.body.priority,
     dateAssigned: req.body.dateAssigned,
     assignedTo: req.body.assignedTo,
     assignedToTeam: req.body.assignedToTeam,
@@ -43,6 +42,27 @@ router.post('/api/tasks/get/single', (req, res) => {
   Task.findById(req.body.id)
   .then(task => {
     res.json(task);
+  })
+});
+
+// edit ask
+router.post('/api/tasks/update', (req, res) => {
+  console.log(req.body);
+  Task.updateOne(
+    { _id: req.body.id },
+    { $set:
+      {
+        task: req.body.task,
+        deadline: req.body.deadline,
+        assignedTo: req.body.assignedTo,
+        assignedToTeam: req.body.assignedToTeam,
+        description: req.body.description,
+        links: req.body.links
+      }
+    }
+  )
+  .then(updatedTask => {
+    res.send(updatedTask);
   })
 });
 

@@ -26,6 +26,7 @@ class TeamForm extends Component {
       currentMembers: [], //stores currently selected members 
       oldMembers: [], //stores initial members (retrieved upon mounting)
       leader: '',
+      currentLeader: '',
       description: '',
       interns: [],
       showModal: false,
@@ -78,6 +79,7 @@ class TeamForm extends Component {
           currentMembers: res.data.members,
           oldMembers: res.data.members,
           leader: res.data.leader,
+          currentLeader: res.data.leader,
           description: res.data.description,
           tasks: res.data.tasks
         })
@@ -176,9 +178,7 @@ class TeamForm extends Component {
           members: diffArray,
           _id: this.state.id
         }
-
-        this.removeTeamFromInterns(deleteData);
-        
+        this.removeTeamFromInterns(deleteData);    
       })
       .then(() => {
         this.props.updateData();
@@ -187,7 +187,7 @@ class TeamForm extends Component {
     
     this.handleCloseModal();
     // "illusion" of change happening
-    // window.location.reload();
+    window.location.reload();
   }
 
   componentDidMount() {
@@ -206,11 +206,12 @@ class TeamForm extends Component {
     let members = [];
     let currentMembers = null;
     let currentMembersDisplay = [];
+    let currentLeader = null;
 
     if (!this.state.isLoading) {
+      interns = this.state.interns; // get interns from state
       // switch for creating a team
       if (this.props.type === 'create') {
-        interns = this.state.interns; // get interns from state
         members = this.state.members || [];
         for (let i = 0; i < interns.length; i++) {
           options.push({
@@ -221,13 +222,12 @@ class TeamForm extends Component {
     
         for (let i = 0; i < members.length; i++) {
           leaderOptions.push({
-            value: this.state.members[i].value,
-            label: this.state.members[i].label
+            value: members[i].value,
+            label: members[i].label
           })
         }
         // else use this switch for editing
       } else {
-        interns = this.state.interns; // get interns from state
         for (let i = 0; i < interns.length; i++) {
           if (!this.state.currentMembers.includes(interns[i]._id)) {
             options.push({
@@ -235,6 +235,9 @@ class TeamForm extends Component {
               label: interns[i].name
             })
           } else {
+            if (interns[i]._id === this.state.currentLeader) {
+              currentLeader = interns[i].name;
+            }
             currentMembersDisplay.push({
               label: interns[i].name,
               value: interns[i]._id
@@ -282,7 +285,7 @@ class TeamForm extends Component {
                 size="md"
                 type="text" 
                 placeholder="Ex. Marketing"
-                defaultValue={this.props.type === 'edit' ? this.props.name : ''}  
+                defaultValue={this.props.type === 'edit' ? this.state.name : ''}  
                 onChange={this.handleNameChange}
               />
             </Form.Group>
@@ -304,6 +307,7 @@ class TeamForm extends Component {
                 options={leaderOptions} 
                 isMulti={false} 
                 onChange={this.handleLeaderChange}
+                placeholder={currentLeader}
                 isSearchable={true}
               />
             </Form.Group>
@@ -314,7 +318,7 @@ class TeamForm extends Component {
                 size="md"
                 type="text" 
                 placeholder="Ex. Tasked with expanding CPMHA connections"
-                defaultValue={this.props.type === 'edit' ? this.props.description : ''}  
+                defaultValue={this.props.type === 'edit' ? this.state.description : ''}  
                 onChange={this.handleDescriptionChange}
               />
             </Form.Group>

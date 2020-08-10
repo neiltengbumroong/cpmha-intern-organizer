@@ -79,6 +79,8 @@ class Task extends Component {
         <div>
           <h3>{taskData.task}</h3>
           <p>{taskData.deadline}</p>
+          <p>Individual: {taskData.assignedTo}</p>
+          <p>Team: {taskData.assignedToTeam}</p>
           <TaskForm
             type={"edit"}
             id={taskData._id}
