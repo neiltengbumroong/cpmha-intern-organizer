@@ -6,10 +6,16 @@ const internSchema = mongoose.Schema({
   school: String,
   major: String,
   joined: Date,
-  tasks: [String],
+  tasks: [{
+    task: String,
+    id: String
+  }],
   weeklyHours: Number,
   totalHours: Number,
-  teams: [String]
+  teams: [{
+    name: String,
+    id: String
+  }]
 });
 
 module.exports = Intern = mongoose.model('intern', internSchema);

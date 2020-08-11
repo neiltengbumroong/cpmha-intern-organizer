@@ -3,10 +3,15 @@ const mongoose = require('mongoose');
 const taskSchema = mongoose.Schema({
   task: String,
   deadline: Date,
-  priority: String,
   dateAssigned: Date,
-  assignedTo: [String],
-  assignedToTeam: [String],
+  assignedTo: [{
+    name: String,
+    id: String
+  }],
+  assignedToTeam: [{
+    name: String,
+    id: String
+  }],
   completed: Boolean,
   links: [String]
 });

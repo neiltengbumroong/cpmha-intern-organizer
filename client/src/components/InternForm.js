@@ -74,6 +74,7 @@ class InternForm extends Component {
     this.setState({ showModal: false });
   }
 
+  // get intern data from database to pre-populate form for editing 
   getInternData() {
     this.setState({ isLoading: true });
     axios.post(INTERN_GET_SINGLE_API, { id: this.props.id })
@@ -82,7 +83,8 @@ class InternForm extends Component {
           name: res.data.name,
           email: res.data.email,
           school: res.data.school,
-          major: res.data.major
+          major: res.data.major,
+          dateJoined: res.data.joined
         })
       })
       .then(() => {
@@ -107,6 +109,7 @@ class InternForm extends Component {
   //   }
   // }
 
+  // create object with intern data, then post to database
   createIntern(event) {
     event.preventDefault();
     const internToCreate = {
@@ -116,7 +119,7 @@ class InternForm extends Component {
       major: this.state.major,
       email: this.state.email,
       joined: this.state.dateJoined,
-      teams: this.state.teams
+      teams: []
     }
 
     axios.post(INTERN_POST_API, internToCreate)
@@ -132,6 +135,7 @@ class InternForm extends Component {
     this.handleCloseModal(); 
   }
 
+  // create object to update document
   editIntern(event) {
     event.preventDefault();
     const internToEdit = {

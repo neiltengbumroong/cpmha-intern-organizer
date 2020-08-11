@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import DateTimePicker from 'react-datetime-picker';
+import { mapToDatabaseReadable } from '../utils';
 
 const TASK_POST_API = 'http://localhost:5000/api/tasks/post';
 const TASK_UPDATE_API = 'http://localhost:5000/api/tasks/update';
@@ -63,8 +64,8 @@ class TaskForm extends Component {
   handleTaskChange(event) {
     this.setState({ task: event.target.value });
   }
-  handleDeadlineChange(date) {
-    this.setState({ deadline: date });
+  handleDeadlineChange(event) {
+    this.setState({ deadline: event });
   }
   handlePriorityChange(event) {
     this.setState({ priority: event.target.value });
@@ -116,21 +117,16 @@ class TaskForm extends Component {
 
   // remove a current member from react-select
   removeCurrentAssigned(id) {
-    let array = [...this.state.assignedToCurrent];
-    let index = array.indexOf(id);
-    if (index !== -1) {
-      array.splice(index, 1);
-      this.setState({ assignedToCurrent: array });
-    }
+    var array = [...this.state.assignedToCurrent];
+    var filteredArray = array.filter(function(el) { return el.id != id; }); 
+    this.setState({ assignedToCurrent: filteredArray });
   }
 
+  // remove a current team from react-select
   removeCurrentTeam(id) {
-    let array = [...this.state.assignedToTeamCurrent];
-    let index = array.indexOf(id);
-    if (index !== -1) {
-      array.splice(index, 1);
-      this.setState({ assignedToTeamCurrent: array });
-    }
+    var array = [...this.state.assignedToTeamCurrent];
+    var filteredArray = array.filter(function(el) { return el.id != id; }); 
+    this.setState({ assignedToTeamCurrent: filteredArray });
   }
 
   // load task data (for editing)
@@ -158,8 +154,8 @@ class TaskForm extends Component {
       id: this.props.id,
       task: this.state.task,
       deadline: this.state.deadline,
-      assignedTo: this.state.assignedTo.map(x => x.value).concat(this.state.assignedToCurrent),
-      assignedToTeam: this.state.assignedToTeam.map(x => x.value).concat(this.state.assignedToTeamCurrent),
+      assignedTo: this.state.assignedTo.map(mapToDatabaseReadable).concat(this.state.assignedToCurrent),
+      assignedToTeam: this.state.assignedToTeam.map(mapToDatabaseReadable).concat(this.state.assignedToTeamCurrent),
       description: this.state.description,
       links: this.state.links
     }
@@ -167,7 +163,7 @@ class TaskForm extends Component {
       .then(res => {
         // add any extra people to the task
         const addDataIndividual = {
-          assignedTo: this.state.assignedTo.map(x => x.value),
+          assignedTo: this.state.assignedTo.map(mapToDatabaseReadable),
           _id: this.state.id
         }
         this.addTaskToInterns(addDataIndividual);
@@ -178,7 +174,7 @@ class TaskForm extends Component {
 
         // add any extra teams to the task
         const addDataTeam = {
-          assignedToTeam: this.state.assignedToTeam.map(x => x.value),
+          assignedToTeam: this.state.assignedToTeam.map(mapToDatabaseReadable),
           _id: this.state.id
         }
         this.addTaskToTeams(addDataTeam);
@@ -189,18 +185,31 @@ class TaskForm extends Component {
       })
 
     this.handleCloseModal();
-    window.location.reload();
+    // window.location.reload();
   }
 
   // find all interns selected and add task
   addTaskToInterns(data) {
-    for (let i = 0; i < data.assignedTo.length; i++) {
-      let taskToUpdate = {
-        internId: data.assignedTo[i],
-        taskId: data._id
+    console.log("intern data: ", data);
+    data.assignedTo.forEach(intern => {
+      const taskToUpdate = {
+        internId: intern.id,
+        taskObject: { id: data._id || this.state.id, task: data.task || this.state.task }     
       }
       axios.post(INTERN_UPDATE_TASK_API, taskToUpdate);
-    }
+    });
+  }
+
+  // method for adding a singular task to many teams
+  addTaskToTeams(data) {
+    console.log("team data: ", data);
+    data.assignedToTeam.forEach(team => {
+      const taskToUpdate = {
+        teamId: team.id,
+        taskObject: { id: data._id || this.state.id, task: data.task || this.state.task }
+      }
+      axios.post(TEAM_UPDATE_TASK_API, taskToUpdate);
+    });
   }
 
   // method for removing a singular task from interns
@@ -208,7 +217,7 @@ class TaskForm extends Component {
     data.forEach(element => {
       let taskToUpdate = {
         taskId: this.state.id,
-        internId: element 
+        internId: element.id
       }
       axios.post(TASKS_DELETE_FROM_INTERN_API, taskToUpdate);
     })
@@ -216,39 +225,33 @@ class TaskForm extends Component {
 
   // method for removing a singular task from teams
   removeTaskFromTeams(data) {
+    
     data.forEach(element => {
       let taskToUpdate = {
         taskId: this.state.id,
-        teamId: element
+        teamId: element.id
       }
-
       axios.post(TASKS_DELETE_FROM_TEAM_API, taskToUpdate);
     })
   }
 
-  // method for adding a singular task to many teams
-  addTaskToTeams(data) {
-    for (let i = 0; i < data.assignedToTeam.length; i++) {
-      let taskToUpdate = {
-        teamId: data.assignedToTeam[i],
-        taskId: data._id
-      }
-      axios.post(TEAM_UPDATE_TASK_API, taskToUpdate);
-    }
-  }
 
-  // standard task creation
+
+  // standard task creation - add to interns and teams as well
   createTask() {
     const taskToCreate = {
       task: this.state.task,
       deadline: this.state.deadline,
       priority: this.state.priority,
       dateAssigned: this.state.dateAssigned,
-      assignedTo: this.state.assignedTo.map(x => x.value),
-      assignedToTeam: this.state.assignedToTeam.map(x => x.value),
+      assignedTo: this.state.assignedTo ? this.state.assignedTo.map(mapToDatabaseReadable) : [],
+      assignedToTeam: this.state.assignedToTeam ? this.state.assignedToTeam.map(mapToDatabaseReadable) : [],
       links: this.state.links
     }
 
+
+
+    // post task and then add the response to teams and interns
     axios.post(TASK_POST_API, taskToCreate)
       .then((res) => {
         this.addTaskToInterns(res.data);
@@ -301,7 +304,7 @@ class TaskForm extends Component {
       } else {
         // if the intern is not assigned, add it to possibilities
         interns.forEach(intern => {
-          if (!this.state.assignedToCurrent.includes(intern._id)) {
+          if (!this.state.assignedToCurrent.some(e => e.id === intern._id)) {
             internOptions.push({
               value: intern._id,
               label: intern.name
@@ -312,10 +315,11 @@ class TaskForm extends Component {
               label: intern.name
             })
           }
+          // console.log("options: ", internOptions);
         })
 
         teams.forEach(team => {
-          if (!this.state.assignedToTeamCurrent.includes(team._id)) {
+          if (!this.state.assignedToTeamCurrent.some(e => e.id === team._id)) {
             teamOptions.push({
               value: team._id,
               label: team.name
@@ -335,7 +339,6 @@ class TaskForm extends Component {
           <button type="button" onClick={() => this.removeCurrentAssigned(intern.value)}>X</button>
         </div>
       )
-
       currentTeams = currentTeamsDisplay.map((team, i) => 
       <div key={i}>
          <p>{team.label}</p>

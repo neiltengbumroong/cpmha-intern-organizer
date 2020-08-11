@@ -23,6 +23,7 @@ class Task extends Component {
     this.deleteTaskFromIntern = this.deleteTaskFromIntern.bind(this);
   }
 
+  // get task data to display and update state
   getTask() {
     this.setState({ isLoading: true });
     axios.post(TASK_GET_SINGLE_API, { id: this.props.id })
@@ -38,26 +39,29 @@ class Task extends Component {
       })
   }
 
+  // loop through each team assigned to this task and remove it
   deleteTaskFromTeam(taskId) {
-    for (let i = 0; i < this.state.task.assignedToTeam.length; i++) {
-      const id = {
-        teamId: this.state.task.assignedToTeam[i],
-        taskId: taskId
+    this.state.task.assignedToTeam.forEach(team => {
+      const taskToDelete = {
+        taskId: taskId,
+        teamId: team.id
       }
-      axios.post(TASKS_DELETE_FROM_TEAM_API, id);
-    }
+      axios.post(TASKS_DELETE_FROM_TEAM_API, taskToDelete);
+    })
   }
 
+  // loop through each intern assigned to this task and remove it
   deleteTaskFromIntern(taskId) {
-    for (let i = 0; i < this.state.task.assignedTo.length; i++) {
-      const id = {
-        internId: this.state.task.assignedTo[i],
-        taskId: taskId
+    this.state.task.assignedTo.forEach(intern => {
+      const taskToDelete = {
+        taskId: taskId,
+        internId: intern.id
       }
-      axios.post(TASKS_DELETE_FROM_INTERN_API, id);
-    }
+      axios.post(TASKS_DELETE_FROM_INTERN_API, taskToDelete);
+    })
   }
 
+  // delete task document from collection
   deleteTask(taskId) {
     const id = { id: taskId };
     axios.post(TASKS_DELETE_API, id)
@@ -67,6 +71,7 @@ class Task extends Component {
       })
   }
 
+  // delete task systematically - from team, then intern, then intern collection
   deleteTaskFull(taskId) {
     this.deleteTaskFromTeam(taskId);
     this.deleteTaskFromIntern(taskId);
@@ -92,8 +97,8 @@ class Task extends Component {
         <div>
           <h3>{taskData.task}</h3>
           <p>{taskData.deadline}</p>
-          <p>Individual: {taskData.assignedTo}</p>
-          <p>Team: {taskData.assignedToTeam}</p>
+          <p>Individual: {taskData.assignedTo.map(x => x.name)}</p>
+          <p>Team: {taskData.assignedToTeam.map(x => x.name)}</p>
           <TaskForm
             type={"edit"}
             id={taskData._id}

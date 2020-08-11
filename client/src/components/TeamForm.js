@@ -5,6 +5,7 @@ import Select from 'react-select';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import { mapToDatabaseReadable } from '../utils';
 
 
 const TEAM_POST_API = 'http://localhost:5000/api/teams/post';
@@ -55,7 +56,11 @@ class TeamForm extends Component {
     this.setState({ members: event ? event.map(x => x) : [] });
   }
   handleLeaderChange(data) {
-    this.setState({ leader: data.value });
+    data['id'] = data['value'];
+    data['name'] = data['label'];
+    delete data['value'];
+    delete data['label'];
+    this.setState({ leader: data });
   }
   handleDescriptionChange(event) {
     this.setState({ description: event.target.value });
@@ -79,7 +84,7 @@ class TeamForm extends Component {
           currentMembers: res.data.members,
           oldMembers: res.data.members,
           leader: res.data.leader,
-          currentLeader: res.data.leader,
+          currentLeader: res.data.leader || '',
           description: res.data.description,
           tasks: res.data.tasks
         })
@@ -107,20 +112,17 @@ class TeamForm extends Component {
 
   // remove a current member from react-select
   removeCurrentMember(id) {
-    let array = [...this.state.currentMembers];
-    let index = array.indexOf(id);
-    if (index !== -1) {
-      array.splice(index, 1);
-      this.setState({ currentMembers: array });
-    }
+    var array = [...this.state.currentMembers];
+    var filteredArray = array.filter(function(el) { return el.id != id; }); 
+    this.setState({ currentMembers: filteredArray });
   }
 
   // add team to interns' "teams" attribute
   addTeamToInterns(data) {
-    data.forEach(intern => {
+    data.members.forEach(intern => {
       let teamToUpdate = {
-        internId: intern,
-        teamId: this.state.id
+        internId: intern.id,
+        teamObject: { id: data._id || this.state.id, name: data.name || this.state.name }
       }
       axios.post(INTERN_UPDATE_TEAM_API, teamToUpdate);
     })   
@@ -130,7 +132,7 @@ class TeamForm extends Component {
   removeTeamFromInterns(data) {
     data.forEach(intern => {
       let teamToUpdate = {
-        internId: intern,
+        internId: intern.id,
         teamId: this.state.id
       }
       axios.post(INTERN_DELETE_TEAM_API, teamToUpdate);
@@ -141,7 +143,7 @@ class TeamForm extends Component {
   createTeam() {
     const teamToCreate = {
       name: this.state.name,
-      members: this.state.members ? this.state.members.map(x => x.value) : [],
+      members: this.state.members ? this.state.members.map(mapToDatabaseReadable) : [],
       leader: this.state.leader,
       description: this.state.description,
     }
@@ -160,7 +162,7 @@ class TeamForm extends Component {
     const teamToUpdate = {
       id: this.state.id,
       name: this.state.name,
-      members: this.state.members.map(x => x.value).concat(this.state.currentMembers),
+      members: this.state.members.map(mapToDatabaseReadable).concat(this.state.currentMembers),
       leader: this.state.leader,
       description: this.state.description
     }
@@ -168,11 +170,18 @@ class TeamForm extends Component {
     // post the basic data to the team update API
     axios.post(TEAM_UPDATE_API, teamToUpdate)
       .then(res => {
-        // add newly attached team members 
-        const addData = this.state.members.map(x => x.value);
+        // add newly attached team members
+        const addData = { members: [], _id: this.state.id };
+        this.state.members.forEach(member => {
+          addData["members"].push({
+            id: member.id
+          })
+        });
         this.addTeamToInterns(addData);
         // remove team members no longer attached
-        let diffArray = this.state.oldMembers.filter(x => !this.state.currentMembers.includes(x));    
+        // console.log("old members: ", this.state.oldMembers);
+        // console.log("current members: ", this.state.currentMembers);
+        let diffArray = this.state.oldMembers.filter(x => !this.state.currentMembers.includes(x));
         this.removeTeamFromInterns(diffArray);    
       })
       .then(() => {
@@ -208,37 +217,37 @@ class TeamForm extends Component {
       // switch for creating a team
       if (this.props.type === 'create') {
         members = this.state.members || [];
-        for (let i = 0; i < interns.length; i++) {
+        interns.forEach(intern => {
           options.push({
-            value: interns[i]._id,
-            label: interns[i].name
+            value: intern._id,
+            label: intern.name
           })
-        }
-    
-        for (let i = 0; i < members.length; i++) {
+        })
+        members.forEach(member => {
           leaderOptions.push({
-            value: members[i].value,
-            label: members[i].label
+            value: member.value,
+            label: member.label
           })
-        }
+        })
         // else use this switch for editing
       } else {
-        for (let i = 0; i < interns.length; i++) {
-          if (!this.state.currentMembers.includes(interns[i]._id)) {
+        interns.forEach(intern => { 
+          if (!this.state.currentMembers.some(e => e.id === intern._id)) {
             options.push({
-              value: interns[i]._id,
-              label: interns[i].name
+              value: intern._id,
+              label: intern.name
             })
           } else {
-            if (interns[i]._id === this.state.currentLeader) {
-              currentLeader = interns[i].name;
+            if (intern._id === this.state.currentLeader.id) {
+              console.log("current leader here");
+              currentLeader = intern.name;
             }
             currentMembersDisplay.push({
-              label: interns[i].name,
-              value: interns[i]._id
+              label: intern.name,
+              value: intern._id
             })
           }    
-        }
+        })
         leaderOptions = [...currentMembersDisplay];
       }
       
@@ -249,8 +258,6 @@ class TeamForm extends Component {
           <button type="button" onClick={() => this.removeCurrentMember(member.value)}>X</button>
         </div>  
       )
-
-      
     }
     
     Modal.setAppElement('body');
@@ -302,7 +309,7 @@ class TeamForm extends Component {
                 options={leaderOptions} 
                 isMulti={false} 
                 onChange={this.handleLeaderChange}
-                placeholder={currentLeader}
+                // placeholder={currentLeader}
                 isSearchable={true}
               />
             </Form.Group>

@@ -11,14 +11,14 @@ router.post('/api/interns/post', (req, res) => {
     school: req.body.school,
     major: req.body.major,
     joined: req.body.joined,
-    tasks: req.body.tasks,
+    tasks: [],
+    teams: [],
     weeklyHours: 0,
-    totalHours: 0,
-    teams: req.body.teams
+    totalHours: 0
   });
   
   intern.save()
-    .then(newIntern =>{
+    .then(newIntern => {
       res.send(newIntern);
     })
   
@@ -41,7 +41,6 @@ router.post('/api/interns/get/single', (req, res) => {
 })
 
 router.post('/api/interns/update', (req, res) => {
-  console.log(req.body);
   Intern.updateOne(
     { _id : req.body.id },
     { $set: 
@@ -60,9 +59,10 @@ router.post('/api/interns/update', (req, res) => {
 
 // push task onto tasks array for intern
 router.post('/api/interns/add-task', (req, res) => {
+  console.log("Adding task: ", req.body);
   Intern.findOneAndUpdate(
     { _id: req.body.internId },
-    { $addToSet: { tasks: req.body.taskId } },
+    { $addToSet: { tasks: req.body.taskObject } },
     (err, intern) => {
       res.send(intern);
     }
@@ -79,9 +79,10 @@ router.post('/api/interns/delete', (req, res) => {
 
 // push team onto teams array for intern
 router.post('/api/interns/add-team', (req, res) => {
+  console.log("adding team: ", req.body);
   Intern.findOneAndUpdate(
     { _id: req.body.internId },
-    { $addToSet: { teams: req.body.teamId } },
+    { $addToSet: { teams: req.body.teamObject } },
     (err, intern) => {
       res.send(intern);
     }
@@ -90,9 +91,10 @@ router.post('/api/interns/add-team', (req, res) => {
 
 // remove single task from intern
 router.post('/api/interns/delete-task', (req, res) => {
+  console.log("removing task: ", req.body);
   Intern.findByIdAndUpdate(
     { _id: req.body.internId },
-    { $pull: { tasks: req.body.taskId } },
+    { $pull: { tasks: { id: req.body.taskId } } },
     (err, team) => {
       res.send(team);
     }
@@ -101,9 +103,10 @@ router.post('/api/interns/delete-task', (req, res) => {
 
 // remove single team from intern
 router.post('/api/interns/delete-team', (req, res) => {
+  console.log("deleting team: ", req.body);
   Intern.findByIdAndUpdate(
     { _id: req.body.internId },
-    { $pull: { teams: req.body.teamId } },
+    { $pull: { teams: { id: req.body.teamId } } },
     (err, team) => {
       res.send(team);
     }

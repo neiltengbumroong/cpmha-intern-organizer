@@ -36,6 +36,7 @@ class Intern extends Component {
     this.setState({ showModal: false });
   }
 
+  // get intern data and set the state
   getIntern() {
     this.setState({ isLoading: true });
     axios.post(INTERN_GET_SINGLE_API, { id: this.state.internId })
@@ -47,30 +48,34 @@ class Intern extends Component {
       })
   }
 
+  // remove intern from tasks' assignedTo attribute upon deletion
   deleteInternFromTask(internId) {
-    for (let i = 0; i < this.state.intern.tasks.length; i++) {
-      const id = {
+    this.state.intern.tasks.forEach(task => {
+      const internToDelete = {
         internId: internId,
-        taskId: this.state.intern.tasks[i]
-      }
-      axios.post(INTERNS_DELETE_FROM_TASK_API, id);
-    } 
+        taskId: task.id
+      };
+      axios.post(INTERNS_DELETE_FROM_TASK_API, internToDelete);
+    })
   }
 
+  // remove intern from teams' tasks attribute upon deletion
   deleteInternFromTeam(internId) {
-    for (let i = 0; i < this.state.intern.teams.length; i++) {
-      const id = {
+    this.state.intern.teams.forEach(team => {
+      const internToDelete = {
         internId: internId,
-        teamId: this.state.intern.teams[i]
+        teamId: team.id
       }
-      axios.post(INTERNS_DELETE_FROM_TEAM_API, id);
-    }
+      axios.post(INTERNS_DELETE_FROM_TEAM_API, internToDelete);
+    })
   }
 
+  // delete intern document from collection 
   deleteIntern(internId) {
     axios.post(INTERNS_DELETE_API, { id: internId })
   }
 
+  // when called, delete systematically from task, team, and then intern collections
   deleteInternFull(internId) {
     this.deleteInternFromTask(internId);
     this.deleteInternFromTeam(internId);

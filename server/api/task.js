@@ -10,7 +10,7 @@ router.post('/api/tasks/post', (req, res) => {
     dateAssigned: req.body.dateAssigned,
     assignedTo: req.body.assignedTo,
     assignedToTeam: req.body.assignedToTeam,
-    completed: req.body.completed,
+    completed: false,
     description: req.body.description
   });
 
@@ -37,6 +37,20 @@ router.get('/api/tasks/get', (req, res) => {
   })
 });
 
+router.post('/api/tasks/toggle-completed', (req, res) => {
+  Task.updateOne(
+    { _id: req.body.taskId },
+    { $set:
+      {
+        completed: req.body.completed
+      }
+    }
+  )
+  .then(updatedTask => {
+    res.send(updatedTask);
+  })
+});
+
 // standard get for a single task
 router.post('/api/tasks/get/single', (req, res) => {
   Task.findById(req.body.id)
@@ -45,9 +59,9 @@ router.post('/api/tasks/get/single', (req, res) => {
   })
 });
 
-// edit ask
+// edit task
 router.post('/api/tasks/update', (req, res) => {
-  console.log(req.body);
+  console.log("editing task: ", req.body);
   Task.updateOne(
     { _id: req.body.id },
     { $set:
@@ -68,9 +82,10 @@ router.post('/api/tasks/update', (req, res) => {
 
 // remove single intern from task 
 router.post('/api/tasks/delete-intern', (req, res) => {
+  console.log("deleting intern: ", req.body);
   Task.findByIdAndUpdate(
     { _id: req.body.taskId },
-    { $pull: { assignedTo: req.body.internId } },
+    { $pull: { assignedTo: { id: req.body.internId } } },
     (err, task) => {
       res.send(task);
     }
@@ -79,9 +94,10 @@ router.post('/api/tasks/delete-intern', (req, res) => {
 
 // remove single team from task
 router.post('/api/tasks/delete-team', (req, res) => {
+  console.log("deleting team: ", req.body);
   Task.findByIdAndUpdate(
     { _id: req.body.internId },
-    { $pull: { assignedToTeam: req.body.teamId } },
+    { $pull: { assignedToTeam: { id: req.body.teamId } } },
     (err, task) => {
       res.send(task);
     }

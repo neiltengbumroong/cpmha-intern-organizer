@@ -25,6 +25,7 @@ class Team extends Component {
     this.setState({ isLoading: this.state.isLoading });
   }
 
+  // get team data and set state
   getTeam() {
     this.setState({ isLoading: true });
     axios.post(TEAMS_GET_SINGLE_API, { id: this.state.teamId })
@@ -38,30 +39,34 @@ class Team extends Component {
       })
   }
 
+  // loop through team's tasks and remove team from task 
   deleteTeamFromTasks(teamId) {
-    for (let i = 0; i < this.state.team.tasks.length; i++) {
-      const id = {
+    this.state.team.tasks.forEach(task => {
+      const teamToDelete = {
         teamId: teamId,
-        taskId: this.state.team.tasks[i]
+        taskId: task.id
       }
-      axios.post(TEAMS_DELETE_FROM_TASK_API, id);
-    } 
+      axios.post(TEAMS_DELETE_FROM_TASK_API, teamToDelete);
+    });
   }
 
+  // loop through team's interns and remove team from intern
   deleteTeamFromInterns(teamId) {
-    for (let i = 0; i < this.state.team.members.length; i++) {
-      const id = {
+    this.state.team.members.forEach(intern => {
+      const teamToDelete = {
         teamId: teamId,
-        internId: this.state.team.members[i]
+        internId: intern.id
       }
-      axios.post(TEAMS_DELETE_FROM_INTERN_API, id);
-    } 
+      axios.post(TEAMS_DELETE_FROM_INTERN_API, teamToDelete);
+    });
   }
 
+  // delete team from collection
   deleteTeam(teamId) {
     axios.post(TEAMS_DELETE_API, { id: teamId });
   }
 
+  // systematically delete team - from tasks, interns, then team collection
   deleteTeamFull(teamId) {
     this.deleteTeamFromTasks(teamId);
     this.deleteTeamFromInterns(teamId);
@@ -81,7 +86,7 @@ class Team extends Component {
       team = (
       <div>
         <h3>{teamData.name}</h3>
-        <p>{teamData.members}</p>
+        <p>{teamData.members.map(x => x.name)}</p>
         <TeamForm
           type={"edit"}
           id={teamData._id}
