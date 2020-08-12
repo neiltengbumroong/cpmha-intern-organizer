@@ -56,11 +56,10 @@ class TeamForm extends Component {
     this.setState({ members: event ? event.map(x => x) : [] });
   }
   handleLeaderChange(data) {
-    data['id'] = data['value'];
-    data['name'] = data['label'];
-    delete data['value'];
-    delete data['label'];
-    this.setState({ leader: data });
+    let tempData = data;
+    tempData['id'] = data['value'];
+    tempData['name'] = data['label'];
+    this.setState({ leader: tempData });
   }
   handleDescriptionChange(event) {
     this.setState({ description: event.target.value });
@@ -69,7 +68,7 @@ class TeamForm extends Component {
   handleOpenModal() {
     this.setState({ showModal: true });
   }
-  
+
   handleCloseModal() {
     this.setState({ showModal: false });
   }
@@ -98,34 +97,35 @@ class TeamForm extends Component {
   loadInterns() {
     this.setState({ isLoading: true });
     axios.get(INTERN_GET_API)
-    .then(res => {
-      this.setState({ 
-        interns: res.data
+      .then(res => {
+        this.setState({
+          interns: res.data
+        })
       })
-    })
-    .then(() => {
-      if (this.props.type === 'create') {
-        this.setState({ isLoading: false });
-      }
-    })
+      .then(() => {
+        if (this.props.type === 'create') {
+          this.setState({ isLoading: false });
+        }
+      })
   }
 
   // remove a current member from react-select
   removeCurrentMember(id) {
     var array = [...this.state.currentMembers];
-    var filteredArray = array.filter(function(el) { return el.id != id; }); 
+    var filteredArray = array.filter(function (el) { return el.id != id; });
     this.setState({ currentMembers: filteredArray });
   }
 
   // add team to interns' "teams" attribute
   addTeamToInterns(data) {
     data.members.forEach(intern => {
+      console.log(intern);
       let teamToUpdate = {
         internId: intern.id,
         teamObject: { id: data._id || this.state.id, name: data.name || this.state.name }
       }
       axios.post(INTERN_UPDATE_TEAM_API, teamToUpdate);
-    })   
+    })
   }
 
   // remove team from interns' team attribute if they are no longer in it
@@ -151,10 +151,10 @@ class TeamForm extends Component {
     // post to team api 
     axios.post(TEAM_POST_API, teamToCreate)
       .then(res => {
-        this.state.members.length > 0 && this.addTeamToInterns(res.data); 
+        this.state.members.length > 0 && this.addTeamToInterns(res.data);
         this.props.updateData();
       })
-    this.handleCloseModal();  
+    this.handleCloseModal();
   }
 
   // edit a team
@@ -170,25 +170,25 @@ class TeamForm extends Component {
     // post the basic data to the team update API
     axios.post(TEAM_UPDATE_API, teamToUpdate)
       .then(res => {
+        // remove team members no longer attached
+        let diffArray = this.state.oldMembers.filter(x => !this.state.currentMembers.includes(x));
+        this.removeTeamFromInterns(diffArray);
+      })
+      .then(() => {
         // add newly attached team members
         const addData = { members: [], _id: this.state.id };
         this.state.members.forEach(member => {
           addData["members"].push({
-            id: member.id
+            id: member.value
           })
-        });
-        this.addTeamToInterns(addData);
-        // remove team members no longer attached
-        // console.log("old members: ", this.state.oldMembers);
-        // console.log("current members: ", this.state.currentMembers);
-        let diffArray = this.state.oldMembers.filter(x => !this.state.currentMembers.includes(x));
-        this.removeTeamFromInterns(diffArray);    
+          this.addTeamToInterns(addData);
+        })
       })
       .then(() => {
         this.props.updateData();
       })
 
-    
+
     this.handleCloseModal();
     // "illusion" of change happening
     // window.location.reload();
@@ -203,7 +203,7 @@ class TeamForm extends Component {
   }
 
   render() {
-    
+
     let options = [];
     let interns = null;
     let leaderOptions = [];
@@ -231,35 +231,34 @@ class TeamForm extends Component {
         })
         // else use this switch for editing
       } else {
-        interns.forEach(intern => { 
+        interns.forEach(intern => {
           if (!this.state.currentMembers.some(e => e.id === intern._id)) {
             options.push({
               value: intern._id,
               label: intern.name
             })
           } else {
-            if (intern._id === this.state.currentLeader.id) {
-              console.log("current leader here");
+            if (this.state.leader && intern._id === this.state.leader.id) {
               currentLeader = intern.name;
             }
             currentMembersDisplay.push({
               label: intern.name,
               value: intern._id
             })
-          }    
+          }
         })
         leaderOptions = [...currentMembersDisplay];
       }
-      
-      currentMembers = currentMembersDisplay.map((member, i) => 
+
+      currentMembers = currentMembersDisplay.map((member, i) =>
         <div key={i}>
           <p>{member.label}</p>
           <p>{member.value}</p>
           <button type="button" onClick={() => this.removeCurrentMember(member.value)}>X</button>
-        </div>  
+        </div>
       )
     }
-    
+
     Modal.setAppElement('body');
 
     return (
@@ -275,7 +274,7 @@ class TeamForm extends Component {
             },
             overlay: {
               zIndex: '100'
-            } 
+            }
           }}
           isOpen={this.state.showModal}
           contentLabel="Create Team Modal">
@@ -283,11 +282,11 @@ class TeamForm extends Component {
             <h1>{this.props.type === 'edit' ? 'Edit Team' : 'New Team'}</h1>
             <Form.Group>
               <Form.Label>Team Name</Form.Label>
-              <Form.Control 
+              <Form.Control
                 size="md"
-                type="text" 
+                type="text"
                 placeholder="Ex. Marketing"
-                defaultValue={this.props.type === 'edit' ? this.state.name : ''}  
+                defaultValue={this.props.type === 'edit' ? this.state.name : ''}
                 onChange={this.handleNameChange}
               />
             </Form.Group>
@@ -295,46 +294,46 @@ class TeamForm extends Component {
             <Form.Group>
               <Form.Label>Add Members</Form.Label>
               {currentMembers}
-              <Select 
-                options={options} 
-                isMulti={true} 
+              <Select
+                options={options}
+                isMulti={true}
                 onChange={this.handleMembersChange}
                 isSearchable={true}
               />
             </Form.Group>
-            
+
             <Form.Group>
               <Form.Label>Leader</Form.Label>
-              <Select 
-                options={leaderOptions} 
-                isMulti={false} 
+              <Select
+                options={leaderOptions}
+                isMulti={false}
                 onChange={this.handleLeaderChange}
-                // placeholder={currentLeader}
+                placeholder={currentLeader}
                 isSearchable={true}
               />
             </Form.Group>
 
             <Form.Group>
               <Form.Label>Description</Form.Label>
-              <Form.Control 
+              <Form.Control
                 size="md"
-                type="text" 
+                type="text"
                 placeholder="Ex. Tasked with expanding CPMHA connections"
-                defaultValue={this.props.type === 'edit' ? this.state.description : ''}  
+                defaultValue={this.props.type === 'edit' ? this.state.description : ''}
                 onChange={this.handleDescriptionChange}
               />
             </Form.Group>
-                      
-            
+
+
             {this.props.type === 'edit' ?
               <button type="button" onClick={this.editTeam}>Save Changes</button>
               :
               <button type="button" onClick={this.createTeam}>Create Team</button>
-            }    
+            }
             <button type="button" onClick={this.handleCloseModal}>Close</button>
           </Form>
         </Modal>
-      </>   
+      </>
     )
   }
 }

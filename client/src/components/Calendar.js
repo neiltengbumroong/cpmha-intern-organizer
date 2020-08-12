@@ -6,13 +6,16 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from "@fullcalendar/interaction";
 import moment from 'moment';
+import Modal from 'react-modal';
 import TaskForm from './TaskForm';
 import EventForm from './EventForm';
+import { Link } from 'react-router-dom';
 
 import '../css/Calendar.css';
 
 const TASK_GET_API = 'http://localhost:5000/api/tasks/get';
 const EVENT_GET_API = 'http://localhost:5000/api/events/get';
+const EVENT_DELETE_API = 'http://localhost:5000/api/events/delete';
 
 const EVENT_FORMAT = 'YYYY-MM-DD HH:MM';
 
@@ -20,14 +23,26 @@ class Calendar extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      eventId: '',
+      eventName: '',
+      eventStart: '',
+      eventEnd: '',
+      eventDescription: '',
       tasks: [],
       events: []
     }
 
-    this.loadData = this.loadData.bind(this);
   }
 
-  loadData() {
+  handleOpenModal = () => {
+    this.setState({ showModal: true });
+  }
+  
+  handleCloseModal = () => {
+    this.setState({ showModal: false });
+  }
+
+  loadData = () => {
     axios.all([
       axios.get(TASK_GET_API),
       axios.get(EVENT_GET_API)
@@ -44,8 +59,21 @@ class Calendar extends Component {
     this.loadData();
   }
 
-  alertEvent = () => {
-    alert("hello");
+  deleteEvent = () => {
+    axios.post(EVENT_DELETE_API, { id: this.state.eventId });
+    this.loadData();
+    this.handleCloseModal();
+  }
+
+  handleEventClick = ({event}) => {
+    this.setState({ 
+      eventId: event.extendedProps.id,
+      eventName: event.extendedProps.name,
+      eventStart: event.extendedProps.start,
+      eventEnd: event.extendedProps.end,
+      eventDescription: event.extendedProps.description,
+      showModal: true 
+    });
   }
 
   showEvent = () => {
@@ -57,12 +85,12 @@ class Calendar extends Component {
     let tasks = this.state.tasks;
     tasks.forEach(task => {
       tasksArr.push({
-        id: task._id,
         title: task.task,
         start: moment(task.deadline).format(EVENT_FORMAT),
         end: moment(task.deadline).format(EVENT_FORMAT),
         extendedProps: {
-          type: 'task'
+          type: 'task',
+          id: task._id
         }
       })
     })
@@ -75,7 +103,12 @@ class Calendar extends Component {
         start: event.start,
         end: event.end,
         extendedProps: {
-          type: 'event'
+          type: 'event',
+          id: event._id,
+          name: event.event,
+          start: event.start,
+          end: event.end,
+          description: event.description
         }
       })
     })
@@ -85,7 +118,8 @@ class Calendar extends Component {
     return (
       <div className="calendar-wrapper">
         <TaskForm updateData={this.loadData.bind(this)}/>
-        <EventForm updateData={this.loadData}/>
+        <EventForm loadData={this.loadData}/>
+        <Link to='/'>Home</Link>
         <div style={{padding: "5%"}}>
           <FullCalendar
             plugins={[ interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin ]}
@@ -96,9 +130,36 @@ class Calendar extends Component {
               right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
             }}
             events={dataArr}
-            eventClick={this.alertEvent}
+            eventClick={this.handleEventClick}
             eventDidMount={this.showEvent}
           />
+          <Modal
+            style={{
+              content: {
+                left: '20%',
+                right: '20%',
+                top: '15%',
+                bottom: '15%',
+              },
+              overlay: {
+                zIndex: '100'
+              } 
+            }}
+            isOpen={this.state.showModal}
+            contentLabel="Manage Event Modal">
+              <h2>Event Information</h2>
+              <h4>{this.state.eventName}</h4>
+              <p>{this.state.eventStart} - {this.state.eventEnd}</p>
+              <p>{this.state.eventDescription}</p>
+              <EventForm 
+                type={"edit"}
+                id={this.state.eventId}
+                closeModal={this.handleCloseModal}
+                loadData={this.loadData}
+              />
+              <button type="button" onClick={this.deleteEvent}>Delete Event</button>
+              <button type="button" onClick={this.handleCloseModal}>Close</button>
+          </Modal>
         </div>
       </div>         
     )

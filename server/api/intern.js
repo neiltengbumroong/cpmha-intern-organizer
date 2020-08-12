@@ -40,6 +40,7 @@ router.post('/api/interns/get/single', (req, res) => {
   })
 })
 
+// update intern
 router.post('/api/interns/update', (req, res) => {
   Intern.updateOne(
     { _id : req.body.id },

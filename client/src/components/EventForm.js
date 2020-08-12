@@ -8,6 +8,9 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 
 const EVENT_POST_API = 'http://localhost:5000/api/events/post';
+const EVENT_UPDATE_API = 'http://localhost:5000/api/events/update';
+const EVENT_GET_SINGLE_API = 'http://localhost:5000/api/events/get/single';
+
 
 class EventForm extends Component {
   constructor(props) {
@@ -18,56 +21,70 @@ class EventForm extends Component {
       end: '',
       description: ''
     }
-
-    this.handleEventChange = this.handleEventChange.bind(this);
-    this.handleStartChange = this.handleStartChange.bind(this);
-    this.handleEndChange = this.handleEndChange.bind(this);
-    this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
-
-    this.createEvent = this.createEvent.bind(this);
-    this.handleOpenModal = this.handleOpenModal.bind(this);
-    this.handleCloseModal = this.handleCloseModal.bind(this);
-
   }
 
-  handleEventChange(event) {
+  handleEventChange = event => {
     this.setState({ event: event.target.value });
   }
-  handleStartChange(date) {
+  handleStartChange = date => {
     this.setState({ start: date});
   }
-  handleEndChange(date) {
+  handleEndChange = date => {
     this.setState({ end: date });
   }
-  handleDescriptionChange(event) {
-    this.setState({ dateAssigned: event.target.value });
+  handleDescriptionChange = event => {
+    this.setState({ description: event.target.value });
   }
-
-  handleOpenModal() {
+  handleOpenModal = () => {
     this.setState({ showModal: true });
   }
   
-  handleCloseModal() {
+  handleCloseModal = () => {
     this.setState({ showModal: false });
   }
 
-  createEvent() {
+  getEventData = () => {
+    axios.post(EVENT_GET_SINGLE_API, { id: this.props.id })
+      .then(res => {
+        this.setState({
+          event: res.data.event,
+          start: res.data.start,
+          end: res.data.end,
+          description: res.data.description
+        })
+      })
+  }
+
+  createEvent = () => {
     const eventToCreate = {
       event: this.state.event,
       start: this.state.start,
       end: this.state.end,
       description: this.state.description,
     }
-
     axios.post(EVENT_POST_API, eventToCreate)
       .then(() => {
-        this.props.updateData();
+        this.props.loadData();
       })
       .catch(error => {
         this.setState({ error: true })
       })
       
     this.handleCloseModal();
+  }
+
+  editEvent = () => {
+    const eventToUpdate = {
+      id: this.props.id,
+      event: this.state.event,
+      start: this.state.start,
+      end: this.state.end,
+      description: this.state.description,
+    }
+    axios.post(EVENT_UPDATE_API, eventToUpdate);
+    this.handleCloseModal();
+    this.props.loadData();
+    this.props.closeModal();
   }
 
   componentDidMount() {
@@ -77,13 +94,19 @@ class EventForm extends Component {
       start: new Date(),
       end: newEnd 
     });
+
+
+    // load event data for editing
+    if (this.props.type === 'edit') {
+      this.getEventData();
+    }
   }
 
   render() {
     Modal.setAppElement('body');
     return (
       <>
-        <button onClick={this.handleOpenModal}>Create Event</button>
+        <button onClick={this.handleOpenModal}>{this.props.type === 'edit' ? "Edit Event" : "Create Event"}</button>
         <Modal
           style={{
             content: {
@@ -99,14 +122,14 @@ class EventForm extends Component {
           isOpen={this.state.showModal}
           contentLabel="Create Event Modal">
           <Form>
-            <h1>New Event</h1>
+            <h1>{this.props.type === 'edit' ? "Edit Event" : "New Event"}</h1>
             <Form.Group>          
               <Form.Label>Event</Form.Label>
               <Form.Control 
                 size="md"
                 type="text" 
                 placeholder="Ex. Weekly Meeting"
-                // defaultValue={this.props.type === 'edit' ? this.props.name : ''}  
+                defaultValue={this.props.type === 'edit' ? this.state.event : ''}  
                 onChange={this.handleEventChange}
               />
             </Form.Group>
@@ -117,7 +140,7 @@ class EventForm extends Component {
                 <Form.Label>Start</Form.Label>
                 <DateTimePicker
                   onChange={this.handleStartChange}
-                  value={this.state.start}
+                  value={new Date(this.state.start)}
                   disableClock={true}
                 />
               </Form.Group>
@@ -127,7 +150,7 @@ class EventForm extends Component {
                   <Form.Label>End</Form.Label>
                   <DateTimePicker
                     onChange={this.handleEndChange}
-                    value={this.state.end}
+                    value={new Date(this.state.end)}
                     disableClock={true}
                   />
                 </Form.Group>
@@ -139,12 +162,16 @@ class EventForm extends Component {
                   size="md"
                   type="text" 
                   placeholder="Ex. Go over weekly updates and progress"
-                  // defaultValue={this.props.type === 'edit' ? this.props.name : ''}  
+                  defaultValue={this.props.type === 'edit' ? this.state.description : ''}  
                   onChange={this.handleDescriptionChange}
                 />          
-            </Form.Group>         
-            <button onClick={this.createEvent}>Create Event</button>
-            <button onClick={this.handleCloseModal}>Close</button>
+            </Form.Group> 
+            {this.props.type === 'edit' ?
+              <button type="button" onClick={this.editEvent}>Save Changes</button>
+              :        
+              <button type="button" onClick={this.createEvent}>Create Event</button>
+            }
+            <button type="button" onClick={this.handleCloseModal}>Close</button>
           </Form>
         </Modal>
       </>   
