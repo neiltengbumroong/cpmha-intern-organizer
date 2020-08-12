@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Modal from 'react-modal';
 import moment from 'moment';
 import DateTimePicker from 'react-datetime-picker';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
+import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
 const EVENT_POST_API = 'http://localhost:5000/api/events/post';
@@ -103,76 +103,72 @@ class EventForm extends Component {
   }
 
   render() {
-    Modal.setAppElement('body');
     return (
       <>
-        <button onClick={this.handleOpenModal}>{this.props.type === 'edit' ? "Edit Event" : "Create Event"}</button>
+        <Button variant="info" onClick={this.handleOpenModal}>{this.props.type === 'edit' ? "Edit Event" : "Create Event"}</Button>
         <Modal
-          style={{
-            content: {
-              left: '20%',
-              right: '20%',
-              top: '15%',
-              bottom: '15%',
-            },
-            overlay: {
-              zIndex: '100'
-            } 
-          }}
-          isOpen={this.state.showModal}
-          contentLabel="Create Event Modal">
-          <Form>
-            <h1>{this.props.type === 'edit' ? "Edit Event" : "New Event"}</h1>
-            <Form.Group>          
-              <Form.Label>Event</Form.Label>
-              <Form.Control 
-                size="md"
-                type="text" 
-                placeholder="Ex. Weekly Meeting"
-                defaultValue={this.props.type === 'edit' ? this.state.event : ''}  
-                onChange={this.handleEventChange}
-              />
-            </Form.Group>
-
-            <Form.Row>
-              <Col>
-              <Form.Group>
-                <Form.Label>Start</Form.Label>
-                <DateTimePicker
-                  onChange={this.handleStartChange}
-                  value={new Date(this.state.start)}
-                  disableClock={true}
-                />
-              </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <Form.Label>End</Form.Label>
-                  <DateTimePicker
-                    onChange={this.handleEndChange}
-                    value={new Date(this.state.end)}
-                    disableClock={true}
-                  />
-                </Form.Group>
-              </Col>
-            </Form.Row>
-            <Form.Group>
-              <Form.Label>Description</Form.Label>
+          show={this.state.showModal}
+          onHide={this.handleCloseModal}
+          keyboard={false}
+          backdrop="static"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title><h1>{this.props.type === 'edit' ? "Edit Event" : "New Event"}</h1></Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>     
+              <Form.Group>          
+                <Form.Label>Event</Form.Label>
                 <Form.Control 
                   size="md"
                   type="text" 
-                  placeholder="Ex. Go over weekly updates and progress"
-                  defaultValue={this.props.type === 'edit' ? this.state.description : ''}  
-                  onChange={this.handleDescriptionChange}
-                />          
-            </Form.Group> 
-            {this.props.type === 'edit' ?
-              <button type="button" onClick={this.editEvent}>Save Changes</button>
-              :        
-              <button type="button" onClick={this.createEvent}>Create Event</button>
-            }
-            <button type="button" onClick={this.handleCloseModal}>Close</button>
-          </Form>
+                  placeholder="Ex. Weekly Meeting"
+                  defaultValue={this.props.type === 'edit' ? this.state.event : ''}  
+                  onChange={this.handleEventChange}
+                />
+              </Form.Group>
+              <Form.Row>
+                <Col>
+                <Form.Group>
+                  <Form.Label>Start</Form.Label>
+                  <DateTimePicker
+                    onChange={this.handleStartChange}
+                    value={new Date(this.state.start)}
+                    disableClock={true}
+                  />
+                </Form.Group>
+                </Col>
+                <Col>
+                  <Form.Group>
+                    <Form.Label>End</Form.Label>
+                    <DateTimePicker
+                      onChange={this.handleEndChange}
+                      value={new Date(this.state.end)}
+                      disableClock={true}
+                    />
+                  </Form.Group>
+                </Col>
+              </Form.Row>
+              <Form.Group>
+                <Form.Label>Description</Form.Label>
+                  <Form.Control 
+                    size="md"
+                    type="text" 
+                    placeholder="Ex. Go over weekly updates and progress"
+                    defaultValue={this.props.type === 'edit' ? this.state.description : ''}  
+                    onChange={this.handleDescriptionChange}
+                  />          
+              </Form.Group> 
+              <Modal.Footer>
+                <Button variant="info" type="button" onClick={this.handleCloseModal}>Close</Button>
+                {this.props.type === 'edit' ?
+                  <Button variant="primary" type="button" onClick={this.editEvent}>Save Changes</Button>
+                  :        
+                  <Button variant="primary" type="button" onClick={this.createEvent}>Create Event</Button>
+                }         
+              </Modal.Footer>
+            </Form>
+          </Modal.Body>
         </Modal>
       </>   
     )

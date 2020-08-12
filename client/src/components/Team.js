@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import TeamForm from './TeamForm';
+import Button from 'react-bootstrap/Button';
 
 const TEAMS_GET_SINGLE_API = 'http://localhost:5000/api/teams/get/single';
 const TEAMS_DELETE_API = 'http://localhost:5000/api/teams/delete';
@@ -14,7 +15,7 @@ class Team extends Component {
     this.state = {
       team: [],
       teamId: props.location.state.id,
-      showEditModal: false,
+      showModal: false,
       isLoading: true
     }
 
@@ -91,8 +92,8 @@ class Team extends Component {
           id={teamData._id}
           updateData={this.updateData}
           updateMain={this.props.updateMain}
-        />
-        <Link to="/"><button type="button" onClick={() => this.deleteTeamFull(teamData._id)}>Delete Team</button></Link>
+        />{' '}
+        <Link to="/"><Button variant="danger" type="button" onClick={() => this.deleteTeamFull(teamData._id)}>Delete Team</Button></Link>
       </div>)
     }
 

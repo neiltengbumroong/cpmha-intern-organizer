@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import TaskForm from './TaskForm';
+import Button from 'react-bootstrap/Button';
 
 const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
 const TASK_TOGGLE_COMPLETE_API = 'http://localhost:5000/api/tasks/toggle-completed';
@@ -94,12 +95,12 @@ class Task extends Component {
           <p>{taskData.deadline}</p>
           <p>Individual: {taskData.assignedTo.map(x => x.name)}</p>
           <p>Team: {taskData.assignedToTeam.map(x => x.name)}</p>
+          <Button variant="success" onClick={this.toggleCompleted}>Complete</Button><br/><br/>
           <TaskForm
             type={"edit"}
             id={taskData._id}
-          />
-          <button onClick={this.toggleCompleted}>Complete</button>
-          <button type="button" onClick={() => this.deleteTaskFull(taskData._id)}>Delete Task</button>
+          />{' '}
+          <Button variant="danger" type="button" onClick={() => this.deleteTaskFull(taskData._id)}>Delete Task</Button>
       </div>)
     }
     return (

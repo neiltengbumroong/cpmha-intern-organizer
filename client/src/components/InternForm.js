@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Modal from 'react-modal';
+// import Modal from 'react-modal';
 import Select from 'react-select';
 // import DatePicker from "react-bootstrap-date-picker";
 import DatePicker from 'react-datepicker';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import "react-datepicker/dist/react-datepicker.css";
 
 const INTERN_POST_API = 'http://localhost:5000/api/interns/post';
@@ -132,89 +133,83 @@ class InternForm extends Component {
   }
 
   render() {
-    Modal.setAppElement("body");
     return (
       <>
-        <button onClick={this.handleOpenModal}>{this.props.type === 'create' ? "Create Intern" : "Edit Profile"}</button>
-        <Modal
-          style={{
-            content: {
-              left: '20%',
-              right: '20%',
-              top: '15%',
-              bottom: '15%',
-            },
-            overlay: {}
-          }}
-          isOpen={this.state.showModal}
-          contentLabel="Intern Modal"
+        <Button variant="info" onClick={this.handleOpenModal}>{this.props.type === 'create' ? "Create Intern" : "Edit Profile"}</Button>
+        <Modal 
+          show={this.state.showModal}
+          onHide={this.handleCloseModal}
+          keyboard={false}
+          backdrop="static"
         >
-          <Form>
-            <h1>{this.props.type === 'edit' ? "Edit Profile" : "New Intern"}</h1>
-            <Form.Group>
-              <Form.Label>Name</Form.Label>
-              <Form.Control 
-                size="md"
-                type="text" 
-                placeholder="John Doe"
-                defaultValue={this.props.type === 'edit' ? this.state.name : ''}  
-                onChange={this.handleNameChange}
-              />
-            </Form.Group>
-
-            <Form.Group>
-              <Form.Label>Email</Form.Label>
-              <Form.Control 
-                size="md"
-                type="email" 
-                placeholder="example@cpmha.com"
-                defaultValue={this.props.type === 'edit' ? this.state.email : ''}  
-                onChange={this.handleEmailChange}
-              />
-            </Form.Group>
-
-            <Form.Row>
-              <Col>
-                <Form.Group>
-                  <Form.Label>School</Form.Label>
-                  <Form.Control 
-                    size="md"
-                    type="text" 
-                    placeholder="School"
-                    defaultValue={this.props.type === 'edit' ? this.state.school : ''}  
-                    onChange={this.handleSchoolChange}
-                  />
+          <Modal.Header closeButton>
+            <Modal.Title>{this.props.type === 'edit' ? "Edit Profile" : "New Intern"}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group>
+                <Form.Label>Name</Form.Label>
+                <Form.Control 
+                  size="md"
+                  type="text" 
+                  placeholder="John Doe"
+                  defaultValue={this.props.type === 'edit' ? this.state.name : ''}  
+                  onChange={this.handleNameChange}
+                />
               </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Major</Form.Label>
-                  <Form.Control 
-                    size="md"
-                    type="text" 
-                    placeholder="Major"
-                    defaultValue={this.props.type === 'edit' ? this.state.major : ''}  
-                    onChange={this.handleMajorChange}
-                  />
+              <Form.Group>
+                <Form.Label>Email</Form.Label>
+                <Form.Control 
+                  size="md"
+                  type="email" 
+                  placeholder="example@cpmha.com"
+                  defaultValue={this.props.type === 'edit' ? this.state.email : ''}  
+                  onChange={this.handleEmailChange}
+                />
+              </Form.Group>
+              <Form.Row>
+                <Col>
+                  <Form.Group>
+                    <Form.Label>School</Form.Label>
+                    <Form.Control 
+                      size="md"
+                      type="text" 
+                      placeholder="School"
+                      defaultValue={this.props.type === 'edit' ? this.state.school : ''}  
+                      onChange={this.handleSchoolChange}
+                    />
                 </Form.Group>
-              </Col>
-            </Form.Row>
-
-            <Form.Group>
-              <Form.Label>Date Joined </Form.Label>
-              <DatePicker
-                selected={this.props.type === 'edit' ? new Date(this.state.dateJoined) : new Date()}
-                onChange={this.handleDateJoinedChange}
-              />
-            </Form.Group>
-            
-            {this.props.type === 'edit' ? 
-              <button type="button" onClick={this.editIntern}>Save Changes</button>
-              :
-              <button type="button" onClick={this.createIntern}>Create Intern</button>
-            }
-            <button type="button" onClick={this.handleCloseModal}>Close</button>
-          </Form>   
+                </Col>
+                <Col>
+                  <Form.Group>
+                    <Form.Label>Major</Form.Label>
+                    <Form.Control 
+                      size="md"
+                      type="text" 
+                      placeholder="Major"
+                      defaultValue={this.props.type === 'edit' ? this.state.major : ''}  
+                      onChange={this.handleMajorChange}
+                    />
+                  </Form.Group>
+                </Col>
+              </Form.Row>
+              <Form.Group>
+                <Form.Label>Date Joined &nbsp;</Form.Label><br/>
+                <DatePicker
+                  selected={this.props.type === 'edit' ? new Date(this.state.dateJoined) : new Date()}
+                  onChange={this.handleDateJoinedChange}
+                />
+              </Form.Group>
+            </Form> 
+            <Modal.Footer>
+              <Button variant="danger" type="button" onClick={this.handleCloseModal}>Cancel</Button>
+              {this.props.type === 'edit' ? 
+                <Button variant="primary" type="button" onClick={this.editIntern}>Save Changes</Button>
+                :
+                <Button variant="primary" type="button" onClick={this.createIntern}>Create Intern</Button>
+              } 
+            </Modal.Footer>
+          </Modal.Body>  
         </Modal>
       </>
     )

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Modal from 'react-modal';
 import Select from 'react-select';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
+import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { mapToDatabaseReadable } from '../utils';
 
@@ -244,79 +244,74 @@ class TeamForm extends Component {
       )
     }
 
-    Modal.setAppElement('body');
-
     return (
       <>
-        <button onClick={this.handleOpenModal}>{this.props.type === 'edit' ? 'Edit Team' : 'Create Team'}</button>
-        <Modal
-          style={{
-            content: {
-              left: '20%',
-              right: '20%',
-              top: '15%',
-              bottom: '15%',
-            },
-            overlay: {
-              zIndex: '100'
-            }
-          }}
-          isOpen={this.state.showModal}
-          contentLabel="Create Team Modal">
-          <Form>
-            <h1>{this.props.type === 'edit' ? 'Edit Team' : 'New Team'}</h1>
-            <Form.Group>
-              <Form.Label>Team Name</Form.Label>
-              <Form.Control
-                size="md"
-                type="text"
-                placeholder="Ex. Marketing"
-                defaultValue={this.props.type === 'edit' ? this.state.name : ''}
-                onChange={this.handleNameChange}
-              />
-            </Form.Group>
+        <Button variant="info" onClick={this.handleOpenModal}>{this.props.type === 'edit' ? 'Edit Team' : 'Create Team'}</Button>
+        <Modal 
+          show={this.state.showModal}
+          onHide={this.handleCloseModal}
+          keyboard={false}
+          backdrop="static"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>{this.props.type === 'edit' ? "Edit Team" : "New Team"}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group>
+                <Form.Label>Team Name</Form.Label>
+                <Form.Control
+                  size="md"
+                  type="text"
+                  placeholder="Ex. Marketing"
+                  defaultValue={this.props.type === 'edit' ? this.state.name : ''}
+                  onChange={this.handleNameChange}
+                />
+              </Form.Group>
 
-            <Form.Group>
-              <Form.Label>Add Members</Form.Label>
-              {currentMembers}
-              <Select
-                options={options}
-                isMulti={true}
-                onChange={this.handleMembersChange}
-                isSearchable={true}
-              />
-            </Form.Group>
+              <Form.Group>
+                <Form.Label>Add Members</Form.Label>
+                {currentMembers}
+                <Select
+                  options={options}
+                  isMulti={true}
+                  onChange={this.handleMembersChange}
+                  isSearchable={true}
+                />
+              </Form.Group>
 
-            <Form.Group>
-              <Form.Label>Leader</Form.Label>
-              <Select
-                options={leaderOptions}
-                isMulti={false}
-                onChange={this.handleLeaderChange}
-                placeholder={currentLeader}
-                isSearchable={true}
-              />
-            </Form.Group>
+              <Form.Group>
+                <Form.Label>Leader</Form.Label>
+                <Select
+                  options={leaderOptions}
+                  isMulti={false}
+                  onChange={this.handleLeaderChange}
+                  placeholder={currentLeader}
+                  isSearchable={true}
+                />
+              </Form.Group>
 
-            <Form.Group>
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                size="md"
-                type="text"
-                placeholder="Ex. Tasked with expanding CPMHA connections"
-                defaultValue={this.props.type === 'edit' ? this.state.description : ''}
-                onChange={this.handleDescriptionChange}
-              />
-            </Form.Group>
-
-
-            {this.props.type === 'edit' ?
-              <button type="button" onClick={this.editTeam}>Save Changes</button>
-              :
-              <button type="button" onClick={this.createTeam}>Create Team</button>
-            }
-            <button type="button" onClick={this.handleCloseModal}>Close</button>
-          </Form>
+              <Form.Group>
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  size="md"
+                  type="text"
+                  placeholder="Ex. Tasked with expanding CPMHA connections"
+                  defaultValue={this.props.type === 'edit' ? this.state.description : ''}
+                  onChange={this.handleDescriptionChange}
+                />
+              </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="danger" type="button" onClick={this.handleCloseModal}>Cancel</Button>
+              {this.props.type === 'edit' ?
+                <Button variant="primary" type="button" onClick={this.editTeam}>Save Changes</Button>
+                :
+                <Button variant="primary" type="button" onClick={this.createTeam}>Create Team</Button>
+              }
+            
+          </Modal.Footer>
         </Modal>
       </>
     )

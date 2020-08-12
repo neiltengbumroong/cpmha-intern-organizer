@@ -3,6 +3,9 @@ import axios from 'axios';
 import InternForm from './InternForm';
 import { Link } from "react-router-dom";
 import moment from 'moment';
+import Jumbotron from 'react-bootstrap/Jumbotron';
+import Container from 'react-bootstrap/Container';
+import Button from 'react-bootstrap/Button';
 
 const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
 const INTERNS_DELETE_API = 'http://localhost:5000/api/interns/delete';
@@ -85,18 +88,20 @@ class Intern extends Component {
     
     if (!this.state.isLoading) {
       intern = (
-        <div>
-          <h3>{internData.name}</h3>
-          <p>{internData.email}</p>
-          <span>School: {internData.school} &nbsp; Major: {internData.major}</span>
-          <p>Weekly Hours Worked: {internData.weeklyHours}</p>
-          <p>Total Hours Worked: {internData.totalHours}</p>
-          <InternForm 
-            type={"edit"}
-            id={internData._id}
-          />
-          <Link to="/"><button type="button" onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</button></Link>
-        </div>
+        <Jumbotron fluid>
+          <Container className="text-center" fluid>
+            <h1>{internData.name}</h1>
+            <p>{internData.email}</p>
+            <span>School: {internData.school} &nbsp; Major: {internData.major}</span>
+            <p>Weekly Hours Worked: {internData.weeklyHours}</p>
+            <p>Total Hours Worked: {internData.totalHours}</p>
+            <InternForm 
+              type={"edit"}
+              id={internData._id}
+            />{' '}
+            <Link to="/"><Button type="button" variant="danger"onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</Button></Link>
+          </Container>     
+        </Jumbotron>
       )
     }
 

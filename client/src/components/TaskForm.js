@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Modal from 'react-modal';
+import Modal from 'react-bootstrap/Modal';
 import Select from 'react-select';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
@@ -322,86 +322,80 @@ class TaskForm extends Component {
           <button type="button" onClick={() => this.removeCurrentTeam(team.value)}>X</button>
         </div>
       )
-
     }
 
-
-    Modal.setAppElement('body');
     return (
       <>
-        <button onClick={this.handleOpenModal}>{this.props.type === 'edit' ? "Edit Task" : "Create Task"}</button>
+        <Button variant="info" onClick={this.handleOpenModal}>{this.props.type === 'edit' ? "Edit Task" : "Create Task"}</Button>
         <Modal
-          style={{
-            content: {
-              left: '20%',
-              right: '20%',
-              top: '15%',
-              bottom: '15%',
-            },
-            overlay: {
-              zIndex: '100'
-            }
-          }}
-          isOpen={this.state.showModal}
-          contentLabel="Create Task Modal">
-          <Form>
-            <h1>{this.props.type === 'edit' ? 'Edit Task' : 'New Task'}</h1>
-            <Form.Group>
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                size="md"
-                type="text"
-                placeholder="Ex. Reach out to school counselors"
-                defaultValue={this.props.type === 'edit' ? this.state.task : ''}
-                onChange={this.handleTaskChange}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Deadline</Form.Label>
-              <DateTimePicker
-                onChange={this.handleDeadlineChange}
-                value={this.state.deadline}
-                disableClock={true}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Assign to (Individual)</Form.Label>
-              {currentAssigned}
-              <Select
-                options={internOptions}
-                isMulti={true}
-                onChange={this.handleAssignedToChange}
-                isSearchable={true}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Assign to (Team)</Form.Label>
-              {currentTeams}
-              <Select
-                options={teamOptions}
-                isMulti={true}
-                onChange={this.handleAssignedToTeamChange}
-                isSearchable={true}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Link</Form.Label>
-              <Form.Control
-                size="md"
-                type="text"
-                placeholder="Google Drive, Website, etc..."
-                defaultValue={this.props.type === 'edit' ? this.state.links : ''}
-                onChange={this.handleLinksChange}
-              />
-            </Form.Group>
-
+          show={this.state.showModal}
+          onHide={this.handleCloseModal}
+          keyboard={false}
+          backdrop="static"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>{this.props.type === 'edit' ? "Edit Task" : "New Task"}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group>
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  size="md"
+                  type="text"
+                  placeholder="Ex. Reach out to school counselors"
+                  defaultValue={this.props.type === 'edit' ? this.state.task : ''}
+                  onChange={this.handleTaskChange}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Deadline</Form.Label>
+                <DateTimePicker
+                  onChange={this.handleDeadlineChange}
+                  value={this.state.deadline}
+                  disableClock={true}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Assign to (Individual)</Form.Label>
+                {currentAssigned}
+                <Select
+                  options={internOptions}
+                  isMulti={true}
+                  onChange={this.handleAssignedToChange}
+                  isSearchable={true}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Assign to (Team)</Form.Label>
+                {currentTeams}
+                <Select
+                  options={teamOptions}
+                  isMulti={true}
+                  onChange={this.handleAssignedToTeamChange}
+                  isSearchable={true}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Link</Form.Label>
+                <Form.Control
+                  size="md"
+                  type="text"
+                  placeholder="Google Drive, Website, etc..."
+                  defaultValue={this.props.type === 'edit' ? this.state.links : ''}
+                  onChange={this.handleLinksChange}
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="danger" type="button" onClick={this.handleCloseModal}>Cancel</Button>
             {this.props.type === 'edit' ?
-              <button type="button" onClick={this.editTask}>Save Changes</button>
+              <Button variant="primary" type="button" onClick={this.editTask}>Save Changes</Button>
               :
-              <button type="button" onClick={this.createTask}>Create Task</button>
+              <Button variant="primary" type="button" onClick={this.createTask}>Create Task</Button>
             }
-            <button type="button" onClick={this.handleCloseModal}>Close</button>
-          </Form>
+          </Modal.Footer>
         </Modal>
       </>
     )

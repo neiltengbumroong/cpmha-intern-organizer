@@ -6,7 +6,8 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from "@fullcalendar/interaction";
 import moment from 'moment';
-import Modal from 'react-modal';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 import TaskForm from './TaskForm';
 import EventForm from './EventForm';
 import { Link } from 'react-router-dom';
@@ -134,31 +135,28 @@ class Calendar extends Component {
             eventDidMount={this.showEvent}
           />
           <Modal
-            style={{
-              content: {
-                left: '20%',
-                right: '20%',
-                top: '15%',
-                bottom: '15%',
-              },
-              overlay: {
-                zIndex: '100'
-              } 
-            }}
-            isOpen={this.state.showModal}
-            contentLabel="Manage Event Modal">
-              <h2>Event Information</h2>
+            show={this.state.showModal}
+            onHide={this.handleCloseModal}
+            keyboard={false}
+            backdrop="static"
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Event Information</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
               <h4>{this.state.eventName}</h4>
               <p>{this.state.eventStart} - {this.state.eventEnd}</p>
               <p>{this.state.eventDescription}</p>
+            </Modal.Body>
+            <Modal.Footer>
               <EventForm 
                 type={"edit"}
                 id={this.state.eventId}
                 closeModal={this.handleCloseModal}
                 loadData={this.loadData}
               />
-              <button type="button" onClick={this.deleteEvent}>Delete Event</button>
-              <button type="button" onClick={this.handleCloseModal}>Close</button>
+              <Button variant="danger" type="button" onClick={this.deleteEvent}>Delete Event</Button>
+            </Modal.Footer>
           </Modal>
         </div>
       </div>         
