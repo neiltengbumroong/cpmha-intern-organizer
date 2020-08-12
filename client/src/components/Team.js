@@ -18,10 +18,9 @@ class Team extends Component {
       isLoading: true
     }
 
-    this.updateData = this.updateData.bind(this);
   }
 
-  updateData() {
+  updateData = () => {
     this.setState({ isLoading: this.state.isLoading });
   }
 

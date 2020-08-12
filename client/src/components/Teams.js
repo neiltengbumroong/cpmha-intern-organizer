@@ -14,11 +14,9 @@ class Teams extends Component {
       teams: [],
       isLoading: true
     }
-
-    this.loadTeams = this.loadTeams.bind(this);
   }
 
-  loadTeams() {
+  loadTeams = () => {
     axios.get(TEAM_GET_API)
       .then(res => {
         this.setState({ 

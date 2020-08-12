@@ -33,48 +33,34 @@ class TeamForm extends Component {
       showModal: false,
       isLoading: true
     }
-
-    this.handleNameChange = this.handleNameChange.bind(this);
-    this.handleMembersChange = this.handleMembersChange.bind(this);
-    this.handleLeaderChange = this.handleLeaderChange.bind(this);
-    this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
-
-    this.createTeam = this.createTeam.bind(this);
-    this.editTeam = this.editTeam.bind(this);
-    this.getTeamData = this.getTeamData.bind(this);
-    this.loadInterns = this.loadInterns.bind(this);
-    this.removeCurrentMember = this.removeCurrentMember.bind(this);
-    this.addTeamToInterns = this.addTeamToInterns.bind(this);
-    this.handleOpenModal = this.handleOpenModal.bind(this);
-    this.handleCloseModal = this.handleCloseModal.bind(this);
   }
 
-  handleNameChange(event) {
+  handleNameChange = event => {
     this.setState({ name: event.target.value });
   }
-  handleMembersChange(event) {
+  handleMembersChange = event => {
     this.setState({ members: event ? event.map(x => x) : [] });
   }
-  handleLeaderChange(data) {
+  handleLeaderChange = data => {
     let tempData = data;
     tempData['id'] = data['value'];
     tempData['name'] = data['label'];
     this.setState({ leader: tempData });
   }
-  handleDescriptionChange(event) {
+  handleDescriptionChange = event => {
     this.setState({ description: event.target.value });
   }
 
-  handleOpenModal() {
+  handleOpenModal = () => {
     this.setState({ showModal: true });
   }
 
-  handleCloseModal() {
+  handleCloseModal = () => {
     this.setState({ showModal: false });
   }
 
   // get basic team data and set states accordingly
-  getTeamData() {
+  getTeamData = () => {
     this.setState({ isLoading: true });
     axios.post(TEAM_GET_SINGLE_API, { id: this.props.id })
       .then(res => {
@@ -94,7 +80,7 @@ class TeamForm extends Component {
   }
 
   // get possible interns to be added to team
-  loadInterns() {
+  loadInterns = () => {
     this.setState({ isLoading: true });
     axios.get(INTERN_GET_API)
       .then(res => {
@@ -110,16 +96,15 @@ class TeamForm extends Component {
   }
 
   // remove a current member from react-select
-  removeCurrentMember(id) {
+  removeCurrentMember = id => {
     var array = [...this.state.currentMembers];
     var filteredArray = array.filter(function (el) { return el.id != id; });
     this.setState({ currentMembers: filteredArray });
   }
 
   // add team to interns' "teams" attribute
-  addTeamToInterns(data) {
+  addTeamToInterns = data => {
     data.members.forEach(intern => {
-      console.log(intern);
       let teamToUpdate = {
         internId: intern.id,
         teamObject: { id: data._id || this.state.id, name: data.name || this.state.name }
@@ -129,7 +114,7 @@ class TeamForm extends Component {
   }
 
   // remove team from interns' team attribute if they are no longer in it
-  removeTeamFromInterns(data) {
+  removeTeamFromInterns = data => {
     data.forEach(intern => {
       let teamToUpdate = {
         internId: intern.id,
@@ -140,7 +125,7 @@ class TeamForm extends Component {
   }
 
   // create a team 
-  createTeam() {
+  createTeam = () => {
     const teamToCreate = {
       name: this.state.name,
       members: this.state.members ? this.state.members.map(mapToDatabaseReadable) : [],
@@ -158,7 +143,7 @@ class TeamForm extends Component {
   }
 
   // edit a team
-  editTeam() {
+  editTeam = () => {
     const teamToUpdate = {
       id: this.state.id,
       name: this.state.name,

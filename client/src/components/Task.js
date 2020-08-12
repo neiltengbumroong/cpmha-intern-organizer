@@ -16,15 +16,10 @@ class Task extends Component {
       completed: false,
       isLoading: true
     }
-    this.getTask = this.getTask.bind(this);
-    this.toggleCompleted = this.toggleCompleted.bind(this);
-    this.deleteTask = this.deleteTask.bind(this);
-    this.deleteTaskFromTeam = this.deleteTaskFromTeam.bind(this);
-    this.deleteTaskFromIntern = this.deleteTaskFromIntern.bind(this);
   }
 
   // get task data to display and update state
-  getTask() {
+  getTask = () => {
     this.setState({ isLoading: true });
     axios.post(TASK_GET_SINGLE_API, { id: this.props.id })
       .then(res => {
@@ -40,7 +35,7 @@ class Task extends Component {
   }
 
   // loop through each team assigned to this task and remove it
-  deleteTaskFromTeam(taskId) {
+  deleteTaskFromTeam = taskId => {
     this.state.task.assignedToTeam.forEach(team => {
       const taskToDelete = {
         taskId: taskId,
@@ -51,7 +46,7 @@ class Task extends Component {
   }
 
   // loop through each intern assigned to this task and remove it
-  deleteTaskFromIntern(taskId) {
+  deleteTaskFromIntern = taskId => {
     this.state.task.assignedTo.forEach(intern => {
       const taskToDelete = {
         taskId: taskId,
@@ -62,7 +57,7 @@ class Task extends Component {
   }
 
   // delete task document from collection
-  deleteTask(taskId) {
+  deleteTask = taskId => {
     const id = { id: taskId };
     axios.post(TASKS_DELETE_API, id)
       .then(() => {
@@ -72,13 +67,13 @@ class Task extends Component {
   }
 
   // delete task systematically - from team, then intern, then intern collection
-  deleteTaskFull(taskId) {
+  deleteTaskFull = taskId => {
     this.deleteTaskFromTeam(taskId);
     this.deleteTaskFromIntern(taskId);
     this.deleteTask(taskId);
   }
 
-  toggleCompleted() {
+  toggleCompleted = () => {
     this.setState({ completed: !this.state.completed }, () => {
       axios.post(TASK_TOGGLE_COMPLETE_API, { taskId: this.state.task._id, completed: this.state.completed });
     });

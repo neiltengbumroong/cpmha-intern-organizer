@@ -39,26 +39,6 @@ class TaskForm extends Component {
       teams: [],
       isLoading: true
     }
-
-    // this.handleTaskChange = this.handleTaskChange.bind(this);
-    // this.handleDeadlineChange = this.handleDeadlineChange.bind(this);
-    // this.handlePriorityChange = this.handlePriorityChange.bind(this);
-    // this.handleDateAssignedChange = this.handleDateAssignedChange.bind(this);
-    // this.handleAssignedToChange = this.handleAssignedToChange.bind(this);
-    // this.handleAssignedToTeamChange = this.handleAssignedToTeamChange.bind(this);
-    // this.handleCompletedChange = this.handleCompletedChange.bind(this);
-    // this.handleLinksChange = this.handleLinksChange.bind(this);
-
-    // this.createTask = this.createTask.bind(this);
-    // this.editTask = this.editTask.bind(this);
-    // this.loadData = this.loadData.bind(this);
-    // this.removeCurrentAssigned = this.removeCurrentAssigned.bind(this);
-    // this.removeCurrentTeam = this.removeCurrentTeam.bind(this);
-    // this.addTaskToInterns = this.addTaskToInterns.bind(this);
-    // this.addTaskToTeams = this.addTaskToTeams.bind(this);
-    // this.handleOpenModal = this.handleOpenModal.bind(this);
-    // this.handleCloseModal = this.handleCloseModal.bind(this);
-
   }
 
   handleTaskChange = event => {

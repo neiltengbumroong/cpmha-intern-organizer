@@ -11,11 +11,9 @@ class Main extends Component {
     this.state = {
       update: true
     }
-
-    this.updateMain = this.updateMain.bind(this);
   }
 
-  updateMain() {
+  updateMain = () => {
     console.log("main updated");
     this.setState({ update: true });
   }

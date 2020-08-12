@@ -16,12 +16,9 @@ class Tasks extends Component {
       tasks: [],
       isLoading: false
     }
-
-    this.loadTasks = this.loadTasks.bind(this);
-   
   }
 
-  loadTasks() {
+  loadTasks = () => {
     axios.get(TASKS_GET_API)
       .then(res => {
         this.setState({ 

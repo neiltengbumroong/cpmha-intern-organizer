@@ -12,10 +12,9 @@ class Interns extends Component {
       interns: [],
       isLoading: true
     }
-    this.loadInterns = this.loadInterns.bind(this);
   }
 
-  loadInterns() {
+  loadInterns = () => {
     axios.get(INTERN_GET_API)
       .then(res => {
         this.setState({ 

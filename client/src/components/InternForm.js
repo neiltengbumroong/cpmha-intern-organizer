@@ -29,53 +29,35 @@ class InternForm extends Component {
       // teamsOptions: [],
       showModal: false
     }
-
-    this.handleNameChange = this.handleNameChange.bind(this);
-    this.handleSchoolChange = this.handleSchoolChange.bind(this);
-    this.handleMajorChange = this.handleMajorChange.bind(this);
-    this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handleDateJoinedChange = this.handleDateJoinedChange.bind(this);
-    this.createIntern = this.createIntern.bind(this);
-    // this.loadTeams = this.loadTeams.bind(this);
-    // this.addInternToTeams = this.addInternToTeams.bind(this);
-    // this.handleTeamsChange = this.handleTeamsChange.bind(this);
-    this.editIntern = this.editIntern.bind(this);
-    this.getInternData = this.getInternData.bind(this);
-
-    this.handleOpenModal = this.handleOpenModal.bind(this);
-    this.handleCloseModal = this.handleCloseModal.bind(this);
   }
 
-  handleNameChange(event) {
+  handleNameChange = event => {
     this.setState({ name: event.target.value });
   }
-  handleSchoolChange(event) {
+  handleSchoolChange = event => {
     this.setState({ school: event.target.value });
   }
-  handleMajorChange(event) {
+  handleMajorChange = event => {
     this.setState({ major: event.target.value });
   }
-  handleEmailChange(event) {
+  handleEmailChange = event => {
     this.setState({ email: event.target.value });
   }
-  handleDateJoinedChange(date) {
+  handleDateJoinedChange = date => {
     this.setState({ dateJoined: date });
   }
-  // handleTeamsChange(event) {
-  //   this.setState({ teams: event ? event.map(x => x.value) : [] });
-  // }
 
   // set state with props here because for some reason they don't show up in constructor
-  handleOpenModal() {
+  handleOpenModal = () => {
     this.setState({ showModal: true });
   }
   
-  handleCloseModal() {
+  handleCloseModal = () => {
     this.setState({ showModal: false });
   }
 
   // get intern data from database to pre-populate form for editing 
-  getInternData() {
+  getInternData = () => {
     this.setState({ isLoading: true });
     axios.post(INTERN_GET_SINGLE_API, { id: this.props.id })
       .then((res) => {
@@ -92,26 +74,8 @@ class InternForm extends Component {
       })
   }
 
-  // loadTeams() {
-  //   axios.get(TEAM_GET_API)
-  //     .then(res => {
-  //       this.setState({ teamsOptions: res.data })
-  //     })
-  // }
-
-  // addInternToTeams(data) {
-  //   for (let i = 0; i < data.teams.length; i++) {
-  //     let internToUpdate = {
-  //       id: data.teams[i],
-  //       internId: data._id
-  //     }
-  //     axios.post(TEAM_UPDATE_MEMBERS_API, internToUpdate);
-  //   }
-  // }
-
   // create object with intern data, then post to database
-  createIntern(event) {
-    event.preventDefault();
+  createIntern = event => {
     const internToCreate = {
       id: this.state.id,
       name: this.state.name,
@@ -136,7 +100,7 @@ class InternForm extends Component {
   }
 
   // create object to update document
-  editIntern(event) {
+  editIntern = event => {
     event.preventDefault();
     const internToEdit = {
       id: this.state.id,
@@ -145,7 +109,6 @@ class InternForm extends Component {
       major: this.state.major,
       email: this.state.email,
       joined: this.state.dateJoined,
-      // teams: this.state.teams
     }
 
 
@@ -170,14 +133,6 @@ class InternForm extends Component {
 
   render() {
     Modal.setAppElement("body");
-    // let options = [];
-    // let teams = this.state.teamsOptions;
-    // for (let i = 0; i < teams.length; i++) {
-    //   options.push({
-    //     value: teams[i]._id,
-    //     label: teams[i].name,
-    //   })
-    // }
     return (
       <>
         <button onClick={this.handleOpenModal}>{this.props.type === 'create' ? "Create Intern" : "Edit Profile"}</button>
@@ -248,23 +203,10 @@ class InternForm extends Component {
             <Form.Group>
               <Form.Label>Date Joined </Form.Label>
               <DatePicker
-                selected={this.props.type === 'edit' ? this.state.dateJoined : new Date()}
+                selected={this.props.type === 'edit' ? new Date(this.state.dateJoined) : new Date()}
                 onChange={this.handleDateJoinedChange}
               />
             </Form.Group>
-{/* 
-            {this.props.type === 'create' ? 
-              <Form.Group>
-                <Form.Label>Add Teams </Form.Label>
-                <Select 
-                  options={options} 
-                  isMulti={true} 
-                  onChange={this.handleTeamsChange}
-                />
-              </Form.Group>       
-              :
-                null
-            } */}
             
             {this.props.type === 'edit' ? 
               <button type="button" onClick={this.editIntern}>Save Changes</button>

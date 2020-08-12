@@ -18,26 +18,18 @@ class Intern extends Component {
       internId: props.location.state.id,
       showEditModal: false
     }
-    this.getIntern = this.getIntern.bind(this);
-    this.deleteInternFull = this.deleteInternFull.bind(this);
-    this.deleteIntern = this.deleteIntern.bind(this);
-    this.deleteInternFromTask = this.deleteInternFromTask.bind(this);
-    this.deleteInternFromTeam = this.deleteInternFromTeam.bind(this);
-
-    this.handleOpenModal = this.handleOpenModal.bind(this);
-    this.handleCloseModal = this.handleCloseModal.bind(this);
   }
 
-  handleOpenModal() {
+  handleOpenModal = () => {
     this.setState({ showModal: true });
   }
   
-  handleCloseModal() {
+  handleCloseModal = () => {
     this.setState({ showModal: false });
   }
 
   // get intern data and set the state
-  getIntern() {
+  getIntern = () => {
     this.setState({ isLoading: true });
     axios.post(INTERN_GET_SINGLE_API, { id: this.state.internId })
       .then(res => {
@@ -49,7 +41,7 @@ class Intern extends Component {
   }
 
   // remove intern from tasks' assignedTo attribute upon deletion
-  deleteInternFromTask(internId) {
+  deleteInternFromTask = internId => {
     this.state.intern.tasks.forEach(task => {
       const internToDelete = {
         internId: internId,
@@ -60,7 +52,7 @@ class Intern extends Component {
   }
 
   // remove intern from teams' tasks attribute upon deletion
-  deleteInternFromTeam(internId) {
+  deleteInternFromTeam = internId => {
     this.state.intern.teams.forEach(team => {
       const internToDelete = {
         internId: internId,
@@ -71,12 +63,12 @@ class Intern extends Component {
   }
 
   // delete intern document from collection 
-  deleteIntern(internId) {
+  deleteIntern = internId => {
     axios.post(INTERNS_DELETE_API, { id: internId })
   }
 
   // when called, delete systematically from task, team, and then intern collections
-  deleteInternFull(internId) {
+  deleteInternFull = internId => {
     this.deleteInternFromTask(internId);
     this.deleteInternFromTeam(internId);
     this.deleteIntern(internId);
