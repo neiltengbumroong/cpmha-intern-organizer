@@ -11,6 +11,7 @@ import Button from 'react-bootstrap/Button';
 import TaskForm from './TaskForm';
 import EventForm from './EventForm';
 import { Link } from 'react-router-dom';
+import Header from './Header';
 
 import '../css/Calendar.css';
 
@@ -117,10 +118,11 @@ class Calendar extends Component {
     let dataArr = tasksArr.concat(eventsArr);
     
     return (
+      <>
+      <Header/>
       <div className="calendar-wrapper">
         <TaskForm updateData={this.loadData.bind(this)}/>
         <EventForm loadData={this.loadData}/>
-        <Link to='/'>Home</Link>
         <div style={{padding: "5%"}}>
           <FullCalendar
             plugins={[ interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin ]}
@@ -159,7 +161,8 @@ class Calendar extends Component {
             </Modal.Footer>
           </Modal>
         </div>
-      </div>         
+      </div>  
+      </>       
     )
   }
 }

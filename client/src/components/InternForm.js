@@ -10,6 +10,8 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import "react-datepicker/dist/react-datepicker.css";
 
+import '../css/custom.scss';
+
 const INTERN_POST_API = 'http://localhost:5000/api/interns/post';
 const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
 const INTERN_UPDATE_API = 'http://localhost:5000/api/interns/update';
@@ -135,7 +137,7 @@ class InternForm extends Component {
   render() {
     return (
       <>
-        <Button variant="info" onClick={this.handleOpenModal}>{this.props.type === 'create' ? "Create Intern" : "Edit Profile"}</Button>
+        <Button bsClass="btn-test" onClick={this.handleOpenModal}>{this.props.type === 'create' ? "Create Intern" : "Edit Profile"}</Button>
         <Modal 
           show={this.state.showModal}
           onHide={this.handleCloseModal}

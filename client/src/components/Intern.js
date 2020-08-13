@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import InternForm from './InternForm';
+import Header from './Header';
 import { Link } from "react-router-dom";
 import moment from 'moment';
-import Jumbotron from 'react-bootstrap/Jumbotron';
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
+import { Jumbotron, Container, Row, Button, Col } from 'react-bootstrap';
 
 const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
 const INTERNS_DELETE_API = 'http://localhost:5000/api/interns/delete';
@@ -88,20 +87,42 @@ class Intern extends Component {
     
     if (!this.state.isLoading) {
       intern = (
-        <Jumbotron fluid>
-          <Container className="text-center" fluid>
-            <h1>{internData.name}</h1>
-            <p>{internData.email}</p>
-            <span>School: {internData.school} &nbsp; Major: {internData.major}</span>
-            <p>Weekly Hours Worked: {internData.weeklyHours}</p>
-            <p>Total Hours Worked: {internData.totalHours}</p>
+        <>
+        <Header/>
+        <Jumbotron>
+          <Container className="text-center">
+            <Row>
+              <Col><h1>{internData.name}</h1></Col>   
+            </Row>
+            <Row className="pb-3">
+              <Col><h5>{internData.email}</h5></Col>
+            </Row>
+            <Row className="pt-3 pb-5">
+              <Col>
+                <h1>{internData.weeklyHours}</h1>
+                <p>Hours worked this week</p>
+              </Col>
+              <Col>
+                <h1>{internData.totalHours}</h1>
+                <p>Hours worked total</p>
+              </Col>
+              <Col>
+                <h1>{internData.tasks.length}</h1>
+                <p>Tasks completed</p>
+              </Col>
+              <Col>
+                <h1>{moment.duration(moment(new Date()).diff(internData.joined)).days()}</h1>
+                <p>Days at CPMHA</p>
+              </Col>
+            </Row>     
             <InternForm 
               type={"edit"}
               id={internData._id}
             />{' '}
             <Link to="/"><Button type="button" variant="danger"onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</Button></Link>
-          </Container>     
+          </Container>
         </Jumbotron>
+        </>
       )
     }
 

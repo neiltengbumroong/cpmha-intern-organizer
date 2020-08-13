@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Modal from 'react-bootstrap/Modal';
 import Select from 'react-select';
-import Form from 'react-bootstrap/Form';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
+import { Form, Modal, Col, Button } from 'react-bootstrap';
 import DateTimePicker from 'react-datetime-picker';
 import { mapToDatabaseReadable } from '../utils';
+import '../css/Calendar.css';
+
+
 
 const TASK_POST_API = 'http://localhost:5000/api/tasks/post';
 const TASK_UPDATE_API = 'http://localhost:5000/api/tasks/update';
@@ -325,8 +325,9 @@ class TaskForm extends Component {
     }
 
     return (
+      
       <>
-        <Button variant="info" onClick={this.handleOpenModal}>{this.props.type === 'edit' ? "Edit Task" : "Create Task"}</Button>
+        <Button onClick={this.handleOpenModal}>{this.props.type === 'edit' ? "Edit Task" : "Create Task"}</Button>
         <Modal
           show={this.state.showModal}
           onHide={this.handleCloseModal}
@@ -349,7 +350,7 @@ class TaskForm extends Component {
                 />
               </Form.Group>
               <Form.Group>
-                <Form.Label>Deadline</Form.Label>
+                <Form.Label>Deadline</Form.Label><br/>
                 <DateTimePicker
                   onChange={this.handleDeadlineChange}
                   value={this.state.deadline}
