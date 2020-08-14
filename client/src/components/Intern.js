@@ -4,7 +4,9 @@ import InternForm from './InternForm';
 import Header from './Header';
 import { Link } from "react-router-dom";
 import moment from 'moment';
-import { Jumbotron, Container, Row, Button, Col } from 'react-bootstrap';
+import { Jumbotron, Container, Row, Button, Col, Card } from 'react-bootstrap';
+
+import '../css/Intern.css';
 
 const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
 const INTERNS_DELETE_API = 'http://localhost:5000/api/interns/delete';
@@ -89,7 +91,7 @@ class Intern extends Component {
       intern = (
         <>
         <Header/>
-        <Jumbotron>
+        <Jumbotron className="intern-jumbo-wrapper">
           <Container className="text-center">
             <Row>
               <Col><h1>{internData.name}</h1></Col>   
@@ -122,6 +124,18 @@ class Intern extends Component {
             <Link to="/"><Button type="button" variant="danger"onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</Button></Link>
           </Container>
         </Jumbotron>
+        <Card className="col 1" style={{width: "30%"}}>
+          <Card.Body>
+            <Card.Title>Intern Details</Card.Title>
+            <Card.Text>
+              <p><strong>Email: </strong> {internData.email}</p>
+              <p><strong>School: </strong> {internData.school}</p>
+              <p><strong>Major: </strong> {internData.major}</p>
+              <p><strong>Joined: </strong> {moment(internData.joined).format('MMMM Do, YYYY')}</p>
+              
+            </Card.Text>
+          </Card.Body>
+        </Card>
         </>
       )
     }

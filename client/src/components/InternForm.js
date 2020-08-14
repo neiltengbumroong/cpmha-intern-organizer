@@ -137,7 +137,7 @@ class InternForm extends Component {
   render() {
     return (
       <>
-        <Button bsClass="btn-test" onClick={this.handleOpenModal}>{this.props.type === 'create' ? "Create Intern" : "Edit Profile"}</Button>
+        <Button onClick={this.handleOpenModal}>{this.props.type === 'create' ? "Create Intern" : "Edit Profile"}</Button>
         <Modal 
           show={this.state.showModal}
           onHide={this.handleCloseModal}

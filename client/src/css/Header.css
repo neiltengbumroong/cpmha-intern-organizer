@@ -1,0 +1,9 @@
+.header-bg {
+  background-color: rgba(190,173,223, 0.7);
+  width: 100%;
+}
+
+.img-responsive {
+  max-width: 90%;
+  max-height: 90%;
+}
