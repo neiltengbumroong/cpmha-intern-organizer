@@ -19,7 +19,8 @@ class EventForm extends Component {
       event: '',
       start: '',
       end: '',
-      description: ''
+      description: '',
+      link: ''
     }
   }
 
@@ -34,6 +35,9 @@ class EventForm extends Component {
   }
   handleDescriptionChange = event => {
     this.setState({ description: event.target.value });
+  }
+  handleLinkChange = event => {
+    this.setState({ link: event.target.value });
   }
   handleOpenModal = () => {
     this.setState({ showModal: true });
@@ -50,7 +54,8 @@ class EventForm extends Component {
           event: res.data.event,
           start: res.data.start,
           end: res.data.end,
-          description: res.data.description
+          description: res.data.description,
+          link: res.data.link
         })
       })
   }
@@ -61,6 +66,7 @@ class EventForm extends Component {
       start: this.state.start,
       end: this.state.end,
       description: this.state.description,
+      link: this.state.link
     }
     axios.post(EVENT_POST_API, eventToCreate)
       .then(() => {
@@ -80,6 +86,7 @@ class EventForm extends Component {
       start: this.state.start,
       end: this.state.end,
       description: this.state.description,
+      link: this.state.link
     }
     axios.post(EVENT_UPDATE_API, eventToUpdate);
     this.handleCloseModal();
@@ -88,6 +95,7 @@ class EventForm extends Component {
   }
 
   componentDidMount() {
+    // set time for date to be one hour past the current date
     var newEnd = new Date();
     newEnd.setHours(newEnd.getHours() + 1);
     this.setState({
@@ -111,11 +119,12 @@ class EventForm extends Component {
           onHide={this.handleCloseModal}
           keyboard={false}
           backdrop="static"
+          size="lg"
         >
           <Modal.Header closeButton>
             <Modal.Title><h1>{this.props.type === 'edit' ? "Edit Event" : "New Event"}</h1></Modal.Title>
           </Modal.Header>
-          <Modal.Body>
+          <Modal.Body className="modal-body ">
             <Form>     
               <Form.Group>          
                 <Form.Label>Event</Form.Label>
@@ -130,7 +139,7 @@ class EventForm extends Component {
               <Form.Row>
                 <Col>
                 <Form.Group>
-                  <Form.Label>Start</Form.Label>
+                  <Form.Label>Start &nbsp;</Form.Label>
                   <DateTimePicker
                     onChange={this.handleStartChange}
                     value={new Date(this.state.start)}
@@ -140,7 +149,7 @@ class EventForm extends Component {
                 </Col>
                 <Col>
                   <Form.Group>
-                    <Form.Label>End</Form.Label>
+                    <Form.Label>End &nbsp;</Form.Label>
                     <DateTimePicker
                       onChange={this.handleEndChange}
                       value={new Date(this.state.end)}
@@ -157,6 +166,16 @@ class EventForm extends Component {
                     placeholder="Ex. Go over weekly updates and progress"
                     defaultValue={this.props.type === 'edit' ? this.state.description : ''}  
                     onChange={this.handleDescriptionChange}
+                  />          
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Link</Form.Label>
+                  <Form.Control 
+                    size="md"
+                    type="text" 
+                    placeholder="Ex. Zoom Link"
+                    defaultValue={this.props.type === 'edit' ? this.state.link : ''}  
+                    onChange={this.handleLinkChange}
                   />          
               </Form.Group> 
               <Modal.Footer>

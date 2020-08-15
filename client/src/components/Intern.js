@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import InternForm from './InternForm';
 import Header from './Header';
+import Task from './Task';
 import { Link } from "react-router-dom";
+import { getAllInterns } from '../utils/index.js';
 import moment from 'moment';
 import { Jumbotron, Container, Row, Button, Col, Card } from 'react-bootstrap';
-
 import '../css/Intern.css';
 
 const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
+const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
 const INTERNS_DELETE_API = 'http://localhost:5000/api/interns/delete';
 const INTERNS_DELETE_FROM_TEAM_API = 'http://localhost:5000/api/teams/delete-intern';
 const INTERNS_DELETE_FROM_TASK_API = 'http://localhost:5000/api/tasks/delete-intern';
@@ -18,6 +20,8 @@ class Intern extends Component {
     super(props);
     this.state = {
       intern: [],
+      interns: [],
+      tasks: [],
       isLoading: true,
       internId: props.location.state.id,
       showEditModal: false
@@ -33,15 +37,26 @@ class Intern extends Component {
   }
 
   // get intern data and set the state
-  getIntern = () => {
-    this.setState({ isLoading: true });
+  getIntern = async () => {
     axios.post(INTERN_GET_SINGLE_API, { id: this.state.internId })
       .then(res => {
         this.setState({ intern: res.data });
+        this.getInternTasks();
       })
-      .then(() => {
-        this.setState({ isLoading: false });
+    getAllInterns()
+      .then(res => {
+        this.setState({ interns: res });
       })
+
+  }
+
+  getInternTasks = () => {
+    this.state.intern.tasks.forEach(task => {
+      axios.post(TASK_GET_SINGLE_API, { id: task.id })
+        .then(res => {
+          this.setState({ tasks: [...this.state.tasks, res.data]});
+        })
+    })
   }
 
   // remove intern from tasks' assignedTo attribute upon deletion
@@ -82,15 +97,59 @@ class Intern extends Component {
     this.getIntern();
   }
 
-  render() {
-    let internData = this.state.intern;
-    let intern = null;
+  componentDidUpdate() {
+    // check if the props for the intern's id are different
+    if (this.state.internId != this.props.location.state.id) {
+      // set new ID and clear out interns and tasks
+      this.setState({ 
+        internId: this.props.location.state.id,
+        intern: [],
+        tasks: []
+      }, () => {
+        // once state is set, scroll to the top of the intern page as well
+        this.getIntern();
+        // window.location.reload();
+        window.scrollTo(0, 0);
+      });    
+    }
+  }
 
+
+  render() {
+    const internData = this.state.intern;
+    let internTeams = null;
+    let internComplete = [];
+    let internIncomplete = [];
+
+    // append teams into a comma separated list of links
+    if (internData.teams) {
+      internTeams = internData.teams.map((team, i) => (
+        <span key={i}>
+          { i > 0 && ", "}
+          <Link to={{
+            pathname: '/teams/' + team.name,
+            state: { id: team.id }
+          }}>{team.name}</Link>
+        </span>
+      ))
+    }
+
+    // separate tasks into groups based on completion status
+    if (this.state.tasks) {
+      this.state.tasks.forEach(task => {
+        if (task.completed) {
+          internComplete.push(task);
+        } else {
+          internIncomplete.push(task);
+        }
+      })
+    }
     
-    if (!this.state.isLoading) {
-      intern = (
-        <>
+    return (
+      <div>
         <Header/>
+        {internData.tasks ? 
+        <>
         <Jumbotron className="intern-jumbo-wrapper">
           <Container className="text-center">
             <Row>
@@ -109,11 +168,11 @@ class Intern extends Component {
                 <p>Hours worked total</p>
               </Col>
               <Col>
-                <h1>{internData.tasks.length}</h1>
-                <p>Tasks completed</p>
+                <h1>{internComplete.length}</h1>
+                <p>Tasks Completed</p>
               </Col>
               <Col>
-                <h1>{moment.duration(moment(new Date()).diff(internData.joined)).days()}</h1>
+                <h1>{Math.round(moment.duration(moment(new Date()).diff(internData.joined)).asDays())}</h1>
                 <p>Days at CPMHA</p>
               </Col>
             </Row>     
@@ -121,28 +180,69 @@ class Intern extends Component {
               type={"edit"}
               id={internData._id}
             />{' '}
-            <Link to="/"><Button type="button" variant="danger"onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</Button></Link>
+            <Button variant="info">Log Work Hours</Button>
           </Container>
         </Jumbotron>
-        <Card className="col 1" style={{width: "30%"}}>
-          <Card.Body>
-            <Card.Title>Intern Details</Card.Title>
-            <Card.Text>
-              <p><strong>Email: </strong> {internData.email}</p>
-              <p><strong>School: </strong> {internData.school}</p>
-              <p><strong>Major: </strong> {internData.major}</p>
-              <p><strong>Joined: </strong> {moment(internData.joined).format('MMMM Do, YYYY')}</p>
-              
-            </Card.Text>
-          </Card.Body>
-        </Card>
+        <Container fluid>
+          <Row>
+            <Col className="col-4">
+              <Card>
+                <Card.Body>
+                  <Card.Title><h3>Intern Details</h3></Card.Title>
+                    <p><strong>Email: </strong> {internData.email}</p>
+                    <p><strong>School: </strong> {internData.school}</p>
+                    <p><strong>Major: </strong> {internData.major}</p>
+                    <p><strong>Joined: </strong> {moment(internData.joined).format('MMMM Do, YYYY')}</p>
+                    <p><strong>Teams: {internTeams}</strong> </p>
+                </Card.Body>
+              </Card>
+              <Card className="mt-5">
+              <Card.Body>
+                <Card.Title><h3>Other Interns</h3></Card.Title>
+                  {this.state.interns.map((intern, i) => (
+                    intern._id === this.state.internId ? '' : 
+                    <div key={i}>
+                      <Link to={{
+                        pathname: '/interns/' + intern.name,
+                        state: { id: intern._id }
+                      }}>
+                        {intern.name}
+                      </Link>
+                    </div>
+                    ))
+                  }
+                    
+              </Card.Body>
+            </Card>
+            </Col>
+            <Col className="col-4 text-left scroll-column">
+              <h2>Pending Tasks</h2>
+              {internIncomplete.length > 0 ? internIncomplete.map((task, i) => (
+              <div className="mt-3 mb-3" key={i}>
+                <Task id={task._id} view={'other'}></Task>
+                <hr/>
+              </div>
+            ))
+            : <p>This intern currently has no pending tasks.</p>}
+            </Col>
+            <Col className="col-4 text-left scroll-column">
+              <h2>Completed Tasks</h2>
+              {internComplete.length > 0 ? internComplete.map((task, i) => (
+              <div className="mb-5" key={i}>
+                <Task id={task._id} view={'other'}></Task>
+              </div>
+            ))
+            : <p>This intern has no completed tasks.</p>}
+            </Col>
+          </Row>
+          <hr className="intern-hr"/>
+          <Row className="m-5 justify-content-center">
+             <Link to="/"><Button type="button" variant="danger"onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</Button></Link>
+          </Row>
+        </Container>
         </>
-      )
-    }
-
-    return (
-      <div>
-        {intern}
+        : 
+        <h1>Loading</h1>}
       </div>
     )
   }

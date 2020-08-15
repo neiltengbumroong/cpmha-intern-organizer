@@ -30,6 +30,7 @@ class Calendar extends Component {
       eventStart: '',
       eventEnd: '',
       eventDescription: '',
+      eventLink: '',
       tasks: [],
       events: []
     }
@@ -74,6 +75,7 @@ class Calendar extends Component {
       eventStart: event.extendedProps.start,
       eventEnd: event.extendedProps.end,
       eventDescription: event.extendedProps.description,
+      eventLink: event.extendedProps.link,
       showModal: true 
     });
   }
@@ -110,7 +112,8 @@ class Calendar extends Component {
           name: event.event,
           start: event.start,
           end: event.end,
-          description: event.description
+          description: event.description,
+          link: event.link
         }
       })
     })
@@ -147,8 +150,9 @@ class Calendar extends Component {
             </Modal.Header>
             <Modal.Body>
               <h4>{this.state.eventName}</h4>
-              <p>{this.state.eventStart} - {this.state.eventEnd}</p>
+              <p>{moment(this.state.eventStart).format('MMMM Do YYYY, h:mm a')} - {moment(this.state.eventEnd).format('MMMM Do YYYY, h:mm a')}</p>
               <p>{this.state.eventDescription}</p>
+              <a target="_blank" rel="noopener noreferrer" href={this.state.eventLink}>{this.state.eventLink}</a>
             </Modal.Body>
             <Modal.Footer>
               <EventForm 

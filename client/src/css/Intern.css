@@ -1,3 +1,13 @@
 .intern-jumbo-wrapper {
   /* background-color: rgba(170, 221, 119, 0.1); */
 }
+
+.scroll-column {
+  height: 100vh;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.intern-hr {
+  margin: 5rem 8rem 2rem;
+}
