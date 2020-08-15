@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
-import Form from 'react-bootstrap/Form';
-import Col from 'react-bootstrap/Col';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import DatePicker from 'react-datepicker';
+import { Form, Col, Modal, Button } from 'react-bootstrap';
 import { mapToDatabaseReadable } from '../utils';
 
 
@@ -23,6 +21,7 @@ class TeamForm extends Component {
     this.state = {
       id: this.props.id,
       name: '',
+      created: new Date(),
       members: [], //stores new members by ID
       currentMembers: [], //stores currently selected members 
       oldMembers: [], //stores initial members (retrieved upon mounting)
@@ -50,6 +49,9 @@ class TeamForm extends Component {
   handleDescriptionChange = event => {
     this.setState({ description: event.target.value });
   }
+  handleCreatedChange = date => {
+    this.setState({ created: date });
+  }
 
   handleOpenModal = () => {
     this.setState({ showModal: true });
@@ -71,7 +73,8 @@ class TeamForm extends Component {
           leader: res.data.leader,
           currentLeader: res.data.leader || '',
           description: res.data.description,
-          tasks: res.data.tasks
+          tasks: res.data.tasks,
+          created: res.data.created
         })
       })
       .then(() => {
@@ -131,6 +134,7 @@ class TeamForm extends Component {
       members: this.state.members ? this.state.members.map(mapToDatabaseReadable) : [],
       leader: this.state.leader,
       description: this.state.description,
+      created: this.state.created
     }
 
     // post to team api 
@@ -149,7 +153,8 @@ class TeamForm extends Component {
       name: this.state.name,
       members: this.state.members.map(mapToDatabaseReadable).concat(this.state.currentMembers),
       leader: this.state.leader,
-      description: this.state.description
+      description: this.state.description,
+      created: this.state.created
     }
 
     // post the basic data to the team update API
@@ -301,16 +306,22 @@ class TeamForm extends Component {
                   onChange={this.handleDescriptionChange}
                 />
               </Form.Group>
-              </Form>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="danger" type="button" onClick={this.handleCloseModal}>Cancel</Button>
-              {this.props.type === 'edit' ?
-                <Button variant="primary" type="button" onClick={this.editTeam}>Save Changes</Button>
-                :
-                <Button variant="primary" type="button" onClick={this.createTeam}>Create Team</Button>
-              }
-            
+              <Form.Group>
+                <Form.Label>Date Created &nbsp;</Form.Label><br/>
+                <DatePicker
+                  selected={this.props.type === 'edit' ? new Date(this.state.created) : new Date()}
+                  onChange={this.handleCreatedChange}
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="danger" type="button" onClick={this.handleCloseModal}>Cancel</Button>
+            {this.props.type === 'edit' ?
+              <Button variant="primary" type="button" onClick={this.editTeam}>Save Changes</Button>
+              :
+              <Button variant="primary" type="button" onClick={this.createTeam}>Create Team</Button>
+            }      
           </Modal.Footer>
         </Modal>
       </>

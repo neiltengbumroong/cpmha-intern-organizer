@@ -22,9 +22,8 @@ class Intern extends Component {
       intern: [],
       interns: [],
       tasks: [],
-      isLoading: true,
       internId: props.location.state.id,
-      showEditModal: false
+      showModal: false
     }
   }
 
@@ -117,7 +116,7 @@ class Intern extends Component {
 
   render() {
     const internData = this.state.intern;
-    let internTeams = null;
+    let internTeams = [];
     let internComplete = [];
     let internIncomplete = [];
 

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import Header from './Header';
 import { Link } from "react-router-dom";
 import TeamForm from './TeamForm';
-import Button from 'react-bootstrap/Button';
+import moment from 'moment';
+import { Jumbotron, Container, Row, Button, Col, Card } from 'react-bootstrap';
 
 const TEAMS_GET_SINGLE_API = 'http://localhost:5000/api/teams/get/single';
 const TEAMS_DELETE_API = 'http://localhost:5000/api/teams/delete';
@@ -14,15 +16,12 @@ class Team extends Component {
     super(props);
     this.state = {
       team: [],
+      teams: [],
+      tasks: [],
       teamId: props.location.state.id,
-      showModal: false,
-      isLoading: true
+      showModal: false
     }
 
-  }
-
-  updateData = () => {
-    this.setState({ isLoading: this.state.isLoading });
   }
 
   // get team data and set state
@@ -80,26 +79,83 @@ class Team extends Component {
 
   render() {
     let teamData = this.state.team;
-    let team = null;
+    let teamComplete = [];
+    let teamIncomplete = [];
+    let teamMembers = [];
 
-    if (!this.state.isLoading) {
-      team = (
-      <div>
-        <h3>{teamData.name}</h3>
-        <p>{teamData.members.map(x => x.name)}</p>
-        <TeamForm
-          type={"edit"}
-          id={teamData._id}
-          updateData={this.updateData}
-          updateMain={this.props.updateMain}
-        />{' '}
-        <Link to="/"><Button variant="danger" type="button" onClick={() => this.deleteTeamFull(teamData._id)}>Delete Team</Button></Link>
-      </div>)
+    // append teams into a comma separated list of links
+    if (teamData.members) {
+      teamMembers = teamData.members.map((intern, i) => (
+        <span key={i}>
+          { i > 0 && ", "}
+          <Link to={{
+            pathname: '/interns/' + intern.name,
+            state: { id: intern.id }
+          }}>{intern.name}</Link>
+        </span>
+      ))
     }
+
 
     return (
       <div>
-        {team}
+        <Header/>
+        {teamData.tasks ? 
+        <>
+          <Jumbotron>
+            <Container className="text-center">
+              <Row>
+                <Col><h1>{teamData.name} Team</h1></Col>
+              </Row>
+              <Row className="pt-3 pb-3">
+                <Col><h4>{teamData.description}</h4></Col>
+              </Row>
+              <Row className="pt-5 pb-3">
+                <Col className="pl-5 ml-5">
+                  <h1>{teamComplete.length}</h1>
+                  <p>Tasks Completed</p>
+                </Col>
+                <Col>
+                  <h1>{teamData.members.length}</h1>
+                  <p>Members</p>
+                </Col>
+                <Col className="pr-5 mr-5">
+                  <h1>{Math.round(moment.duration(moment(new Date()).diff(teamData.created)).asDays())}</h1>
+                  <p>Days Old</p>
+                </Col>
+              </Row>
+              <TeamForm
+                type={"edit"}
+                id={teamData._id}
+              />
+            </Container>
+          </Jumbotron>
+          <Container fluid>
+            <Row>
+              <Col className="col-4">
+                <Card>
+                  <Card.Body>
+                    <Card.Title><h3>Team Details</h3></Card.Title>
+                    <p><strong>Leader: </strong> 
+                      <Link to={{
+                        pathname: '/interns/' + teamData.leader.name,
+                        state: { id: teamData.leader.id }
+                      }}>{teamData.leader.name}</Link>
+                    </p>
+                    <p><strong>Members: </strong> {teamMembers}</p>
+                    <p><strong>Created: </strong> {moment(teamData.joined).format('MMMM Do, YYYY')}</p>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </Container>
+          <Row className="m-5 justify-content-center">
+             <Link to="/"><Button type="button" variant="danger"onClick={() => this.deleteTeamFull(teamData._id)}>Delete Team</Button></Link>
+          </Row>
+        </>
+        : 
+        <h1>Loading</h1>}
+        
       </div>
     )
   }

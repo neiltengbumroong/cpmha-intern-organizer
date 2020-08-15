@@ -28,8 +28,6 @@ class InternForm extends Component {
       major: '',
       email: '',
       dateJoined: new Date(),
-      // teams: [],
-      // teamsOptions: [],
       showModal: false
     }
   }
