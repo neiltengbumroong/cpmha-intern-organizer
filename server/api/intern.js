@@ -58,12 +58,27 @@ router.post('/api/interns/update', (req, res) => {
   })
 })
 
+// update intern's activity
+router.post('/api/interns/update-work', (req, res) => {
+  console.log("Adding work: ", req.body);
+  Intern.findOneAndUpdate(
+    { _id: req.body.id },
+    { 
+      $push: { work: req.body.workObject },
+      $inc: { totalHours: req.body.workObject.hours} 
+    },
+    (err, intern) => {
+      res.send(intern);
+    }
+  )
+});
+
 // push task onto tasks array for intern
 router.post('/api/interns/add-task', (req, res) => {
   console.log("Adding task: ", req.body);
   Intern.findOneAndUpdate(
     { _id: req.body.internId },
-    { $addToSet: { tasks: req.body.taskObject } },
+    { $push: { tasks: req.body.taskObject } },
     (err, intern) => {
       res.send(intern);
     }

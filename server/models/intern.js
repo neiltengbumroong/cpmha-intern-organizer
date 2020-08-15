@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Double = require('@mongoosejs/double');
 
 const internSchema = mongoose.Schema({
   name: String,
@@ -6,12 +7,17 @@ const internSchema = mongoose.Schema({
   school: String,
   major: String,
   joined: Date,
+  work: [{
+    work: String,
+    hours: Double,
+    date: Date
+  }],
   tasks: [{
     task: String,
     id: String
   }],
-  weeklyHours: Number,
-  totalHours: Number,
+  weeklyHours: Double,
+  totalHours: Double,
   teams: [{
     name: String,
     id: String

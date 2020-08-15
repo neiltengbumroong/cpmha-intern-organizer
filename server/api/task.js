@@ -11,7 +11,8 @@ router.post('/api/tasks/post', (req, res) => {
     assignedTo: req.body.assignedTo,
     assignedToTeam: req.body.assignedToTeam,
     completed: false,
-    description: req.body.description
+    description: req.body.description,
+    link: req.body.link
   });
 
   task
@@ -71,7 +72,7 @@ router.post('/api/tasks/update', (req, res) => {
         assignedTo: req.body.assignedTo,
         assignedToTeam: req.body.assignedToTeam,
         description: req.body.description,
-        links: req.body.links
+        link: req.body.link
       }
     }
   )

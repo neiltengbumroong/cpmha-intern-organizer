@@ -27,6 +27,7 @@ class InternForm extends Component {
       school: '',
       major: '',
       email: '',
+      work: [],
       dateJoined: new Date(),
       showModal: false
     }
@@ -67,7 +68,7 @@ class InternForm extends Component {
           email: res.data.email,
           school: res.data.school,
           major: res.data.major,
-          dateJoined: res.data.joined
+          dateJoined: res.data.joined, 
         })
       })
       .then(() => {
@@ -84,7 +85,8 @@ class InternForm extends Component {
       major: this.state.major,
       email: this.state.email,
       joined: this.state.dateJoined,
-      teams: []
+      teams: [],
+      work: []
     }
 
     axios.post(INTERN_POST_API, internToCreate)
@@ -141,6 +143,7 @@ class InternForm extends Component {
           onHide={this.handleCloseModal}
           keyboard={false}
           backdrop="static"
+          size="lg"
         >
           <Modal.Header closeButton>
             <Modal.Title>{this.props.type === 'edit' ? "Edit Profile" : "New Intern"}</Modal.Title>

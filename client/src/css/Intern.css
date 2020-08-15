@@ -8,6 +8,12 @@
   overflow-y: scroll;
 }
 
+.activity-scroll-column {
+  height: 50vh;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
 .intern-hr {
   margin: 5rem 8rem 2rem;
 }

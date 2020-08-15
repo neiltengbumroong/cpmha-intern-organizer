@@ -124,9 +124,19 @@ class Task extends Component {
         {taskData.assignedTo ? 
           <div>
             <h5>{taskData.task}</h5>
-            <p>Deadline: {moment(taskData.deadline).format('MMMM Do YYYY, h:mm a')}</p>
-            <p>Assigned to (Individual): {assignedTo}</p>
-            <p>Assigned To (Team): {assignedToTeam}</p>
+            <p>{taskData.description}</p>
+            <p>Deadline: {moment(taskData.deadline).format('LLLL')}</p>
+            <p>{assignedTo.length > 0 && (
+              <>
+                {['Assigned to (Individuals): ',  assignedTo]}
+              </>
+            )}</p>
+            <p>{assignedToTeam.length > 0 && (
+              <>
+                {['Assigned to (Teams): ',  assignedToTeam]}
+              </>
+            )}</p>
+            <p>Link: <a href={taskData.link} target="_blank" rel="noopener noreferrer">{taskData.link}</a></p>
             {taskData.completed ? 
             <Button variant="success" disabled>Complete</Button> :
             <Button variant="success" onClick={this.toggleCompleted}>Complete</Button>}

@@ -25,6 +25,7 @@ class TaskForm extends Component {
       id: this.props.id,
       task: '',
       deadline: new Date(),
+      description: '',
       dateAssigned: new Date(),
       assignedTo: [], // store new by id
       assignedToOld: [], // store initial
@@ -32,7 +33,7 @@ class TaskForm extends Component {
       assignedToTeam: [], // store new by id
       assignedToTeamOld: [], // store initial
       assignedToTeamCurrent: [], // store new by id
-      links: '',
+      link: '',
       error: false,
       showModal: false,
       interns: [],
@@ -53,6 +54,9 @@ class TaskForm extends Component {
   handleDateAssignedChange = event => {
     this.setState({ dateAssigned: event.target.value });
   }
+  handleDescriptionChange = event => {
+    this.setState({ description: event.target.value });
+  }
   handleAssignedToChange = event => {
     this.setState({ assignedTo: event ? event.map(x => x) : [] });
   }
@@ -62,8 +66,8 @@ class TaskForm extends Component {
   handleCompletedChange = () => {
     this.setState({ completed: !this.state.completed });
   }
-  handleLinksChange = event => {
-    this.setState({ links: event.target.value });
+  handleLinkChange = event => {
+    this.setState({ link: event.target.value });
   }
 
   handleOpenModal = () => {
@@ -116,11 +120,12 @@ class TaskForm extends Component {
         this.setState({
           task: res.data.task,
           deadline: res.data.deadline,
+          description: res.data.description,
           assignedToCurrent: res.data.assignedTo,
           assignedToOld: res.data.assignedTo,
           assignedToTeamCurrent: res.data.assignedToTeam,
           assignedToTeamOld: res.data.assignedToTeam,
-          links: res.data.links,
+          link: res.data.link,
           completed: res.data.completed
         })
       })
@@ -134,10 +139,11 @@ class TaskForm extends Component {
       id: this.props.id,
       task: this.state.task,
       deadline: this.state.deadline,
+      description: this.state.description,
       assignedTo: this.state.assignedTo.map(mapToDatabaseReadable).concat(this.state.assignedToCurrent),
       assignedToTeam: this.state.assignedToTeam.map(mapToDatabaseReadable).concat(this.state.assignedToTeamCurrent),
       description: this.state.description,
-      links: this.state.links
+      link: this.state.link
     }
     axios.post(TASK_UPDATE_API, taskToUpdate)
       .then(res => {
@@ -221,9 +227,10 @@ class TaskForm extends Component {
       deadline: this.state.deadline,
       priority: this.state.priority,
       dateAssigned: this.state.dateAssigned,
+      description: this.state.description,
       assignedTo: this.state.assignedTo ? this.state.assignedTo.map(mapToDatabaseReadable) : [],
       assignedToTeam: this.state.assignedToTeam ? this.state.assignedToTeam.map(mapToDatabaseReadable) : [],
-      links: this.state.links
+      link: this.state.link
     }
 
 
@@ -266,6 +273,7 @@ class TaskForm extends Component {
       if (this.props.type === 'create') {
         // list intern options
         interns.forEach(intern => {
+          
           internOptions.push({
             value: intern._id,
             label: intern.name
@@ -292,7 +300,6 @@ class TaskForm extends Component {
               label: intern.name
             })
           }
-          // console.log("options: ", internOptions);
         })
 
         teams.forEach(team => {
@@ -325,7 +332,6 @@ class TaskForm extends Component {
     }
 
     return (
-      
       <>
         <Button onClick={this.handleOpenModal}>{this.props.type === 'edit' ? "Edit Task" : "Create Task"}</Button>
         <Modal
@@ -333,6 +339,7 @@ class TaskForm extends Component {
           onHide={this.handleCloseModal}
           keyboard={false}
           backdrop="static"
+          size="lg"
         >
           <Modal.Header closeButton>
             <Modal.Title>{this.props.type === 'edit' ? "Edit Task" : "New Task"}</Modal.Title>
@@ -347,6 +354,17 @@ class TaskForm extends Component {
                   placeholder="Ex. Reach out to school counselors"
                   defaultValue={this.props.type === 'edit' ? this.state.task : ''}
                   onChange={this.handleTaskChange}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  size="md"
+                  type="text"
+                  placeholder="Ex. Follow this script when reaching out. Write down contact info... etc."
+                  defaultValue={this.props.type === 'edit' ? this.state.description : ''}
+                  onChange={this.handleDescriptionChange}
                 />
               </Form.Group>
               <Form.Group>
@@ -383,8 +401,8 @@ class TaskForm extends Component {
                   size="md"
                   type="text"
                   placeholder="Google Drive, Website, etc..."
-                  defaultValue={this.props.type === 'edit' ? this.state.links : ''}
-                  onChange={this.handleLinksChange}
+                  defaultValue={this.props.type === 'edit' ? this.state.link : ''}
+                  onChange={this.handleLinkChange}
                 />
               </Form.Group>
             </Form>

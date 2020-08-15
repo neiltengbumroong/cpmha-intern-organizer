@@ -175,7 +175,7 @@ class TeamForm extends Component {
         })
       })
       .then(() => {
-        this.props.updateData();
+        // this.props.updateData();
       })
 
 
@@ -257,6 +257,7 @@ class TeamForm extends Component {
           onHide={this.handleCloseModal}
           keyboard={false}
           backdrop="static"
+          size="lg"
         >
           <Modal.Header closeButton>
             <Modal.Title>{this.props.type === 'edit' ? "Edit Team" : "New Team"}</Modal.Title>
@@ -295,10 +296,10 @@ class TeamForm extends Component {
                   isSearchable={true}
                 />
               </Form.Group>
-
               <Form.Group>
                 <Form.Label>Description</Form.Label>
                 <Form.Control
+                  as="textarea"
                   size="md"
                   type="text"
                   placeholder="Ex. Tasked with expanding CPMHA connections"

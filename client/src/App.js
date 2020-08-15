@@ -15,7 +15,7 @@ function App() {
           <Route exact path='/' exact component={withRouter(Home)}/>
           <Route exact path='/calendar' exact component={withRouter(Calendar)}/>
           <Route exact path='/interns/:internId' component={withRouter(Intern)}/>
-          <Route exact path='/teams/:teamId' exact component={withRouter(Team)}/>
+          <Route exact path='/teams/:teamId' component={withRouter(Team)}/>
           
         </Switch>
       </Router>

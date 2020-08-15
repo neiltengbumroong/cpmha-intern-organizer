@@ -11,7 +11,8 @@ const teamSchema = mongoose.Schema({
   tasks: [{
     task: String,
     id: String
-  }]
+  }],
+  created: Date
 });
 
 module.exports = Team = mongoose.model('team', teamSchema);

@@ -124,8 +124,8 @@ class Calendar extends Component {
       <>
       <Header/>
       <div className="calendar-wrapper">
-        <TaskForm updateData={this.loadData.bind(this)}/>
-        <EventForm loadData={this.loadData}/>
+        <TaskForm updateData={this.loadData.bind(this)} type='create'/>
+        <EventForm loadData={this.loadData} />
         <div style={{padding: "5%"}}>
           <FullCalendar
             plugins={[ interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin ]}
@@ -150,7 +150,7 @@ class Calendar extends Component {
             </Modal.Header>
             <Modal.Body>
               <h4>{this.state.eventName}</h4>
-              <p>{moment(this.state.eventStart).format('MMMM Do YYYY, h:mm a')} - {moment(this.state.eventEnd).format('MMMM Do YYYY, h:mm a')}</p>
+              <p>{moment(this.state.eventStart).format('LLLL')} - {moment(this.state.eventEnd).format('LLLL')}</p>
               <p>{this.state.eventDescription}</p>
               <a target="_blank" rel="noopener noreferrer" href={this.state.eventLink}>{this.state.eventLink}</a>
             </Modal.Body>

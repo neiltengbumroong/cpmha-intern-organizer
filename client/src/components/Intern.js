@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import InternForm from './InternForm';
+import ActivityForm from './ActivityForm';
 import Header from './Header';
 import Task from './Task';
 import { Link } from "react-router-dom";
@@ -10,6 +11,7 @@ import { Jumbotron, Container, Row, Button, Col, Card } from 'react-bootstrap';
 import '../css/Intern.css';
 
 const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
+const TEAMS_GET_SINGLE_API = 'http://localhost:5000/api/teams/get/single';
 const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
 const INTERNS_DELETE_API = 'http://localhost:5000/api/interns/delete';
 const INTERNS_DELETE_FROM_TEAM_API = 'http://localhost:5000/api/teams/delete-intern';
@@ -50,10 +52,23 @@ class Intern extends Component {
   }
 
   getInternTasks = () => {
+    // first, get all tasks directly associated with the intern
     this.state.intern.tasks.forEach(task => {
       axios.post(TASK_GET_SINGLE_API, { id: task.id })
         .then(res => {
           this.setState({ tasks: [...this.state.tasks, res.data]});
+        })
+    })
+    // then get all tasks assigned to the teams of the intern
+    this.state.intern.teams.forEach(team => {
+      axios.post(TEAMS_GET_SINGLE_API, { id: team.id })
+        .then(res => {
+          res.data.tasks.forEach(task => {
+            axios.post(TASK_GET_SINGLE_API, { id: task.id })
+              .then(res => {
+                this.setState({ tasks: [...this.state.tasks, res.data]});
+              })
+          })
         })
     })
   }
@@ -98,7 +113,7 @@ class Intern extends Component {
 
   componentDidUpdate() {
     // check if the props for the intern's id are different
-    if (this.state.internId != this.props.location.state.id) {
+    if (this.state.internId !== this.props.location.state.id) {
       // set new ID and clear out interns and tasks
       this.setState({ 
         internId: this.props.location.state.id,
@@ -119,6 +134,7 @@ class Intern extends Component {
     let internTeams = [];
     let internComplete = [];
     let internIncomplete = [];
+    let internWork = [];
 
     // append teams into a comma separated list of links
     if (internData.teams) {
@@ -143,7 +159,14 @@ class Intern extends Component {
         }
       })
     }
-    
+
+    // map activity into feed
+    if (internData.work) {
+      internWork = internData.work.map((work, i) => (
+        <p>{moment(moment(work.date).utc(), "YYYYMMDD").fromNow()}: Spent <strong>{work.hours}</strong> hour(s) on <strong>{work.work}</strong></p>
+      ))
+    }
+
     return (
       <div>
         <Header/>
@@ -179,7 +202,7 @@ class Intern extends Component {
               type={"edit"}
               id={internData._id}
             />{' '}
-            <Button variant="info">Log Work Hours</Button>
+            <ActivityForm internId={internData._id} name={internData.name} tasks={internComplete.concat(internIncomplete)}/>
           </Container>
         </Jumbotron>
         <Container fluid>
@@ -188,11 +211,19 @@ class Intern extends Component {
               <Card>
                 <Card.Body>
                   <Card.Title><h3>Intern Details</h3></Card.Title>
+                    <hr/>
                     <p><strong>Email: </strong> {internData.email}</p>
                     <p><strong>School: </strong> {internData.school}</p>
                     <p><strong>Major: </strong> {internData.major}</p>
                     <p><strong>Joined: </strong> {moment(internData.joined).format('MMMM Do, YYYY')}</p>
                     <p><strong>Teams: {internTeams}</strong> </p>
+                </Card.Body>
+              </Card>
+              <Card className="mt-5">
+                <Card.Body className="activity-scroll-column">
+                  <Card.Title><h3>Activity Feed</h3></Card.Title>
+                  <hr/>
+                  {internWork.reverse()}
                 </Card.Body>
               </Card>
               <Card className="mt-5">
@@ -209,8 +240,7 @@ class Intern extends Component {
                       </Link>
                     </div>
                     ))
-                  }
-                    
+                  }       
               </Card.Body>
             </Card>
             </Col>

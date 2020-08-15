@@ -8,7 +8,8 @@ router.post('/api/teams/post', (req, res) => {
     name: req.body.name,
     members: req.body.members,
     leader: req.body.leader,
-    description: req.body.description
+    description: req.body.description,
+    created: req.body.created
   });
   
   team
@@ -63,7 +64,8 @@ router.post('/api/teams/update', (req, res) => {
         name: req.body.name,
         members: req.body.members,
         leader: req.body.leader,
-        description: req.body.description
+        description: req.body.description,
+        created: req.body.created
       }
     }
   )

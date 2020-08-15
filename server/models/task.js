@@ -4,6 +4,7 @@ const taskSchema = mongoose.Schema({
   task: String,
   deadline: Date,
   dateAssigned: Date,
+  description: String,
   assignedTo: [{
     name: String,
     id: String
@@ -13,7 +14,7 @@ const taskSchema = mongoose.Schema({
     id: String
   }],
   completed: Boolean,
-  links: [String]
+  link: String
 });
 
 module.exports = Task = mongoose.model('task', taskSchema);

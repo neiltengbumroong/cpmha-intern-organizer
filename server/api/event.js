@@ -8,7 +8,8 @@ router.post('/api/events/post', (req, res) => {
     event: req.body.event,
     start: req.body.start,
     end: req.body.end,
-    description: req.body.description
+    description: req.body.description,
+    link: req.body.link
   });
   event
     .save()
@@ -25,7 +26,8 @@ router.post('/api/events/update', (req, res) => {
       { event: req.body.event,
         start: req.body.start,
         end: req.body.end,
-        description: req.body.description
+        description: req.body.description,
+        link: req.body.link
       }
     }
   )
