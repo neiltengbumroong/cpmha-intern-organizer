@@ -140,7 +140,7 @@ class Team extends Component {
     }
 
     return (
-      <div>
+      <div className="main-background">
         <Header/>
         {teamData.tasks ? 
         <>

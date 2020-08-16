@@ -138,7 +138,7 @@ class Task extends Component {
             )}</p>
             <p>Link: <a href={taskData.link} target="_blank" rel="noopener noreferrer">{taskData.link}</a></p>
             {taskData.completed ? 
-            <Button variant="success" disabled>Complete</Button> :
+            null :
             <Button variant="success" onClick={this.toggleCompleted}>Complete</Button>}
             {this.props.view === 'other' ? null :
             <>
@@ -149,6 +149,7 @@ class Task extends Component {
               <Button variant="danger" type="button" onClick={() => this.deleteTaskFull(taskData._id)}>Delete Task</Button>
               </>
             }
+            <hr/>
           </div>
           : null
         }

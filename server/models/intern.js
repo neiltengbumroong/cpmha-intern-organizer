@@ -6,6 +6,7 @@ const internSchema = mongoose.Schema({
   email: String,
   school: String,
   major: String,
+  phone: String,
   joined: Date,
   work: [{
     work: String,
@@ -16,7 +17,6 @@ const internSchema = mongoose.Schema({
     task: String,
     id: String
   }],
-  weeklyHours: Double,
   totalHours: Double,
   teams: [{
     name: String,

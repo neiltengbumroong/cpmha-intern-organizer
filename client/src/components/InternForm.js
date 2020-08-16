@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-// import Modal from 'react-modal';
-import Select from 'react-select';
-// import DatePicker from "react-bootstrap-date-picker";
 import DatePicker from 'react-datepicker';
-import Form from 'react-bootstrap/Form';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Form, Col, Button, Modal } from 'react-bootstrap';
 import "react-datepicker/dist/react-datepicker.css";
 
 import '../css/custom.scss';
@@ -27,6 +21,7 @@ class InternForm extends Component {
       school: '',
       major: '',
       email: '',
+      phone: '',
       work: [],
       dateJoined: new Date(),
       showModal: false
@@ -42,6 +37,9 @@ class InternForm extends Component {
   handleMajorChange = event => {
     this.setState({ major: event.target.value });
   }
+  handlePhoneChange = event => {
+    this.setState({ phone: event.target.value });
+  }
   handleEmailChange = event => {
     this.setState({ email: event.target.value });
   }
@@ -49,7 +47,6 @@ class InternForm extends Component {
     this.setState({ dateJoined: date });
   }
 
-  // set state with props here because for some reason they don't show up in constructor
   handleOpenModal = () => {
     this.setState({ showModal: true });
   }
@@ -68,7 +65,8 @@ class InternForm extends Component {
           email: res.data.email,
           school: res.data.school,
           major: res.data.major,
-          dateJoined: res.data.joined, 
+          dateJoined: res.data.joined,
+          phone: res.data.phone
         })
       })
       .then(() => {
@@ -85,6 +83,7 @@ class InternForm extends Component {
       major: this.state.major,
       email: this.state.email,
       joined: this.state.dateJoined,
+      phone: this.state.phone,
       teams: [],
       work: []
     }
@@ -112,6 +111,7 @@ class InternForm extends Component {
       major: this.state.major,
       email: this.state.email,
       joined: this.state.dateJoined,
+      phone: this.state.phone
     }
 
 
@@ -168,6 +168,16 @@ class InternForm extends Component {
                   placeholder="example@cpmha.com"
                   defaultValue={this.props.type === 'edit' ? this.state.email : ''}  
                   onChange={this.handleEmailChange}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Phone</Form.Label>
+                <Form.Control 
+                  size="md"
+                  type="telephone" 
+                  placeholder="(888)-888-8888"
+                  defaultValue={this.props.type === 'edit' ? this.state.phone : ''}  
+                  onChange={this.handlePhoneChange}
                 />
               </Form.Group>
               <Form.Row>

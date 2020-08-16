@@ -14,7 +14,7 @@ const Header = () => (
         <ButtonToolbar>
           <Link to="/"><Button variant="cpmha-dark-purple" className="mr-2">Home</Button></Link>
           <Link to="/calendar"><Button variant="cpmha-dark-purple" className="mr-2">Calendar</Button></Link>
-          <Button variant="cpmha-dark-purple" className="mr-2">Contact List</Button>
+          <Link to="/contactlist"><Button variant="cpmha-dark-purple" className="mr-2">Contact List</Button></Link>
           <a href="https://concussionspainmentalhealth.com/" target="_blank" rel="nooponer noreferrer"><Button variant="cpmha-dark-purple">CPMHA Site</Button></a>
         </ButtonToolbar>
       </Col>

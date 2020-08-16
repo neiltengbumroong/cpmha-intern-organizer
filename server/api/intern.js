@@ -10,10 +10,10 @@ router.post('/api/interns/post', (req, res) => {
     email: req.body.email,
     school: req.body.school,
     major: req.body.major,
+    phone: req.body.phone,
     joined: req.body.joined,
     tasks: [],
     teams: [],
-    weeklyHours: 0,
     totalHours: 0
   });
   
@@ -49,7 +49,8 @@ router.post('/api/interns/update', (req, res) => {
         school: req.body.school,
         major: req.body.major,
         email: req.body.email,
-        joined: req.body.joined
+        joined: req.body.joined,
+        phone: req.body.phone
       }
     }
   )

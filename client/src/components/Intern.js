@@ -58,15 +58,22 @@ class Intern extends Component {
         .then(res => {
           this.setState({ tasks: [...this.state.tasks, res.data]});
         })
-    })
-    // then get all tasks assigned to the teams of the intern
-    this.state.intern.teams.forEach(team => {
-      axios.post(TEAMS_GET_SINGLE_API, { id: team.id })
-        .then(res => {
-          res.data.tasks.forEach(task => {
-            axios.post(TASK_GET_SINGLE_API, { id: task.id })
+        .then(() => {
+        // then get all tasks assigned to the teams of the intern
+          this.state.intern.teams.forEach(team => {
+            axios.post(TEAMS_GET_SINGLE_API, { id: team.id })
               .then(res => {
-                this.setState({ tasks: [...this.state.tasks, res.data]});
+                // loop through each team's tasks
+                res.data.tasks.forEach(task => {
+                  // for each task, if it was already assigned to the intern
+                  // individually then we skip it
+                  if (!this.state.tasks.some(e => e._id === task.id)) {
+                    axios.post(TASK_GET_SINGLE_API, { id: task.id })
+                      .then(res => {
+                        this.setState({ tasks: [...this.state.tasks, res.data]});
+                      })
+                  }      
+                })
               })
           })
         })
@@ -135,6 +142,7 @@ class Intern extends Component {
     let internComplete = [];
     let internIncomplete = [];
     let internWork = [];
+    let weeklyHours = 0;
 
     // append teams into a comma separated list of links
     if (internData.teams) {
@@ -160,10 +168,15 @@ class Intern extends Component {
       })
     }
 
-    // map activity into feed
+    // map activity into feed and count weekly hours
     if (internData.work) {
+      internData.work.forEach(work => {
+        if (moment(work.date).diff(new Date(), 'days') < 8) {
+          weeklyHours = weeklyHours + work.hours;
+        }
+      })
       internWork = internData.work.map((work, i) => (
-        <p>{moment(moment(work.date).utc(), "YYYYMMDD").fromNow()}: Spent <strong>{work.hours}</strong> hour(s) on <strong>{work.work}</strong></p>
+        <p key={i}>{moment(moment(work.date).utc(), "YYYYMMDD").fromNow()}: Spent <strong>{work.hours}</strong> {work.hours > 1 ? "hours" : "hour"} on <strong>{work.work}</strong></p>
       ))
     }
 
@@ -172,7 +185,7 @@ class Intern extends Component {
         <Header/>
         {internData.tasks ? 
         <>
-        <Jumbotron className="intern-jumbo-wrapper">
+        <Jumbotron className="jumbotron-wrapper">
           <Container className="text-center">
             <Row>
               <Col><h1>{internData.name}</h1></Col>   
@@ -182,7 +195,7 @@ class Intern extends Component {
             </Row>
             <Row className="pt-3 pb-5">
               <Col>
-                <h1>{internData.weeklyHours}</h1>
+                <h1>{weeklyHours}</h1>
                 <p>Hours worked this week</p>
               </Col>
               <Col>
@@ -205,8 +218,8 @@ class Intern extends Component {
             <ActivityForm internId={internData._id} name={internData.name} tasks={internComplete.concat(internIncomplete)}/>
           </Container>
         </Jumbotron>
-        <Container fluid>
-          <Row>
+        <Container className="main-background" fluid>
+          <Row className="pt-5">
             <Col className="col-4">
               <Card>
                 <Card.Body>
@@ -265,7 +278,7 @@ class Intern extends Component {
             </Col>
           </Row>
           <hr className="intern-hr"/>
-          <Row className="m-5 justify-content-center">
+          <Row className="p-5 justify-content-center">
              <Link to="/"><Button type="button" variant="danger"onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</Button></Link>
           </Row>
         </Container>

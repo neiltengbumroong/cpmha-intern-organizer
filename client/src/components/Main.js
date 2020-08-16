@@ -20,11 +20,14 @@ class Main extends Component {
 
   render() {
     return (
+      <div className="main-background">
       <div className="main-wrapper"> 
-        <div className="section-wrapper"><Tasks updateMain={this.updateMain}/></div>
-        <div className="section-wrapper"><Teams updateMain={this.updateMain}/></div>
-        <div className="section-wrapper"><Interns updateMain={this.updateMain}/></div>
+          <div className="section-wrapper"><Tasks updateMain={this.updateMain}/></div>
+          <div className="section-wrapper"><Teams updateMain={this.updateMain}/></div>
+          <div className="section-wrapper"><Interns updateMain={this.updateMain}/></div>
+        </div>
       </div>
+      
     )
   }
 }

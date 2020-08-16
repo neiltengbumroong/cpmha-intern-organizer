@@ -121,7 +121,7 @@ class Calendar extends Component {
     let dataArr = tasksArr.concat(eventsArr);
     
     return (
-      <>
+      <div className="main-background">
       <Header/>
       <div className="calendar-wrapper">
         <TaskForm updateData={this.loadData.bind(this)} type='create'/>
@@ -166,7 +166,7 @@ class Calendar extends Component {
           </Modal>
         </div>
       </div>  
-      </>       
+      </div>       
     )
   }
 }
