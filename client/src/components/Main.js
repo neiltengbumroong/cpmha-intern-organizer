@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Tasks from './Tasks';
 import Task from './Task';
-import Interns from './Interns';
 import Announcement from './Announcement';
 import InternForm from './InternForm';
 import TeamForm from './TeamForm';
-import Teams from './Teams';
+import TaskForm from './TaskForm';
 import AnnounceForm from './AnnounceForm';
 import { Card, Container, Row, Col, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -75,13 +73,13 @@ class Main extends Component {
         <Container fluid>
           <Row className="pt-4">
             <Col md={8} className="ml-5 mr-5">
-              <Row className="justify-content-between mb-4">
+              <Row className="justify-content-between mb-2">
                 <h2>Announcements</h2>
                 <AnnounceForm/>
               </Row>
-              
+              <Row>
               {this.state.announcements ? 
-                this.state.announcements.slice(0).reverse().map((announcement, i) => (
+                this.state.announcements.slice(0).reverse().map((announcement, i) => (   
                   <Announcement
                     key={i}
                     subject={announcement.subject}
@@ -92,19 +90,22 @@ class Main extends Component {
                 ))
                 : null
               }
-              <Row className="mt-5">
+              </Row>
+              <Row className="mt-5 mb-5 justify-content-center">
+                <TaskForm/>
+              </Row>
+              <Row >
                 <Col md={6} className="text-left scroll-column">
-                  <h2>Pending Tasks</h2>
+                  <h3 className="text-center">Pending Tasks</h3>
                   {incompleteTasks.length > 0 ? incompleteTasks.map((task, i) => (
                   <div className="mt-3 mb-3" key={i}>
                     <Task id={task._id} view={'main'}></Task>
-                    <hr/>
                   </div>
                   ))
                   : <p>There are currently has no pending tasks.</p>}
                 </Col>
                 <Col md={6} className="text-left scroll-column">
-                  <h2>Completed Tasks</h2>
+                  <h3 className="text-center">Completed Tasks</h3>
                   {completeTasks.length > 0 ? completeTasks.map((task, i) => (
                   <div className="mb-5" key={i}>
                     <Task id={task._id} view={'main'}></Task>

@@ -24,7 +24,7 @@ class Announcement extends Component {
     return (
       <Container className="mt-3 announce-container">
         <Row className="justify-content-between">
-          <a className="btn btn-link" onClick={this.handleOpenModal}><strong>{this.props.subject}</strong> - {this.props.name}</a>
+          <strong className="btn btn-link" onClick={this.handleOpenModal}>{this.props.subject} - {this.props.name}</strong>
           <strong>{moment(moment(this.props.date).utc(), "YYYYMMDD").fromNow()}</strong>
         </Row>
         <div onClick={e => e.stopPropagation()}>

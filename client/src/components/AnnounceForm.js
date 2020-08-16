@@ -48,7 +48,7 @@ class AnnounceForm extends Component {
   render() {
     return (
       <>
-        <Button onClick={this.handleOpenModal}>New Announcement</Button>
+        <Button className="btn-xs" onClick={this.handleOpenModal}>New Announcement</Button>
         <Modal 
           show={this.state.showModal}
           onHide={this.handleCloseModal}

@@ -333,7 +333,9 @@ class TaskForm extends Component {
 
     return (
       <>
-        <Button onClick={this.handleOpenModal}>{this.props.type === 'edit' ? "Edit Task" : "Create Task"}</Button>
+        {this.props.type === 'edit' ?
+          <Button className="btn-sm" onClick={this.handleOpenModal}>Edit Task</Button> :
+          <Button className="btn-lg" onClick={this.handleOpenModal}>Create Task</Button>}
         <Modal
           show={this.state.showModal}
           onHide={this.handleCloseModal}
