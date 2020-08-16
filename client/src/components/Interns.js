@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import InternForm from './InternForm';
+import { Card, Container, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 const INTERN_GET_API = 'http://localhost:5000/api/interns/get';

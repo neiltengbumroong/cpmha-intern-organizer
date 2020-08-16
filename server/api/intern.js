@@ -30,7 +30,7 @@ router.get('/api/interns/get', (req, res) => {
   .then(interns => {
     res.json(interns);
   })
-})
+});
 
 // standard get for a single intern
 router.post('/api/interns/get/single', (req, res) => {

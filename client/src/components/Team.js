@@ -147,10 +147,10 @@ class Team extends Component {
           <Jumbotron>
             <Container className="text-center">
               <Row>
-                <Col><h1>{teamData.name} Team</h1></Col>
-              </Row>
-              <Row className="pt-3">
-                <Col><p>{teamData.description}</p></Col>
+                <Col>
+                  <h1>{teamData.name} Team</h1>
+                  <p>{teamData.description}</p>
+                </Col>
               </Row>
               <Row className="pt-3 pb-3">
                 <Col className="pl-5 ml-5">

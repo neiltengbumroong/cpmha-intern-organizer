@@ -10,6 +10,7 @@ app.use(require('./api/task'));
 app.use(require('./api/intern'));
 app.use(require('./api/event'));
 app.use(require('./api/team'));
+app.use(require('./api/announce'));
 
 const port = process.env.PORT || 5000;
 const connection = process.env.MONGO_URI || 'mongodb://localhost:27017/cpmha';
