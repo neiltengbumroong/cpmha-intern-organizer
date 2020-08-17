@@ -13,7 +13,6 @@ import EventForm from './EventForm';
 import { Link } from 'react-router-dom';
 import Header from './Header';
 
-import '../css/Calendar.css';
 
 const TASK_GET_API = 'http://localhost:5000/api/tasks/get';
 const EVENT_GET_API = 'http://localhost:5000/api/events/get';
@@ -99,8 +98,7 @@ class Calendar extends Component {
     tasks.forEach(task => {
       tasksArr.push({
         title: task.task,
-        start: moment(task.deadline).format(EVENT_FORMAT),
-        end: moment(task.deadline).format(EVENT_FORMAT),
+        start: task.deadline,
         color: 'rgb(71,55,193)',
         extendedProps: {
           type: 'task',
@@ -114,7 +112,7 @@ class Calendar extends Component {
 
     let eventsArr = [];
     let events = this.state.events;
-    events.forEach(event =>  {
+    events.forEach(event => {
       eventsArr.push({
         title: event.event,
         start: event.start,
@@ -124,8 +122,6 @@ class Calendar extends Component {
           type: 'event',
           id: event._id,
           name: event.event,
-          start: event.start,
-          end: event.end,
           description: event.description,
           link: event.link
         }
@@ -167,8 +163,8 @@ class Calendar extends Component {
                     <Modal.Body>
                       <div>
                         <h4>{this.state.eventName}</h4>
-                        <p>Due by {this.state.eventEnd}</p>
                         <p>{this.state.eventDescription}</p>
+                        <p>Due by {this.state.eventEnd}</p>
                         <a target="_blank" rel="noopener noreferrer" href={this.state.eventLink}>{this.state.eventLink}</a>
                       </div>
                     </Modal.Body>

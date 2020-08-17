@@ -4,9 +4,6 @@ import Select from 'react-select';
 import { Form, Modal, Col, Button, Container, Row } from 'react-bootstrap';
 import DateTimePicker from 'react-datetime-picker';
 import { mapToDatabaseReadable } from '../utils';
-import '../css/Calendar.css';
-
-
 
 const TASK_POST_API = 'http://localhost:5000/api/tasks/post';
 const TASK_UPDATE_API = 'http://localhost:5000/api/tasks/update';

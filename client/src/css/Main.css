@@ -1,3 +1,53 @@
+* {
+  font-family: solway-regular;
+}
+
+/* ------ Fonts ------ */
+@font-face {
+  font-family: solway-bold;
+  src: url('../fonts/Solway/Solway-Bold.ttf')
+}
+
+@font-face {
+  font-family: solway-regular;
+  src: url('../fonts/Solway/Solway-Regular.ttf')
+}
+
+.home-wrapper {
+  padding: 2%;
+  text-align: center;
+}
+
+.calendar-wrapper {
+  padding: 5%;
+}
+
+.p-task {
+  font-size: 14px;
+  margin-bottom: 0.5rem;
+}
+
+.jumbotron-wrapper {
+  margin-bottom: 0px;
+  padding-bottom: 3rem;
+}
+
+.scroll-column {
+  max-height: 150vh;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.activity-scroll-column {
+  max-height: 50vh;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.intern-hr {
+  margin: 5rem 8rem 2rem;
+}
+
 .announcements-scroll {
   overflow: hidden;
   overflow-y: auto;
@@ -11,4 +61,40 @@
 
 .section-wrapper {
   padding: 0 5%;
+}
+
+.header-bg {
+background: rgb(106,50,171);
+background: linear-gradient(90deg, rgba(106,50,171,1) 0%, rgba(156,131,244,1) 100%);
+  width: 100%;
+  z-index: 100;
+}
+
+.main-background {
+  background-color: rgba(238, 229, 246, 0.4);
+}
+
+.img-responsive {
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.announce-link {
+  color: rgb(71,55,193);
+}
+
+.announce-link:hover {
+  color: rgb(34, 23, 121);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.team-link {
+  color: #33b1d8;
+}
+
+.team-link:hover {
+  color: #386b7a;
+  cursor: pointer;
+  text-decoration: underline;
 }

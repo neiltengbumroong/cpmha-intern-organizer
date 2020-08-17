@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 import { getAllInterns } from '../utils/index.js';
 import moment from 'moment';
 import { Jumbotron, Container, Row, Button, Col, Card } from 'react-bootstrap';
-import '../css/Intern.css';
 
 const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
 const TEAMS_GET_SINGLE_API = 'http://localhost:5000/api/teams/get/single';

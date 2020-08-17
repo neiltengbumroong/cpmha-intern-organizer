@@ -5,6 +5,7 @@ import Announcement from './Announcement';
 import InternForm from './InternForm';
 import TeamForm from './TeamForm';
 import TaskForm from './TaskForm';
+import Header from './Header';
 import AnnounceForm from './AnnounceForm';
 import { Card, Container, Row, Col, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -78,6 +79,7 @@ class Main extends Component {
 
     return (
       <div className="main-background">
+        <Header/>
         <Container className="pb-5" fluid>
           <Row className="pt-4">
             <Col sm={12} md={9} className="pl-5 pr-5 announcements-scroll">
@@ -149,7 +151,7 @@ class Main extends Component {
                   <Card.Title><h3>Teams</h3></Card.Title>
                   {this.state.teams.map((team, i) => (
                     <div key={i} className="pb-1">
-                      <Link to={{
+                      <Link className="team-link" to={{
                         pathname: '/teams/' + team.name,
                         state: { id: team._id }
                       }}>
@@ -165,6 +167,7 @@ class Main extends Component {
                   <Card.Title><h3>Known Issues</h3></Card.Title>
                   <p>- Deleting an intern who is currently leading a team will cause an error</p>
                   <p>- Some pages won't update after user action (editing, submitting, etc.), simply refresh page but please still document below</p>
+                  <p>- Calendar sometimes displays tasks and events as two-day events when they are single day events, or in the tasks' case not events at all</p>
                   <a href="https://docs.google.com/document/d/1DKajjcdVYzG0nmLjwyYfKFkQBSFlJVDN6W6F2jAfpQA/edit" className="btn-link">https://docs.google.com/document/d/1DKajjcdVYzG0nmLjwyYfKFkQBSFlJVDN6W6F2jAfpQA/edit</a>
                 </Card.Body>
               </Card>

@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import { Modal, Button, Row, Container } from 'react-bootstrap';
 
-import '../css/Main.css';
-
 class Announcement extends Component {
   constructor(props) {
     super(props);
@@ -24,7 +22,7 @@ class Announcement extends Component {
     return (
       <Container className="mt-2" fluid>
         <Row sm={12} className="justify-content-between">
-          <strong className="btn btn-link" onClick={this.handleOpenModal}>{this.props.subject} • {this.props.name}</strong> 
+          <strong className="announce-link" onClick={this.handleOpenModal}>{this.props.subject} • {this.props.name}</strong> 
           <strong className="d-none d-md-block">{moment(moment(this.props.date).utc(), "YYYYMMDD").fromNow()}</strong>
         </Row>
         <div onClick={e => e.stopPropagation()}>

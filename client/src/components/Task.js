@@ -123,7 +123,8 @@ class Task extends Component {
       <div>
         {taskData.assignedTo ? 
           <div>
-            <h5>{taskData.task}</h5>
+            <h4>{taskData.task}</h4>
+            <hr/>
             <p className="p-task">{taskData.description}</p>
             <p className="p-task">Deadline: {moment(taskData.deadline).format('LLLL')}</p>
             <p className="p-task">Assigned to: {assignedTo.concat(assignedToTeam)}</p>

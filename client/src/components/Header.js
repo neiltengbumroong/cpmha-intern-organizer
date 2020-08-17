@@ -2,7 +2,6 @@ import React from 'react';
 import { Container, Row, Col, Image, Button, ButtonGroup, ButtonToolbar } from 'react-bootstrap';
 import Logo from '../images/CPMHA-logo-final.png';
 import { Link } from 'react-router-dom';
-import '../css/Header.css';
 
 const Header = () => (
   <Container className="header-bg" fluid>
