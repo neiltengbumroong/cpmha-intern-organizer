@@ -28,6 +28,15 @@ class Main extends Component {
     }
   }
 
+  loadTask = () => {
+    axios.get(TASK_GET_API)
+      .then(res => {
+        this.setState({
+          tasks: res.data
+        })
+      })
+  }
+
   loadData = () => {
     axios.all([
       axios.get(TEAM_GET_API),
@@ -47,7 +56,6 @@ class Main extends Component {
 
 
   updateMain = () => {
-    console.log("main updated");
     this.setState({ update: true });
   }
 
@@ -94,14 +102,14 @@ class Main extends Component {
               <hr/>
               <Row className="mt-5 mb-5 justify-content-between">
                 <h2>Tasks</h2>
-                <TaskForm type="create" updateParent={this.loadData}/>
+                <TaskForm type="create" updateParent={this.loadTask}/>
               </Row>
               <Row className="mb-4">
                 <Col sm={12} md={6} className="text-left scroll-column">
                   <h3 className="text-center">Pending</h3>
                   {incompleteTasks.length > 0 ? incompleteTasks.slice(0).reverse().map((task, i) => (
                   <div className="mt-3 mb-3" key={i}>
-                    <Task updateParent={this.loadData} id={task._id} view={'main'}></Task>
+                    <Task updateParent={this.loadTask} id={task._id} view={'main'}></Task>
                   </div>
                   ))
                   : <p className="text-center">There are currently has no pending tasks.</p>}
@@ -110,7 +118,7 @@ class Main extends Component {
                   <h3 className="text-center">Completed</h3>
                   {completeTasks.length > 0 ? completeTasks.slice(0).reverse().map((task, i) => (
                   <div className="mb-5" key={i}>
-                    <Task updateParent={this.loadData} id={task._id} view={'main'}></Task>
+                    <Task updateParent={this.loadTask} id={task._id} view={'main'}></Task>
                   </div>
                   ))
                   : <p className="text-center">There are no completed tasks.</p>}
@@ -119,7 +127,7 @@ class Main extends Component {
             </Col>
             <Col sm={12} md={3}>
               <Card className="mb-3 text-left">
-                <InternForm type="create"/>
+                <InternForm updateParent={this.loadData} type="create"/>
                 <Card.Body>
                   <Card.Title><h3>Interns</h3></Card.Title>
                   {this.state.interns.map((intern, i) => (

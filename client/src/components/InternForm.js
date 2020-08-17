@@ -24,7 +24,8 @@ class InternForm extends Component {
       phone: '',
       work: [],
       dateJoined: new Date(),
-      showModal: false
+      showModal: false,
+      errors: []
     }
   }
 
@@ -55,6 +56,36 @@ class InternForm extends Component {
     this.setState({ showModal: false });
   }
 
+  handleValidation = () => {
+    let errors = {};
+    if (!this.state.name) {
+      errors["name"] = "Intern name is required.";
+    }
+    if (!this.state.email) {
+      errors["email"] = "Intern email is required.";
+    } else {
+      let emailRegex = /[a-zA-Z]+[@][a-zA-Z]+[.][a-zA-Z]{3}$/gm;
+      let validEmail = emailRegex.test(this.state.email);
+      if (!validEmail) {
+        errors["email"] = "Email is in invalid format. Ex. xx@cpmha.com"
+      }
+    }
+
+    if (this.state.phone) {
+      let phoneRegex = /[(][0-9]{3}[)][-][0-9]{3}[-][0-9]{4}$/gm;
+      let validPhone = phoneRegex.test(this.state.phone);
+      if (!validPhone) {
+        errors["phone"] = "Phone number must be in exact (888)-888-8888 format.";
+      }
+    }
+
+    this.setState({ errors: errors });
+    if (errors["name"] || errors["email"] || errors["phone"]) {
+      return false;
+    } 
+    return true;
+  }
+
   // get intern data from database to pre-populate form for editing 
   getInternData = () => {
     this.setState({ isLoading: true });
@@ -75,58 +106,50 @@ class InternForm extends Component {
   }
 
   // create object with intern data, then post to database
-  createIntern = event => {
-    const internToCreate = {
-      id: this.state.id,
-      name: this.state.name,
-      school: this.state.school,
-      major: this.state.major,
-      email: this.state.email,
-      joined: this.state.dateJoined,
-      phone: this.state.phone,
-      teams: [],
-      work: []
+  createIntern = async () => {
+    const validated = await this.handleValidation();
+    if (validated) {
+      const internToCreate = {
+        id: this.state.id,
+        name: this.state.name,
+        school: this.state.school,
+        major: this.state.major,
+        email: this.state.email,
+        joined: this.state.dateJoined,
+        phone: this.state.phone,
+        teams: [],
+        work: []
+      }
+
+      axios.post(INTERN_POST_API, internToCreate);
+      this.props.updateParent();
+      this.handleCloseModal();
     }
-
-    axios.post(INTERN_POST_API, internToCreate)
-      .then(res => {
-        // this.addInternToTeams(res.data);
-        this.props.updateMain();
-        this.props.updateData();
-      })
-      .catch(error => {
-        this.setState({ error: true })
-      })
-
-    this.handleCloseModal(); 
   }
 
   // create object to update document
-  editIntern = event => {
-    event.preventDefault();
-    const internToEdit = {
-      id: this.state.id,
-      name: this.state.name,
-      school: this.state.school,
-      major: this.state.major,
-      email: this.state.email,
-      joined: this.state.dateJoined,
-      phone: this.state.phone
+  editIntern = async () => {
+    const validated = await this.handleValidation();
+    if (validated) {
+      const internToEdit = {
+        id: this.state.id,
+        name: this.state.name,
+        school: this.state.school,
+        major: this.state.major,
+        email: this.state.email,
+        joined: this.state.dateJoined,
+        phone: this.state.phone
+      }
+      axios.post(INTERN_UPDATE_API, internToEdit)
+        .then(res => {
+          this.getInternData();
+          this.props.updateParent();
+        })
+        .catch(error => {
+          this.setState({ error: true })
+        })
+      this.handleCloseModal();
     }
-
-
-    axios.post(INTERN_UPDATE_API, internToEdit)
-      .then(res => {
-        this.getInternData();
-        this.props.updateParent();
-      })
-      .catch(error => {
-        this.setState({ error: true })
-      })
-    this.handleCloseModal();
-    
-    // "illusion" that something changed
-    // window.location.reload();
   }
 
   componentDidMount() {
@@ -156,10 +179,15 @@ class InternForm extends Component {
                 <Form.Control 
                   size="md"
                   type="text" 
+                  maxLength="40"
                   placeholder="John Doe"
                   defaultValue={this.props.type === 'edit' ? this.state.name : ''}  
                   onChange={this.handleNameChange}
+                  isInvalid={this.state.errors.name}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {this.state.errors["name"]}
+                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Email</Form.Label>
@@ -169,17 +197,26 @@ class InternForm extends Component {
                   placeholder="example@cpmha.com"
                   defaultValue={this.props.type === 'edit' ? this.state.email : ''}  
                   onChange={this.handleEmailChange}
+                  isInvalid={this.state.errors.email}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {this.state.errors["email"]}
+                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Phone</Form.Label>
                 <Form.Control 
                   size="md"
                   type="telephone" 
+                  maxLength="14"
                   placeholder="(888)-888-8888"
                   defaultValue={this.props.type === 'edit' ? this.state.phone : ''}  
                   onChange={this.handlePhoneChange}
+                  isInvalid={this.state.errors.phone}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {this.state.errors["phone"]}
+                </Form.Control.Feedback>
               </Form.Group>
               <Form.Row>
                 <Col>
@@ -187,7 +224,8 @@ class InternForm extends Component {
                     <Form.Label>School</Form.Label>
                     <Form.Control 
                       size="md"
-                      type="text" 
+                      type="text"
+                      maxLength="50"
                       placeholder="School"
                       defaultValue={this.props.type === 'edit' ? this.state.school : ''}  
                       onChange={this.handleSchoolChange}
@@ -199,7 +237,8 @@ class InternForm extends Component {
                     <Form.Label>Major</Form.Label>
                     <Form.Control 
                       size="md"
-                      type="text" 
+                      type="text"
+                      maxLength="50"
                       placeholder="Major"
                       defaultValue={this.props.type === 'edit' ? this.state.major : ''}  
                       onChange={this.handleMajorChange}

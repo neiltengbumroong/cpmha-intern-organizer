@@ -232,6 +232,7 @@ class Intern extends Component {
                   <Card.Title><h3>Intern Details</h3></Card.Title>
                     <hr/>
                     <p><strong>Email: </strong> {internData.email}</p>
+                    <p><strong>Phone: </strong> {internData.phone}</p>
                     <p><strong>School: </strong> {internData.school}</p>
                     <p><strong>Major: </strong> {internData.major}</p>
                     <p><strong>Joined: </strong> {moment(internData.joined).format('MMMM Do, YYYY')}</p>

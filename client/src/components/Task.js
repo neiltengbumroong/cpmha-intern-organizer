@@ -65,7 +65,7 @@ class Task extends Component {
     const id = { id: taskId };
     axios.post(TASKS_DELETE_API, id)
       .then(() => {
-        // this.props.updateParent();
+        this.props.updateParent();
         window.location.reload();
       })
   }
@@ -81,7 +81,7 @@ class Task extends Component {
     this.setState({ completed: !this.state.completed }, () => {
       axios.post(TASK_TOGGLE_COMPLETE_API, { taskId: this.state.task._id, completed: this.state.completed })
         .then(() => {
-          this.props.updateParent();
+          window.location.reload();
         })
     });
   }

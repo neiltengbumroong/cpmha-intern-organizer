@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
-import { Form, Modal, Col, Button } from 'react-bootstrap';
+import { Form, Modal, Col, Button, Container, Row } from 'react-bootstrap';
 import DateTimePicker from 'react-datetime-picker';
 import { mapToDatabaseReadable } from '../utils';
 import '../css/Calendar.css';
@@ -38,7 +38,8 @@ class TaskForm extends Component {
       showModal: false,
       interns: [],
       teams: [],
-      isLoading: true
+      isLoading: true,
+      errors: []
     }
   }
 
@@ -76,6 +77,23 @@ class TaskForm extends Component {
 
   handleCloseModal = () => {
     this.setState({ showModal: false });
+  }
+
+  handleValidation = () => {
+    let errors = {};
+    if (!this.state.task) {
+      errors["name"] = "Task name is required.";
+    }
+    if (!this.state.description) {
+      errors["description"] = "Task description is required.";
+    }
+
+    this.setState({ errors: errors });
+
+    if (errors["name"] || errors["description"]) {
+      return false;
+    } 
+    return true;
   }
 
   // load data from teams and inters
@@ -134,45 +152,49 @@ class TaskForm extends Component {
       })
   }
 
-  editTask = () => {
-    const taskToUpdate = {
-      id: this.props.id,
-      task: this.state.task,
-      deadline: this.state.deadline,
-      description: this.state.description,
-      assignedTo: this.state.assignedTo.map(mapToDatabaseReadable).concat(this.state.assignedToCurrent),
-      assignedToTeam: this.state.assignedToTeam.map(mapToDatabaseReadable).concat(this.state.assignedToTeamCurrent),
-      description: this.state.description,
-      link: this.state.link
+  editTask = async () => {
+    const validated = await this.handleValidation();
+    if (validated) {
+      const taskToUpdate = {
+        id: this.props.id,
+        task: this.state.task,
+        deadline: this.state.deadline,
+        description: this.state.description,
+        assignedTo: this.state.assignedTo.map(mapToDatabaseReadable).concat(this.state.assignedToCurrent),
+        assignedToTeam: this.state.assignedToTeam.map(mapToDatabaseReadable).concat(this.state.assignedToTeamCurrent),
+        description: this.state.description,
+        link: this.state.link
+      }
+      axios.post(TASK_UPDATE_API, taskToUpdate)
+        .then(res => {
+          this.props.updateParent();
+          this.getTaskData();
+          // remove people no longer attached to the task
+          const diffArrayIndividual = this.state.assignedToOld.filter(x => !this.state.assignedToCurrent.includes(x));
+          this.removeTaskFromInterns(diffArrayIndividual);
+
+          // remove teams no longer attached to the task
+          const diffArrayTeam = this.state.assignedToTeamOld.filter(x => !this.state.assignedToTeamCurrent.includes(x));
+          this.removeTaskFromTeams(diffArrayTeam);
+        })
+        .then(() => {
+          // add any extra people to the task
+          const addDataIndividual = {
+            assignedTo: this.state.assignedTo.map(mapToDatabaseReadable),
+            _id: this.state.id
+          }
+          this.addTaskToInterns(addDataIndividual);
+          // add any extra teams to the task
+          const addDataTeam = {
+            assignedToTeam: this.state.assignedToTeam.map(mapToDatabaseReadable),
+            _id: this.state.id
+          }
+          this.addTaskToTeams(addDataTeam);
+        })
+
+      this.handleCloseModal();
+      window.location.reload();
     }
-    axios.post(TASK_UPDATE_API, taskToUpdate)
-      .then(res => {
-        // remove people no longer attached to the task
-        const diffArrayIndividual = this.state.assignedToOld.filter(x => !this.state.assignedToCurrent.includes(x));
-        this.removeTaskFromInterns(diffArrayIndividual);
-
-        // remove teams no longer attached to the task
-        const diffArrayTeam = this.state.assignedToTeamOld.filter(x => !this.state.assignedToTeamCurrent.includes(x));
-        this.removeTaskFromTeams(diffArrayTeam);
-      })
-      .then(() => {
-        // add any extra people to the task
-        const addDataIndividual = {
-          assignedTo: this.state.assignedTo.map(mapToDatabaseReadable),
-          _id: this.state.id
-        }
-        this.addTaskToInterns(addDataIndividual);
-        // add any extra teams to the task
-        const addDataTeam = {
-          assignedToTeam: this.state.assignedToTeam.map(mapToDatabaseReadable),
-          _id: this.state.id
-        }
-        this.addTaskToTeams(addDataTeam);
-        this.props.updateParent();
-      })
-
-    this.handleCloseModal();
-    // window.location.reload();
   }
 
   // find all interns selected and add task
@@ -222,33 +244,34 @@ class TaskForm extends Component {
 
 
   // standard task creation - add to interns and teams as well
-  createTask = () => {
-    const taskToCreate = {
-      task: this.state.task,
-      deadline: this.state.deadline,
-      priority: this.state.priority,
-      dateAssigned: this.state.dateAssigned,
-      description: this.state.description,
-      assignedTo: this.state.assignedTo ? this.state.assignedTo.map(mapToDatabaseReadable) : [],
-      assignedToTeam: this.state.assignedToTeam ? this.state.assignedToTeam.map(mapToDatabaseReadable) : [],
-      link: this.state.link
+  createTask = async () => {
+    const validated = await this.handleValidation();
+    if (validated) {
+      const taskToCreate = {
+        task: this.state.task,
+        deadline: this.state.deadline,
+        priority: this.state.priority,
+        dateAssigned: this.state.dateAssigned,
+        description: this.state.description,
+        assignedTo: this.state.assignedTo ? this.state.assignedTo.map(mapToDatabaseReadable) : [],
+        assignedToTeam: this.state.assignedToTeam ? this.state.assignedToTeam.map(mapToDatabaseReadable) : [],
+        link: this.state.link
+      }
+      
+      // post task and then add the response to teams and interns
+      axios.post(TASK_POST_API, taskToCreate)
+        .then((res) => {
+          this.addTaskToInterns(res.data);
+          this.addTaskToTeams(res.data);
+          this.props.updateParent();
+        })
+        .catch(error => {
+          this.setState({ error: true })
+        })
+
+      this.handleCloseModal();
+      // window.location.reload();
     }
-
-
-
-    // post task and then add the response to teams and interns
-    axios.post(TASK_POST_API, taskToCreate)
-      .then((res) => {
-        this.addTaskToInterns(res.data);
-        this.addTaskToTeams(res.data);
-        this.props.updateParent();
-      })
-      .catch(error => {
-        this.setState({ error: true })
-      })
-
-    this.handleCloseModal();
-    // window.location.reload();
   }
 
   componentDidMount() {
@@ -317,16 +340,20 @@ class TaskForm extends Component {
       }
 
       currentAssigned = currentAssignedDisplay.map((intern, i) =>
-        <div key={i}>
-          <p>{intern.label}</p>
-          <button type="button" onClick={() => this.removeCurrentAssigned(intern.value)}>X</button>
-        </div>
+        <Container key={i}>
+          <Row>
+            <Button className="pt-0 pb-0 mt-0 mb-0" variant="danger" size="sm" onClick={() => this.removeCurrentAssigned(intern.value)}>X</Button>
+            <p> &nbsp;{intern.label}</p>
+          </Row>       
+        </Container>
       )
       currentTeams = currentTeamsDisplay.map((team, i) =>
-        <div key={i}>
-          <p>{team.label}</p>
-          <button type="button" onClick={() => this.removeCurrentTeam(team.value)}>X</button>
-        </div>
+        <Container key={i}>
+          <Row>
+            <Button className="pt-0 pb-0 mt-0 mb-0" variant="danger" size="sm" onClick={() => this.removeCurrentTeam(team.value)}>X</Button>
+            <p> &nbsp;{team.label}</p>
+          </Row>
+        </Container>
       )
     }
 
@@ -352,21 +379,31 @@ class TaskForm extends Component {
                 <Form.Control
                   size="md"
                   type="text"
+                  maxLength="50"
                   placeholder="Ex. Reach out to school counselors"
                   defaultValue={this.props.type === 'edit' ? this.state.task : ''}
                   onChange={this.handleTaskChange}
+                  isInvalid={this.state.errors.name}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {this.state.errors["name"]}
+                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Description</Form.Label>
                 <Form.Control
                   as="textarea"
                   size="md"
+                  maxLength="300"
                   type="text"
                   placeholder="Ex. Follow this script when reaching out. Write down contact info... etc."
                   defaultValue={this.props.type === 'edit' ? this.state.description : ''}
                   onChange={this.handleDescriptionChange}
+                  isInvalid={this.state.errors.description}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {this.state.errors["description"]}
+                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Deadline</Form.Label><br/>
@@ -377,8 +414,9 @@ class TaskForm extends Component {
                 />
               </Form.Group>
               <Form.Group>
-                <Form.Label>Assign to (Individual)</Form.Label>
+                <h5>Currently Assigned (Individuals)</h5>
                 {currentAssigned}
+                <Form.Label>Assign to (Individual)</Form.Label>     
                 <Select
                   options={internOptions}
                   isMulti={true}
@@ -387,8 +425,9 @@ class TaskForm extends Component {
                 />
               </Form.Group>
               <Form.Group>
-                <Form.Label>Assign to (Team)</Form.Label>
+                <h5>Currently Assigned (Teams)</h5>
                 {currentTeams}
+                <Form.Label>Assign to (Team)</Form.Label>
                 <Select
                   options={teamOptions}
                   isMulti={true}

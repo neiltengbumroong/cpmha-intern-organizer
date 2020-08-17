@@ -20,7 +20,8 @@ class EventForm extends Component {
       start: '',
       end: '',
       description: '',
-      link: ''
+      link: '',
+      errors: []
     }
   }
 
@@ -42,9 +43,24 @@ class EventForm extends Component {
   handleOpenModal = () => {
     this.setState({ showModal: true });
   }
-  
   handleCloseModal = () => {
     this.setState({ showModal: false });
+  }
+  handleValidation = () => {
+    let errors = {};
+    if (!this.state.event) {
+      errors["name"] = "Event name is required.";
+    }
+    if (!this.state.description) {
+      errors["description"] = "Event description is required.";
+    }
+
+    this.setState({ errors: errors });
+
+    if (errors["name"] || errors["description"]) {
+      return false;
+    } 
+    return true;
   }
 
   getEventData = () => {
@@ -60,38 +76,44 @@ class EventForm extends Component {
       })
   }
 
-  createEvent = () => {
-    const eventToCreate = {
-      event: this.state.event,
-      start: this.state.start,
-      end: this.state.end,
-      description: this.state.description,
-      link: this.state.link
+  createEvent = async () => {
+    const validated = await this.handleValidation();
+    if (validated) {
+      const eventToCreate = {
+        event: this.state.event,
+        start: this.state.start,
+        end: this.state.end,
+        description: this.state.description,
+        link: this.state.link
+      }
+      axios.post(EVENT_POST_API, eventToCreate)
+        .then(() => {
+          this.props.loadData();
+        })
+        .catch(error => {
+          this.setState({ error: true })
+        })
+        
+      this.handleCloseModal();
     }
-    axios.post(EVENT_POST_API, eventToCreate)
-      .then(() => {
-        this.props.loadData();
-      })
-      .catch(error => {
-        this.setState({ error: true })
-      })
-      
-    this.handleCloseModal();
   }
 
-  editEvent = () => {
-    const eventToUpdate = {
-      id: this.props.id,
-      event: this.state.event,
-      start: this.state.start,
-      end: this.state.end,
-      description: this.state.description,
-      link: this.state.link
+  editEvent = async () => {
+    const validated = this.handleValidation();
+    if (validated) {
+      const eventToUpdate = {
+        id: this.props.id,
+        event: this.state.event,
+        start: this.state.start,
+        end: this.state.end,
+        description: this.state.description,
+        link: this.state.link
+      }
+      axios.post(EVENT_UPDATE_API, eventToUpdate);
+      this.handleCloseModal();
+      this.props.loadData();
+      this.props.closeModal();
     }
-    axios.post(EVENT_UPDATE_API, eventToUpdate);
-    this.handleCloseModal();
-    this.props.loadData();
-    this.props.closeModal();
   }
 
   componentDidMount() {
@@ -131,10 +153,30 @@ class EventForm extends Component {
                 <Form.Control 
                   size="md"
                   type="text" 
+                  maxLength="100"
                   placeholder="Ex. Weekly Meeting"
                   defaultValue={this.props.type === 'edit' ? this.state.event : ''}  
                   onChange={this.handleEventChange}
+                  isInvalid={this.state.errors.name}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {this.state.errors["name"]}
+                </Form.Control.Feedback>
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Description</Form.Label>
+                <Form.Control 
+                    size="md"
+                    type="text"
+                    maxLength="500" 
+                    placeholder="Ex. Go over weekly updates and progress"
+                    defaultValue={this.props.type === 'edit' ? this.state.description : ''}  
+                    onChange={this.handleDescriptionChange}
+                    isInvalid={this.state.errors.description}
+                />
+                <Form.Control.Feedback type="invalid">
+                  {this.state.errors["description"]}
+                </Form.Control.Feedback>
               </Form.Group>
               <Form.Row>
                 <Col>
@@ -158,16 +200,6 @@ class EventForm extends Component {
                   </Form.Group>
                 </Col>
               </Form.Row>
-              <Form.Group>
-                <Form.Label>Description</Form.Label>
-                  <Form.Control 
-                    size="md"
-                    type="text" 
-                    placeholder="Ex. Go over weekly updates and progress"
-                    defaultValue={this.props.type === 'edit' ? this.state.description : ''}  
-                    onChange={this.handleDescriptionChange}
-                  />          
-              </Form.Group>
               <Form.Group>
                 <Form.Label>Link</Form.Label>
                   <Form.Control 

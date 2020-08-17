@@ -200,6 +200,7 @@ class TeamForm extends Component {
         })
         .then(() => {
           this.props.updateParent();
+          this.getTeamData();
         })
 
 
@@ -288,7 +289,7 @@ class TeamForm extends Component {
           </Modal.Header>
           <Modal.Body>
             <Form>
-              <Form.Group controlId="nameValidation">
+              <Form.Group>
                 <Form.Label>Team Name</Form.Label>
                 <Form.Control
                   size="md"
@@ -307,7 +308,6 @@ class TeamForm extends Component {
               <Form.Group>
                   <h5 className="text-left">Current Members</h5>
                   {currentMembers}
-                  
                 <Form.Label>Add Members</Form.Label>
                 <Select
                   options={options}
