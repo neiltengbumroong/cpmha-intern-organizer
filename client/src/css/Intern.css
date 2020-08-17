@@ -4,7 +4,7 @@
 }
 
 .scroll-column {
-  height: 100vh;
+  max-height: 100vh;
   overflow: hidden;
   overflow-y: scroll;
 }

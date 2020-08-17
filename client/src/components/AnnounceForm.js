@@ -39,8 +39,8 @@ class AnnounceForm extends Component {
       date: new Date()
     }
     axios.post(ANNOUNCE_POST_API, newAnnounce)
-      .then(res => {
-        console.log(res);
+      .then(() => {
+        this.props.updateMain();
       })
     this.handleCloseModal();
   }
@@ -48,7 +48,7 @@ class AnnounceForm extends Component {
   render() {
     return (
       <>
-        <Button className="btn-xs" onClick={this.handleOpenModal}>New Announcement</Button>
+        <Button variant="cpmha-dark-purple" className="btn-xs" onClick={this.handleOpenModal}>New Announcement</Button>
         <Modal 
           show={this.state.showModal}
           onHide={this.handleCloseModal}
@@ -64,6 +64,7 @@ class AnnounceForm extends Component {
               <Form.Group>
                 <Form.Label>Name</Form.Label>
                 <Form.Control 
+                  maxLength="20"
                   size="md"
                   type="text" 
                   placeholder="John Doe"
@@ -72,7 +73,8 @@ class AnnounceForm extends Component {
               </Form.Group>         
               <Form.Group>
                 <Form.Label>Subject</Form.Label>
-                <Form.Control 
+                <Form.Control
+                  maxLength="50"
                   size="md"
                   type="text" 
                   placeholder="Weekly Reminder"
@@ -82,6 +84,7 @@ class AnnounceForm extends Component {
               <Form.Group>
                 <Form.Label>Announcement</Form.Label>
                 <Form.Control 
+                  maxLength="1000"
                   size="md"
                   as="textarea" 
                   placeholder="Update for this week, etc..."

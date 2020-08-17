@@ -17,3 +17,8 @@
   font-family: solway-regular;
   src: url('../fonts/Solway/Solway-Regular.ttf')
 }
+
+.p-task {
+  font-size: 14px;
+  margin-bottom: 0.5rem;
+}

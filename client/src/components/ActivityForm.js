@@ -47,6 +47,7 @@ class ActivityForm extends Component {
     axios.post(INTERN_UPDATE_WORK_API, newActivity)
       .then(() => {
         this.handleCloseModal();
+        this.props.updateParent();
       })
   }
 

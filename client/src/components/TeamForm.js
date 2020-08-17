@@ -141,7 +141,7 @@ class TeamForm extends Component {
     axios.post(TEAM_POST_API, teamToCreate)
       .then(res => {
         this.state.members.length > 0 && this.addTeamToInterns(res.data);
-        this.props.updateData();
+        this.props.updateParent();
       })
     this.handleCloseModal();
   }
@@ -175,7 +175,7 @@ class TeamForm extends Component {
         })
       })
       .then(() => {
-        // this.props.updateData();
+        this.props.updateParent();
       })
 
 

@@ -1,5 +1,4 @@
 .announcements-scroll {
-  max-height: 70vh;
   overflow: hidden;
   overflow-y: auto;
 }
@@ -12,11 +11,4 @@
 
 .section-wrapper {
   padding: 0 5%;
-}
-
-.announce-container {
-}
-
-.announce-container:hover {
-  cursor: pointer;
 }

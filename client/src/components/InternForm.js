@@ -117,15 +117,16 @@ class InternForm extends Component {
 
     axios.post(INTERN_UPDATE_API, internToEdit)
       .then(res => {
-        this.props.updateMain();
-        this.props.updateData();
+        this.getInternData();
+        this.props.updateParent();
       })
       .catch(error => {
         this.setState({ error: true })
       })
     this.handleCloseModal();
+    
     // "illusion" that something changed
-    window.location.reload();
+    // window.location.reload();
   }
 
   componentDidMount() {

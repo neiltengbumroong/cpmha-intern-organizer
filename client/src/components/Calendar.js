@@ -25,6 +25,7 @@ class Calendar extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      eventType: '',
       eventId: '',
       eventName: '',
       eventStart: '',
@@ -69,19 +70,27 @@ class Calendar extends Component {
   }
 
   handleEventClick = ({event}) => {
-    this.setState({ 
-      eventId: event.extendedProps.id,
-      eventName: event.extendedProps.name,
-      eventStart: event.extendedProps.start,
-      eventEnd: event.extendedProps.end,
-      eventDescription: event.extendedProps.description,
-      eventLink: event.extendedProps.link,
-      showModal: true 
-    });
-  }
-
-  showEvent = () => {
-
+    if (event.extendedProps.type === 'task') {
+      this.setState({
+        eventType: event.extendedProps.type,
+        eventName: event.title,
+        eventEnd: moment(event.extendedProps.deadline).format('LLLL'),
+        eventDescription: event.extendedProps.description,
+        eventLink: event.extendedProps.link,
+        showModal: true
+      });
+    } else {
+      this.setState({
+        eventType: event.extendedProps.type,
+        eventId: event.extendedProps.id,
+        eventName: event.extendedProps.name,
+        eventStart: event.start,
+        eventEnd: event.end,
+        eventDescription: event.extendedProps.description,
+        eventLink: event.extendedProps.link,
+        showModal: true 
+      });
+    }
   }
 
   render() {
@@ -92,9 +101,13 @@ class Calendar extends Component {
         title: task.task,
         start: moment(task.deadline).format(EVENT_FORMAT),
         end: moment(task.deadline).format(EVENT_FORMAT),
+        color: 'rgb(71,55,193)',
         extendedProps: {
           type: 'task',
-          id: task._id
+          id: task._id,
+          description: task.description,
+          link: task.link,
+          deadline: task.deadline
         }
       })
     })
@@ -106,6 +119,7 @@ class Calendar extends Component {
         title: event.event,
         start: event.start,
         end: event.end,
+        color: '#5bc0de',
         extendedProps: {
           type: 'event',
           id: event._id,
@@ -122,50 +136,69 @@ class Calendar extends Component {
     
     return (
       <div className="main-background">
-      <Header/>
-      <div className="calendar-wrapper">
-        <TaskForm updateData={this.loadData.bind(this)} type='create'/>
-        <EventForm loadData={this.loadData} />
-        <div style={{padding: "5%"}}>
-          <FullCalendar
-            plugins={[ interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin ]}
-            initialView="dayGridMonth"
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
-            }}
-            events={dataArr}
-            eventClick={this.handleEventClick}
-            eventDidMount={this.showEvent}
-          />
-          <Modal
-            show={this.state.showModal}
-            onHide={this.handleCloseModal}
-            keyboard={false}
-            backdrop="static"
-          >
-            <Modal.Header closeButton>
-              <Modal.Title>Event Information</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <h4>{this.state.eventName}</h4>
-              <p>{moment(this.state.eventStart).format('LLLL')} - {moment(this.state.eventEnd).format('LLLL')}</p>
-              <p>{this.state.eventDescription}</p>
-              <a target="_blank" rel="noopener noreferrer" href={this.state.eventLink}>{this.state.eventLink}</a>
-            </Modal.Body>
-            <Modal.Footer>
-              <EventForm 
-                type={"edit"}
-                id={this.state.eventId}
-                closeModal={this.handleCloseModal}
-                loadData={this.loadData}
-              />
-              <Button variant="danger" type="button" onClick={this.deleteEvent}>Delete Event</Button>
-            </Modal.Footer>
-          </Modal>
-        </div>
-      </div>  
+        <Header/>
+        <div className="calendar-wrapper">
+          <TaskForm updateParent={this.loadData} type='create'/>
+          <EventForm loadData={this.loadData} />
+          <div style={{padding: "5%"}}>
+            <FullCalendar
+              plugins={[ interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin ]}
+              initialView="dayGridMonth"
+              headerToolbar={{
+                left: "prev,next today",
+                center: "title",
+                right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
+              }}
+              events={dataArr}
+              eventClick={this.handleEventClick}
+            />
+            <Modal
+              show={this.state.showModal}
+              onHide={this.handleCloseModal}
+              keyboard={false}
+              backdrop="static"
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>{this.state.eventType === 'task' ? "Task Information" : "Event Information"}</Modal.Title>
+              </Modal.Header>
+              
+                {this.state.eventType === 'task' ?
+                  <>
+                    <Modal.Body>
+                      <div>
+                        <h4>{this.state.eventName}</h4>
+                        <p>Due by {this.state.eventEnd}</p>
+                        <p>{this.state.eventDescription}</p>
+                        <a target="_blank" rel="noopener noreferrer" href={this.state.eventLink}>{this.state.eventLink}</a>
+                      </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="danger" type="button" onClick={this.handleCloseModal}>Close</Button>
+                    </Modal.Footer>  
+                  </>  
+                  :
+                  <>
+                    <Modal.Body>
+                      <div>
+                        <h4>{this.state.eventName}</h4>
+                        <p>{moment(this.state.eventStart).format('LLLL')} - {moment(this.state.eventEnd).format('LLLL')}</p>
+                        <p>{this.state.eventDescription}</p>
+                        <a target="_blank" rel="noopener noreferrer" href={this.state.eventLink}>{this.state.eventLink}</a>
+                      </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <EventForm 
+                        type={"edit"}
+                        id={this.state.eventId}
+                        closeModal={this.handleCloseModal}
+                        loadData={this.loadData}
+                      />
+                      <Button variant="danger" type="button" onClick={this.deleteEvent}>Delete Event</Button>
+                    </Modal.Footer>  
+                  </>}        
+            </Modal>
+          </div>
+        </div>  
       </div>       
     )
   }

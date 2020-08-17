@@ -22,10 +22,10 @@ class Announcement extends Component {
 
   render() {
     return (
-      <Container className="mt-3 announce-container">
-        <Row className="justify-content-between">
-          <strong className="btn btn-link" onClick={this.handleOpenModal}>{this.props.subject} - {this.props.name}</strong>
-          <strong>{moment(moment(this.props.date).utc(), "YYYYMMDD").fromNow()}</strong>
+      <Container className="mt-2" fluid>
+        <Row sm={12} className="justify-content-between">
+          <strong className="btn btn-link" onClick={this.handleOpenModal}>{this.props.subject}</strong>
+          <strong className="d-none d-md-block">{this.props.name} • {moment(moment(this.props.date).utc(), "YYYYMMDD").fromNow()}</strong>
         </Row>
         <div onClick={e => e.stopPropagation()}>
           <Modal
@@ -44,15 +44,16 @@ class Announcement extends Component {
                   <h5>{this.props.name}</h5>
                   <h5>{moment(this.props.date).format('MMMM Do YYYY, h:mm a')}</h5>
                 </Row>        
-              <p>{this.props.announcement}</p>
+                <Row className="pt-2">
+                  <p style={{whiteSpace: "pre-wrap", overflowWrap: "break-word"}}>{this.props.announcement}</p>
+                </Row>
               </Container>
             </Modal.Body>
             <Modal.Footer>
               <Button onClick={this.handleCloseModal} variant="danger">Close</Button>
             </Modal.Footer>
           </Modal>
-        </div>
-        
+        </div>  
       </Container>
     )
   }

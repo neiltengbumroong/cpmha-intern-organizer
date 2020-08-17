@@ -115,6 +115,7 @@ class Team extends Component {
     let teamIncomplete = [];
     let teamMembers = [];
 
+
     // append teams into a comma separated list of links
     if (teamData.members) {
       teamMembers = teamData.members.map((intern, i) => (
@@ -169,10 +170,11 @@ class Team extends Component {
               <TeamForm
                 type={"edit"}
                 id={teamData._id}
+                updateParent={this.getTeam}
               />
             </Container>
           </Jumbotron>
-          <Container fluid>
+          <Container className="pb-5" fluid>
             <Row>
               <Col className="col-4">
                 <Card>
@@ -188,7 +190,7 @@ class Team extends Component {
                       null}
                     </p>
                     <p><strong>Members: </strong> {teamMembers}</p>
-                    <p><strong>Created: </strong> {moment(teamData.joined).format('MMMM Do, YYYY')}</p>
+                    <p><strong>Created: </strong> {moment(teamData.created).format('MMMM Do, YYYY')}</p>
                   </Card.Body>
                 </Card>
                 <Card className="mt-5">
@@ -230,13 +232,13 @@ class Team extends Component {
               </Col>
             </Row>
           </Container>
-          <Row className="m-5 justify-content-center">
+          <hr/>
+          <Row className="p-5 justify-content-center">
              <Link to="/"><Button type="button" variant="danger"onClick={() => this.deleteTeamFull(teamData._id)}>Delete Team</Button></Link>
           </Row>
         </>
         : 
-        <h1>Loading</h1>}
-        
+        <h1>Loading</h1>}  
       </div>
     )
   }

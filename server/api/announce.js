@@ -26,4 +26,12 @@ router.get('/api/announcements/get', (req, res) => {
   })
 });
 
+// standard get for all announcements
+router.get('/api/announcements/get-recent', (req, res) => {
+  Announce.find().sort({'date': -1 }).limit(10)
+  .then(announcements => {
+    res.json(announcements);
+  })
+});
+
 module.exports = router;

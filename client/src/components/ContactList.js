@@ -35,7 +35,7 @@ class ContactList extends Component {
     return (
       <div className="main-background">
         <Header/>
-        <Container>
+        <Container className="p-5">
           <Row className="justify-content-center pt-4 pb-4">
             <h1>Contact List</h1>   
           </Row>
@@ -44,7 +44,7 @@ class ContactList extends Component {
           </Row>
           <Row>        
             {BOARD_MEMBER_DATA.map((member, i) => (
-              <Col xs={3} key={i} className="mb-3">
+              <Col md={3} sm={4} xs={6} key={i} className="mb-3">
                 <p><strong>{member.name}</strong></p>
                 <p>{member.email}</p>
                 <p>{member.phone}</p>
@@ -59,7 +59,7 @@ class ContactList extends Component {
           <Row>
             {this.state.interns ? 
               this.state.interns.map((intern, i) => (
-                <Col xs={3} key={i} className="mb-3">
+                <Col md={3} sm={4} xs={6} key={i} className="mb-3">
                   <p><strong>{intern.name}</strong></p>
                   <p>{intern.email}</p>
                   <p>{intern.phone}</p>
@@ -67,7 +67,6 @@ class ContactList extends Component {
               ))
               : <h1>Loading</h1>
             }
-
           </Row>
         </Container>
       </div>

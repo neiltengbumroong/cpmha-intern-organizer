@@ -65,8 +65,8 @@ class Task extends Component {
     const id = { id: taskId };
     axios.post(TASKS_DELETE_API, id)
       .then(() => {
-        // this.props.updateMain();
-        // this.props.updateData();
+        // this.props.updateParent();
+        window.location.reload();
       })
   }
 
@@ -81,7 +81,7 @@ class Task extends Component {
     this.setState({ completed: !this.state.completed }, () => {
       axios.post(TASK_TOGGLE_COMPLETE_API, { taskId: this.state.task._id, completed: this.state.completed })
         .then(() => {
-          window.location.reload();
+          this.props.updateParent();
         })
     });
   }
@@ -109,8 +109,8 @@ class Task extends Component {
 
     if (taskData.assignedToTeam) {
       assignedToTeam = taskData.assignedToTeam.map((team, i) => (
-        <span key={i}>
-          { i > 0 && ", "}
+        <span key={i + taskData.assignedTo.length}>
+          {", "}
           <Link to={{
             pathname: '/teams/' + team.name,
             state: { id: team.id }
@@ -124,19 +124,10 @@ class Task extends Component {
         {taskData.assignedTo ? 
           <div>
             <h5>{taskData.task}</h5>
-            <p>{taskData.description}</p>
-            <p>Deadline: {moment(taskData.deadline).format('LLLL')}</p>
-            <p>{assignedTo.length > 0 && (
-              <>
-                {['Assigned to (Individuals): ',  assignedTo]}
-              </>
-            )}</p>
-            <p>{assignedToTeam.length > 0 && (
-              <>
-                {['Assigned to (Teams): ',  assignedToTeam]}
-              </>
-            )}</p>
-            <p>Link: <a href={taskData.link} target="_blank" rel="noopener noreferrer">{taskData.link}</a></p>
+            <p className="p-task">{taskData.description}</p>
+            <p className="p-task">Deadline: {moment(taskData.deadline).format('LLLL')}</p>
+            <p className="p-task">Assigned to: {assignedTo.concat(assignedToTeam)}</p>
+            <p className="p-task">Link: <a href={taskData.link} target="_blank" rel="noopener noreferrer">{taskData.link}</a></p>
             {this.props.view === 'other' ? 
               taskData.completed ? 
               null :
@@ -145,11 +136,11 @@ class Task extends Component {
               <TaskForm
                 type={"edit"}
                 id={taskData._id}
+                updateParent={this.props.updateParent}
               />
               <Button className="btn-sm" variant="danger" type="button" onClick={() => this.deleteTaskFull(taskData._id)}>Delete Task</Button>
               </>
             }
-            <hr/>
           </div>
           : null
         }

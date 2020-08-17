@@ -38,7 +38,7 @@ class Intern extends Component {
   }
 
   // get intern data and set the state
-  getIntern = async () => {
+  getIntern = () => {
     axios.post(INTERN_GET_SINGLE_API, { id: this.state.internId })
       .then(res => {
         this.setState({ intern: res.data });
@@ -211,16 +211,22 @@ class Intern extends Component {
                 <p>Days at CPMHA</p>
               </Col>
             </Row>     
-            <InternForm 
+            <InternForm
+              updateParent={this.getIntern}
               type={"edit"}
               id={internData._id}
             />{' '}
-            <ActivityForm internId={internData._id} name={internData.name} tasks={internComplete.concat(internIncomplete)}/>
+            <ActivityForm 
+              updateParent={this.getIntern} 
+              internId={internData._id} 
+              name={internData.name} 
+              tasks={internComplete.concat(internIncomplete)}
+            />
           </Container>
         </Jumbotron>
         <Container className="main-background" fluid>
           <Row className="pt-5">
-            <Col className="col-4">
+            <Col md={4} sm={12}>
               <Card>
                 <Card.Body>
                   <Card.Title><h3>Intern Details</h3></Card.Title>
@@ -239,7 +245,7 @@ class Intern extends Component {
                   {internWork.reverse()}
                 </Card.Body>
               </Card>
-              <Card className="mt-5">
+              <Card className="mt-5 mb-5">
               <Card.Body>
                 <Card.Title><h3>Other Interns</h3></Card.Title>
                   {this.state.interns.map((intern, i) => (
@@ -257,27 +263,29 @@ class Intern extends Component {
               </Card.Body>
             </Card>
             </Col>
-            <Col className="col-4 text-left scroll-column">
+            <Col md={4} sm={12} className="text-left scroll-column">
               <h2>Pending Tasks</h2>
               {internIncomplete.length > 0 ? internIncomplete.map((task, i) => (
               <div className="mt-3 mb-3" key={i}>
+                {i > 0 && <hr/>}
                 <Task id={task._id} view={'other'}></Task>
-                <hr/>
+                
               </div>
             ))
             : <p>This intern currently has no pending tasks.</p>}
             </Col>
-            <Col className="col-4 text-left scroll-column">
+            <Col md={4} sm={12} className="text-left scroll-column">
               <h2>Completed Tasks</h2>
               {internComplete.length > 0 ? internComplete.map((task, i) => (
-              <div className="mb-5" key={i}>
+              <div className="mt-3 mb-3" key={i}>
+                {i > 0 && <hr/>}
                 <Task id={task._id} view={'other'}></Task>
               </div>
             ))
             : <p>This intern has no completed tasks.</p>}
             </Col>
           </Row>
-          <hr className="intern-hr"/>
+          <hr/>
           <Row className="p-5 justify-content-center">
              <Link to="/"><Button type="button" variant="danger"onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</Button></Link>
           </Row>

@@ -168,6 +168,7 @@ class TaskForm extends Component {
           _id: this.state.id
         }
         this.addTaskToTeams(addDataTeam);
+        this.props.updateParent();
       })
 
     this.handleCloseModal();
@@ -240,8 +241,7 @@ class TaskForm extends Component {
       .then((res) => {
         this.addTaskToInterns(res.data);
         this.addTaskToTeams(res.data);
-        this.props.updateMain();
-        this.props.updateData();
+        this.props.updateParent();
       })
       .catch(error => {
         this.setState({ error: true })
@@ -272,8 +272,7 @@ class TaskForm extends Component {
       // if form is used for creation
       if (this.props.type === 'create') {
         // list intern options
-        interns.forEach(intern => {
-          
+        interns.forEach(intern => {   
           internOptions.push({
             value: intern._id,
             label: intern.name
@@ -335,7 +334,7 @@ class TaskForm extends Component {
       <>
         {this.props.type === 'edit' ?
           <Button className="btn-sm" onClick={this.handleOpenModal}>Edit Task</Button> :
-          <Button className="btn-lg" onClick={this.handleOpenModal}>Create Task</Button>}
+          <Button variant="cpmha-dark-purple" className="btn-md" onClick={this.handleOpenModal}>Create Task</Button>}
         <Modal
           show={this.state.showModal}
           onHide={this.handleCloseModal}
