@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
-import { Form, Col, Modal, Button } from 'react-bootstrap';
+import { Formik } from 'formik';
+import { Form, Col, Modal, Button, Row, Container } from 'react-bootstrap';
 import { mapToDatabaseReadable } from '../utils';
 
 
@@ -30,7 +31,8 @@ class TeamForm extends Component {
       description: '',
       interns: [],
       showModal: false,
-      isLoading: true
+      isLoading: true,
+      errors: []
     }
   }
 
@@ -59,6 +61,23 @@ class TeamForm extends Component {
 
   handleCloseModal = () => {
     this.setState({ showModal: false });
+  }
+
+  handleValidation = () => {
+    let errors = {};
+    if (!this.state.name) {
+      errors["name"] = "Team name is required.";
+    }
+    if (!this.state.description) {
+      errors["description"] = "Team description is required.";
+    }
+
+    this.setState({ errors: errors });
+
+    if (errors["name"] || errors["description"]) {
+      return false;
+    } 
+    return true;
   }
 
   // get basic team data and set states accordingly
@@ -128,60 +147,64 @@ class TeamForm extends Component {
   }
 
   // create a team 
-  createTeam = () => {
-    const teamToCreate = {
-      name: this.state.name,
-      members: this.state.members ? this.state.members.map(mapToDatabaseReadable) : [],
-      leader: this.state.leader,
-      description: this.state.description,
-      created: this.state.created
-    }
+  createTeam = async () => {
+    const validated = await this.handleValidation();
+    if (validated) {
+      const teamToCreate = {
+        name: this.state.name,
+        members: this.state.members ? this.state.members.map(mapToDatabaseReadable) : [],
+        leader: this.state.leader,
+        description: this.state.description,
+        created: this.state.created
+      }
 
-    // post to team api 
-    axios.post(TEAM_POST_API, teamToCreate)
-      .then(res => {
-        this.state.members.length > 0 && this.addTeamToInterns(res.data);
-        this.props.updateParent();
-      })
-    this.handleCloseModal();
+      //post to team api 
+      axios.post(TEAM_POST_API, teamToCreate)
+        .then(res => {
+          this.state.members.length > 0 && this.addTeamToInterns(res.data);
+          this.props.updateParent();
+        })
+      this.handleCloseModal();
+    }
   }
 
   // edit a team
-  editTeam = () => {
-    const teamToUpdate = {
-      id: this.state.id,
-      name: this.state.name,
-      members: this.state.members.map(mapToDatabaseReadable).concat(this.state.currentMembers),
-      leader: this.state.leader,
-      description: this.state.description,
-      created: this.state.created
-    }
+  editTeam = async () => {
+    const validated = await this.handleValidation();
+    if (validated) {
+      const teamToUpdate = {
+        id: this.state.id,
+        name: this.state.name,
+        members: this.state.members.map(mapToDatabaseReadable).concat(this.state.currentMembers),
+        leader: this.state.leader,
+        description: this.state.description,
+        created: this.state.created
+      }
 
-    // post the basic data to the team update API
-    axios.post(TEAM_UPDATE_API, teamToUpdate)
-      .then(res => {
-        // remove team members no longer attached
-        let diffArray = this.state.oldMembers.filter(x => !this.state.currentMembers.includes(x));
-        this.removeTeamFromInterns(diffArray);
-      })
-      .then(() => {
-        // add newly attached team members
-        const addData = { members: [], _id: this.state.id };
-        this.state.members.forEach(member => {
-          addData["members"].push({
-            id: member.value
-          })
-          this.addTeamToInterns(addData);
+      // post the basic data to the team update API
+      axios.post(TEAM_UPDATE_API, teamToUpdate)
+        .then(res => {
+          // remove team members no longer attached
+          let diffArray = this.state.oldMembers.filter(x => !this.state.currentMembers.includes(x));
+          this.removeTeamFromInterns(diffArray);
         })
-      })
-      .then(() => {
-        this.props.updateParent();
-      })
+        .then(() => {
+          // add newly attached team members
+          const addData = { members: [], _id: this.state.id };
+          this.state.members.forEach(member => {
+            addData["members"].push({
+              id: member.value
+            })
+            this.addTeamToInterns(addData);
+          })
+        })
+        .then(() => {
+          this.props.updateParent();
+        })
 
 
-    this.handleCloseModal();
-    // "illusion" of change happening
-    // window.location.reload();
+      this.handleCloseModal();
+    }
   }
 
   componentDidMount() {
@@ -241,11 +264,12 @@ class TeamForm extends Component {
       }
 
       currentMembers = currentMembersDisplay.map((member, i) =>
-        <div key={i}>
-          <p>{member.label}</p>
-          <p>{member.value}</p>
-          <button type="button" onClick={() => this.removeCurrentMember(member.value)}>X</button>
-        </div>
+        <Container key={i}>
+          <Row>
+            <Button className="pt-0 pb-0 mt-0 mb-0" variant="danger" size="sm" onClick={() => this.removeCurrentMember(member.value)}>X</Button>
+            <p> &nbsp;{member.label}</p>
+          </Row>      
+        </Container>
       )
     }
 
@@ -264,7 +288,7 @@ class TeamForm extends Component {
           </Modal.Header>
           <Modal.Body>
             <Form>
-              <Form.Group>
+              <Form.Group controlId="nameValidation">
                 <Form.Label>Team Name</Form.Label>
                 <Form.Control
                   size="md"
@@ -272,12 +296,19 @@ class TeamForm extends Component {
                   placeholder="Ex. Marketing"
                   defaultValue={this.props.type === 'edit' ? this.state.name : ''}
                   onChange={this.handleNameChange}
+                  isInvalid={this.state.errors.name}
+                  required
                 />
+                <Form.Control.Feedback type="invalid">
+                  {this.state.errors["name"]}
+                </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group>
+                  <h5 className="text-left">Current Members</h5>
+                  {currentMembers}
+                  
                 <Form.Label>Add Members</Form.Label>
-                {currentMembers}
                 <Select
                   options={options}
                   isMulti={true}
@@ -305,7 +336,12 @@ class TeamForm extends Component {
                   placeholder="Ex. Tasked with expanding CPMHA connections"
                   defaultValue={this.props.type === 'edit' ? this.state.description : ''}
                   onChange={this.handleDescriptionChange}
+                  isInvalid={this.state.errors.description}
+                  required
                 />
+                <Form.Control.Feedback type="invalid">
+                  {this.state.errors["description"]}
+                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Date Created &nbsp;</Form.Label><br/>

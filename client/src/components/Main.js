@@ -157,7 +157,7 @@ class Main extends Component {
                   <Card.Title><h3>Known Issues</h3></Card.Title>
                   <p>- Deleting an intern who is currently leading a team will cause an error</p>
                   <p>- Some pages won't update after user action (editing, submitting, etc.), simply refresh page but please still document below</p>
-                  <a href="https://docs.google.com/document/d/1DKajjcdVYzG0nmLjwyYfKFkQBSFlJVDN6W6F2jAfpQA/edit" classname="btn btn-link">https://docs.google.com/document/d/1DKajjcdVYzG0nmLjwyYfKFkQBSFlJVDN6W6F2jAfpQA/edit</a>
+                  <a href="https://docs.google.com/document/d/1DKajjcdVYzG0nmLjwyYfKFkQBSFlJVDN6W6F2jAfpQA/edit" className="btn-link">https://docs.google.com/document/d/1DKajjcdVYzG0nmLjwyYfKFkQBSFlJVDN6W6F2jAfpQA/edit</a>
                 </Card.Body>
               </Card>
             </Col> 
