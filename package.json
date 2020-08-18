@@ -4,9 +4,9 @@
   "description": "server side for cpmha-intern-organizer",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "author": "Neil Tengbumroong",
   "license": "ISC",
