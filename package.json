@@ -4,8 +4,8 @@
   "description": "server side for cpmha-intern-organizer",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "node ./serverindex.js",
+    "dev": "nodemon ./server/index.js",
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "author": "Neil Tengbumroong",
