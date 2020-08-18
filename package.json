@@ -4,7 +4,7 @@
   "description": "server side for cpmha-intern-organizer",
   "main": "index.js",
   "scripts": {
-    "start": "node ./serverindex.js",
+    "start": "node ./server/index.js",
     "dev": "nodemon ./server/index.js",
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
