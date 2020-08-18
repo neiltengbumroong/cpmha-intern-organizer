@@ -3,14 +3,9 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import { Form, Col, Button, Modal } from 'react-bootstrap';
 import "react-datepicker/dist/react-datepicker.css";
-
 import '../css/custom.scss';
 
-const INTERN_POST_API = 'http://localhost:5000/api/interns/post';
-const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
-const INTERN_UPDATE_API = 'http://localhost:5000/api/interns/update';
-const TEAM_GET_API = 'http://localhost:5000/api/teams/get';
-const TEAM_UPDATE_MEMBERS_API = 'http://localhost:5000/api/team/add-members';
+import * as API from '../utils/api';
 
 class InternForm extends Component {
   constructor(props) {
@@ -89,7 +84,7 @@ class InternForm extends Component {
   // get intern data from database to pre-populate form for editing 
   getInternData = () => {
     this.setState({ isLoading: true });
-    axios.post(INTERN_GET_SINGLE_API, { id: this.props.id })
+    axios.post(API.INTERN_GET_SINGLE_API, { id: this.props.id })
       .then((res) => {
         this.setState({
           name: res.data.name,
@@ -121,7 +116,7 @@ class InternForm extends Component {
         work: []
       }
 
-      axios.post(INTERN_POST_API, internToCreate);
+      axios.post(API.INTERN_POST_API, internToCreate);
       this.props.updateParent();
       this.handleCloseModal();
     }
@@ -140,7 +135,7 @@ class InternForm extends Component {
         joined: this.state.dateJoined,
         phone: this.state.phone
       }
-      axios.post(INTERN_UPDATE_API, internToEdit)
+      axios.post(API.INTERN_UPDATE_API, internToEdit)
         .then(res => {
           this.getInternData();
           this.props.updateParent();

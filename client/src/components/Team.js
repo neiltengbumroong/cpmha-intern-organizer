@@ -7,12 +7,7 @@ import Task from './Task';
 import moment from 'moment';
 import { Jumbotron, Container, Row, Button, Col, Card, Modal, Form } from 'react-bootstrap';
 
-const TEAMS_GET_SINGLE_API = 'http://localhost:5000/api/teams/get/single';
-const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
-const TEAMS_DELETE_API = 'http://localhost:5000/api/teams/delete';
-const TEAMS_DELETE_FROM_TASK_API = 'http://localhost:5000/api/tasks/delete-team';
-const TEAMS_DELETE_FROM_INTERN_API = 'http://localhost:5000/api/interns/delete-team';
-const TEAM_GET_API = 'http://localhost:5000/api/teams/get';
+import * as API from '../utils/api';
 
 const MASTER_KEY = 'paolo';
 
@@ -61,7 +56,7 @@ class Team extends Component {
 
   // get team data and set state
   getTeam = () => {
-    axios.post(TEAMS_GET_SINGLE_API, { id: this.state.teamId })
+    axios.post(API.TEAM_GET_SINGLE_API, { id: this.state.teamId })
       .then(res => {
         this.setState({ 
           team: res.data,
@@ -74,7 +69,7 @@ class Team extends Component {
 
   // get all teams' data to display
   getAllTeams = () => {
-    axios.get(TEAM_GET_API)
+    axios.get(API.TEAM_GET_API)
       .then(res => {
         this.setState({ teams: res.data })
       })
@@ -82,7 +77,7 @@ class Team extends Component {
 
   getTeamTasks = () => {
     this.state.team.tasks.forEach(task => {
-      axios.post(TASK_GET_SINGLE_API, { id: task.id })
+      axios.post(API.TASK_GET_SINGLE_API, { id: task.id })
       .then(res => {
           this.setState({ tasks: [...this.state.tasks, res.data]});
         })
@@ -96,7 +91,7 @@ class Team extends Component {
         teamId: teamId,
         taskId: task.id
       }
-      axios.post(TEAMS_DELETE_FROM_TASK_API, teamToDelete);
+      axios.post(API.TASK_DELETE_TEAM_API, teamToDelete);
     });
   }
 
@@ -107,13 +102,13 @@ class Team extends Component {
         teamId: teamId,
         internId: intern.id
       }
-      axios.post(TEAMS_DELETE_FROM_INTERN_API, teamToDelete);
+      axios.post(API.INTERN_DELETE_TEAM_API, teamToDelete);
     });
   }
 
   // delete team from collection
   deleteTeam = teamId => {
-    axios.post(TEAMS_DELETE_API, { id: teamId });
+    axios.post(API.TEAM_DELETE_API, { id: teamId });
   }
 
   // systematically delete team - from tasks, interns, then team collection
@@ -130,7 +125,7 @@ class Team extends Component {
 
   componentDidUpdate() {
     // check if the props for the team's id are different
-    if (this.state.teamId != this.props.location.state.id) {
+    if (this.state.teamId !== this.props.location.state.id) {
       // set new ID and clear out team and tasks
       this.setState({ 
         teamId: this.props.location.state.id,
@@ -311,7 +306,7 @@ class Team extends Component {
             </Modal.Body>
             <Modal.Footer>
               <Button variant="primary" onClick={this.handleCloseDeleteModal}>Cancel</Button>
-              {this.state.confirmDelete ? 
+              {this.state.confirmDelete && this.state.confirmKey ? 
                 <Link to="/"><Button variant="danger" onClick={() => this.deleteTeamFull(this.state.teamId)}>Confirm</Button></Link>
                 :
                 <Button variant="danger" disabled>Confirm</Button>

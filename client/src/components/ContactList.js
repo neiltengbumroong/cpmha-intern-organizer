@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Header from './Header';
 import { Col, Row, Container } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 
-const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
+import * as API from '../utils/api';
 
 const BOARD_MEMBER_DATA = [
   { name: 'Paolo Dell Aquila', phone: '(561)-827-4111', email: 'pd@cpmha.com' },
@@ -21,7 +20,7 @@ class ContactList extends Component {
   }
 
   loadInterns = () => {
-    axios.get(INTERN_GET_API)
+    axios.get(API.INTERN_GET_API)
       .then(res => {
         this.setState({ interns: res.data });
       })
@@ -35,7 +34,7 @@ class ContactList extends Component {
     return (
       <div className="main-background">
         <Header/>
-        <Container className="p-5">
+        <Container className="pl-5 pr-5">
           <Row className="justify-content-center pt-4 pb-4">
             <h1>Contact List</h1>   
           </Row>

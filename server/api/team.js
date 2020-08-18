@@ -36,7 +36,7 @@ router.post('/api/teams/get/single', (req, res) => {
 });
 
 // push intern onto members array for intern
-router.post('/api/team/add-members', (req, res) => {
+router.post('/api/team/add/members', (req, res) => {
   Team.findOneAndUpdate(
     { _id: req.body.id },
     { $addToSet: { members: req.body.internObject } },
@@ -75,7 +75,7 @@ router.post('/api/teams/update', (req, res) => {
 })
 
 // push task onto tasks array for team
-router.post('/api/teams/add-task', (req, res) => {
+router.post('/api/teams/add/task', (req, res) => {
   console.log("adding task: ", req.body);
   Team.findOneAndUpdate(
     { _id: req.body.teamId },
@@ -87,7 +87,7 @@ router.post('/api/teams/add-task', (req, res) => {
 });
 
 // remove single intern from team 
-router.post('/api/teams/delete-intern', (req, res) => {
+router.post('/api/teams/delete/member', (req, res) => {
   console.log("removing intern: ", req.body);
   Team.findByIdAndUpdate(
     { _id: req.body.teamId },
@@ -99,7 +99,7 @@ router.post('/api/teams/delete-intern', (req, res) => {
 });
 
 // remove single task from team
-router.post('/api/teams/delete-task', (req, res) => {
+router.post('/api/teams/delete/task', (req, res) => {
   Team.findByIdAndUpdate(
     { _id: req.body.teamId },
     { $pull: { tasks: { id: req.body.taskId } } },

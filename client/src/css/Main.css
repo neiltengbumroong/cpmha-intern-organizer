@@ -74,6 +74,7 @@ background: linear-gradient(90deg, rgba(106,50,171,1) 0%, rgba(156,131,244,1) 10
 
 .main-background {
   background-color: rgba(238, 229, 246, 0.4);
+  min-height: 100vh;
 }
 
 .img-responsive {

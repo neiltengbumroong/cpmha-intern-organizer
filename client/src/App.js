@@ -4,7 +4,7 @@ import Team from './components/Team';
 import Main from './components/Main';
 import Calendar from './components/Calendar';
 import ContactList from './components/ContactList';
-import { BrowserRouter as Router, Route, Switch, withRouter } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 
 function App() {
@@ -13,8 +13,8 @@ function App() {
     <div>
       <Router>
         <Switch>
-          <Route exact path='/' exact component={Main}/>
-          <Route exact path='/calendar' exact component={Calendar}/>
+          <Route exact path='/' component={Main}/>
+          <Route exact path='/calendar' component={Calendar}/>
           <Route exact path='/interns/:internId' component={Intern}/>
           <Route exact path='/teams/:teamId' component={Team}/>
           <Route exact path='/ContactList' component={ContactList}/>

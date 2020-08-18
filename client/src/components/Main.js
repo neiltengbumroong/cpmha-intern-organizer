@@ -7,15 +7,11 @@ import TeamForm from './TeamForm';
 import TaskForm from './TaskForm';
 import Header from './Header';
 import AnnounceForm from './AnnounceForm';
-import { Card, Container, Row, Col, Modal } from 'react-bootstrap';
+import { Card, Container, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import '../css/Main.css';
-
-const ANNOUNCEMENT_GET_RECENT_API = 'http://localhost:5000/api/announcements/get-recent';
-const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
-const TEAM_GET_API = 'http://localhost:5000/api/teams/get';
-const TASK_GET_API = 'http://localhost:5000/api/tasks/get';
+import * as API from '../utils/api';
 
 class Main extends Component {
   constructor(props) {
@@ -33,7 +29,7 @@ class Main extends Component {
     this.setState({
       tasks: []
     }, () => {
-      axios.get(TASK_GET_API)
+      axios.get(API.TASK_GET_API)
       .then(res => {
         this.setState({
           tasks: res.data
@@ -50,10 +46,10 @@ class Main extends Component {
       announcements: []
     }, () => {
       axios.all([
-      axios.get(TEAM_GET_API),
-      axios.get(INTERN_GET_API),
-      axios.get(ANNOUNCEMENT_GET_RECENT_API),
-      axios.get(TASK_GET_API)
+      axios.get(API.TEAM_GET_API),
+      axios.get(API.INTERN_GET_API),
+      axios.get(API.ANNOUNCEMENT_GET_RECENT_API),
+      axios.get(API.TASK_GET_API)
     ])
       .then(res => {
         this.setState({

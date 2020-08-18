@@ -10,15 +10,9 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import TaskForm from './TaskForm';
 import EventForm from './EventForm';
-import { Link } from 'react-router-dom';
 import Header from './Header';
 
-
-const TASK_GET_API = 'http://localhost:5000/api/tasks/get';
-const EVENT_GET_API = 'http://localhost:5000/api/events/get';
-const EVENT_DELETE_API = 'http://localhost:5000/api/events/delete';
-
-const EVENT_FORMAT = 'YYYY-MM-DD HH:MM';
+import * as API from '../utils/api';
 
 class Calendar extends Component {
   constructor(props) {
@@ -47,8 +41,8 @@ class Calendar extends Component {
 
   loadData = () => {
     axios.all([
-      axios.get(TASK_GET_API),
-      axios.get(EVENT_GET_API)
+      axios.get(API.TASK_GET_API),
+      axios.get(API.EVENT_GET_API)
     ])
     .then(res => {
       this.setState({ 
@@ -63,7 +57,7 @@ class Calendar extends Component {
   }
 
   deleteEvent = () => {
-    axios.post(EVENT_DELETE_API, { id: this.state.eventId });
+    axios.post(API.EVENT_DELETE_API, { id: this.state.eventId });
     this.loadData();
     this.handleCloseModal();
   }

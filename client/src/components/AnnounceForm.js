@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Form, Col, Button, Modal } from 'react-bootstrap';
+import { Form, Button, Modal } from 'react-bootstrap';
 
-const ANNOUNCE_POST_API = 'http://localhost:5000/api/announcements/post';
+import * as API from '../utils/api';
 
 class AnnounceForm extends Component {
   constructor(props) {
@@ -60,7 +60,7 @@ class AnnounceForm extends Component {
         announcement: this.state.announcement,
         date: new Date()
       }
-      axios.post(ANNOUNCE_POST_API, newAnnounce)
+      axios.post(API.ANNOUNCEMENT_POST_API, newAnnounce)
         .then(() => {
           this.props.updateMain();
         })

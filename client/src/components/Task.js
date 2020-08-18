@@ -5,12 +5,7 @@ import TaskForm from './TaskForm';
 import { Button, Modal, Form, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
-const TASK_TOGGLE_COMPLETE_API = 'http://localhost:5000/api/tasks/toggle-completed';
-const INTERN_TOGGLE_COMPLETE_API = 'http://localhost:5000/api/interns/toggle-completed';
-const TASKS_DELETE_API = 'http://localhost:5000/api/tasks/delete';
-const TASKS_DELETE_FROM_TEAM_API = 'http://localhost:5000/api/teams/delete-task';
-const TASKS_DELETE_FROM_INTERN_API = 'http://localhost:5000/api/interns/delete-task';
+import * as API from '../utils/api';
 
 const MASTER_KEY = 'paolo';
 
@@ -56,7 +51,7 @@ class Task extends Component {
       isLoading: true,
       task: ''
     });
-    axios.post(TASK_GET_SINGLE_API, { id: this.props.id })
+    axios.post(API.TASK_GET_SINGLE_API, { id: this.props.id })
       .then(res => {
         this.setState({ 
           task: res.data,
@@ -76,7 +71,7 @@ class Task extends Component {
         taskId: taskId,
         teamId: team.id
       }
-      axios.post(TASKS_DELETE_FROM_TEAM_API, taskToDelete);
+      axios.post(API.TEAM_DELETE_TASK_API, taskToDelete);
     })
   }
 
@@ -87,14 +82,14 @@ class Task extends Component {
         taskId: taskId,
         internId: intern.id
       }
-      axios.post(TASKS_DELETE_FROM_INTERN_API, taskToDelete);
+      axios.post(API.INTERN_DELETE_TASK_API, taskToDelete);
     })
   }
 
   // delete task document from collection
   deleteTask = taskId => {
     const id = { id: taskId };
-    axios.post(TASKS_DELETE_API, id)
+    axios.post(API.TASK_DELETE_API, id)
       .then(() => {
         this.props.updateParent();
       })
@@ -109,7 +104,7 @@ class Task extends Component {
 
   toggleCompleted = () => {
     this.setState({ completed: !this.state.completed }, () => {
-      axios.post(TASK_TOGGLE_COMPLETE_API, { taskId: this.state.task._id, completed: this.state.completed })
+      axios.post(API.TASK_TOGGLE_COMPLETE_API, { taskId: this.state.task._id, completed: this.state.completed })
         .then(() => {
           window.location.reload();
         })

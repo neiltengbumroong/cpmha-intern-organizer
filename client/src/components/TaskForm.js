@@ -5,15 +5,7 @@ import { Form, Modal, Col, Button, Container, Row } from 'react-bootstrap';
 import DateTimePicker from 'react-datetime-picker';
 import { mapToDatabaseReadable } from '../utils';
 
-const TASK_POST_API = 'http://localhost:5000/api/tasks/post';
-const TASK_UPDATE_API = 'http://localhost:5000/api/tasks/update';
-const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
-const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
-const TEAM_GET_API = 'http://localhost:5000/api/teams/get';
-const INTERN_UPDATE_TASK_API = 'http://localhost:5000/api/interns/add-task';
-const TEAM_UPDATE_TASK_API = 'http://localhost:5000/api/teams/add-task';
-const TASKS_DELETE_FROM_INTERN_API = 'http://localhost:5000/api/interns/delete-task';
-const TASKS_DELETE_FROM_TEAM_API = 'http://localhost:5000/api/teams/delete-task';
+import * as API from '../utils/api';
 
 const MASTER_KEY = 'paolo';
 
@@ -110,8 +102,8 @@ class TaskForm extends Component {
   loadData = () => {
     this.setState({ isLoading: true });
     axios.all([
-      axios.get(INTERN_GET_API),
-      axios.get(TEAM_GET_API)
+      axios.get(API.INTERN_GET_API),
+      axios.get(API.TEAM_GET_API)
     ])
       .then(res => {
         this.setState({
@@ -130,20 +122,20 @@ class TaskForm extends Component {
   // remove a current member from react-select
   removeCurrentAssigned = id => {
     var array = [...this.state.assignedToCurrent];
-    var filteredArray = array.filter(function (el) { return el.id != id; });
+    var filteredArray = array.filter(function (el) { return el.id !== id; });
     this.setState({ assignedToCurrent: filteredArray });
   }
 
   // remove a current team from react-select
   removeCurrentTeam = id => {
     var array = [...this.state.assignedToTeamCurrent];
-    var filteredArray = array.filter(function (el) { return el.id != id; });
+    var filteredArray = array.filter(function (el) { return el.id !== id; });
     this.setState({ assignedToTeamCurrent: filteredArray });
   }
 
   // load task data (for editing)
   getTaskData = () => {
-    axios.post(TASK_GET_SINGLE_API, { id: this.props.id })
+    axios.post(API.TASK_GET_SINGLE_API, { id: this.props.id })
       .then(res => {
         this.setState({
           task: res.data.task,
@@ -172,10 +164,9 @@ class TaskForm extends Component {
         description: this.state.description,
         assignedTo: this.state.assignedTo.map(mapToDatabaseReadable).concat(this.state.assignedToCurrent),
         assignedToTeam: this.state.assignedToTeam.map(mapToDatabaseReadable).concat(this.state.assignedToTeamCurrent),
-        description: this.state.description,
         link: this.state.link
       }
-      axios.post(TASK_UPDATE_API, taskToUpdate)
+      axios.post(API.TASK_UPDATE_API, taskToUpdate)
         .then(res => {
           this.props.updateParent();
           this.getTaskData();
@@ -203,7 +194,6 @@ class TaskForm extends Component {
         })
 
       this.handleCloseModal();
-      // window.location.reload();
     }
   }
 
@@ -214,7 +204,7 @@ class TaskForm extends Component {
         internId: intern.id,
         taskObject: { id: data._id || this.state.id, task: data.task || this.state.task }
       }
-      axios.post(INTERN_UPDATE_TASK_API, taskToUpdate);
+      axios.post(API.INTERN_ADD_TASK_API, taskToUpdate);
     });
   }
 
@@ -225,7 +215,7 @@ class TaskForm extends Component {
         teamId: team.id,
         taskObject: { id: data._id || this.state.id, task: data.task || this.state.task }
       }
-      axios.post(TEAM_UPDATE_TASK_API, taskToUpdate);
+      axios.post(API.TEAM_ADD_TASK_API, taskToUpdate);
     });
   }
 
@@ -236,7 +226,7 @@ class TaskForm extends Component {
         taskId: this.state.id,
         internId: element.id
       }
-      axios.post(TASKS_DELETE_FROM_INTERN_API, taskToUpdate);
+      axios.post(API.INTERN_DELETE_TASK_API, taskToUpdate);
     })
   }
 
@@ -247,7 +237,7 @@ class TaskForm extends Component {
         taskId: this.state.id,
         teamId: element.id
       }
-      axios.post(TASKS_DELETE_FROM_TEAM_API, taskToUpdate);
+      axios.post(API.TEAM_DELETE_TASK_API, taskToUpdate);
     })
   }
 
@@ -269,7 +259,7 @@ class TaskForm extends Component {
       }
       
       // post task and then add the response to teams and interns
-      axios.post(TASK_POST_API, taskToCreate)
+      axios.post(API.TASK_POST_API, taskToCreate)
         .then((res) => {
           this.addTaskToInterns(res.data);
           this.addTaskToTeams(res.data);

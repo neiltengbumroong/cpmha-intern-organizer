@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import moment from 'moment';
 import DateTimePicker from 'react-datetime-picker';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
-const EVENT_POST_API = 'http://localhost:5000/api/events/post';
-const EVENT_UPDATE_API = 'http://localhost:5000/api/events/update';
-const EVENT_GET_SINGLE_API = 'http://localhost:5000/api/events/get/single';
-
+import * as API from '../utils/api';
 
 class EventForm extends Component {
   constructor(props) {
@@ -64,7 +60,7 @@ class EventForm extends Component {
   }
 
   getEventData = () => {
-    axios.post(EVENT_GET_SINGLE_API, { id: this.props.id })
+    axios.post(API.EVENT_GET_SINGLE_API, { id: this.props.id })
       .then(res => {
         this.setState({
           event: res.data.event,
@@ -86,7 +82,7 @@ class EventForm extends Component {
         description: this.state.description,
         link: this.state.link
       }
-      axios.post(EVENT_POST_API, eventToCreate)
+      axios.post(API.EVENT_POST_API, eventToCreate)
         .then(() => {
           this.props.loadData();
         })
@@ -109,7 +105,7 @@ class EventForm extends Component {
         description: this.state.description,
         link: this.state.link
       }
-      axios.post(EVENT_UPDATE_API, eventToUpdate);
+      axios.post(API.EVENT_UPDATE_API, eventToUpdate);
       this.handleCloseModal();
       this.props.loadData();
       this.props.closeModal();

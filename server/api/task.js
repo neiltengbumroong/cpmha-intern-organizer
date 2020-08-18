@@ -38,7 +38,7 @@ router.get('/api/tasks/get', (req, res) => {
   })
 });
 
-router.post('/api/tasks/toggle-completed', (req, res) => {
+router.post('/api/tasks/toggle/completed', (req, res) => {
   Task.updateOne(
     { _id: req.body.taskId },
     { $set:
@@ -82,7 +82,7 @@ router.post('/api/tasks/update', (req, res) => {
 });
 
 // remove single intern from task 
-router.post('/api/tasks/delete-intern', (req, res) => {
+router.post('/api/tasks/delete/intern', (req, res) => {
   console.log("deleting intern: ", req.body);
   Task.findByIdAndUpdate(
     { _id: req.body.taskId },
@@ -94,7 +94,7 @@ router.post('/api/tasks/delete-intern', (req, res) => {
 });
 
 // remove single team from task
-router.post('/api/tasks/delete-team', (req, res) => {
+router.post('/api/tasks/delete/team', (req, res) => {
   console.log("deleting team: ", req.body);
   Task.findByIdAndUpdate(
     { _id: req.body.internId },

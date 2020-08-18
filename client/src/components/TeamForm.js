@@ -2,19 +2,10 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
-import { Formik } from 'formik';
-import { Form, Col, Modal, Button, Row, Container } from 'react-bootstrap';
+import { Form, Modal, Button, Row, Container } from 'react-bootstrap';
 import { mapToDatabaseReadable } from '../utils';
 
-
-const TEAM_POST_API = 'http://localhost:5000/api/teams/post';
-const TEAM_UPDATE_API = 'http://localhost:5000/api/teams/update';
-const TEAM_ADD_MEMBERS_API = 'http://localhost:5000/api/team/add-members';
-const TEAM_GET_SINGLE_API = 'http://localhost:5000/api/teams/get/single';
-const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
-const INTERN_GET_API = 'http://localhost:5000/api/interns/get';
-const INTERN_UPDATE_TEAM_API = 'http://localhost:5000/api/interns/add-team';
-const INTERN_DELETE_TEAM_API = 'http://localhost:5000/api/interns/delete-team';
+import * as API from '../utils/api';
 
 class TeamForm extends Component {
   constructor(props) {
@@ -83,7 +74,7 @@ class TeamForm extends Component {
   // get basic team data and set states accordingly
   getTeamData = () => {
     this.setState({ isLoading: true });
-    axios.post(TEAM_GET_SINGLE_API, { id: this.props.id })
+    axios.post(API.TEAM_GET_SINGLE_API, { id: this.props.id })
       .then(res => {
         this.setState({
           name: res.data.name,
@@ -104,7 +95,7 @@ class TeamForm extends Component {
   // get possible interns to be added to team
   loadInterns = () => {
     this.setState({ isLoading: true });
-    axios.get(INTERN_GET_API)
+    axios.get(API.INTERN_GET_API)
       .then(res => {
         this.setState({
           interns: res.data
@@ -120,7 +111,7 @@ class TeamForm extends Component {
   // remove a current member from react-select
   removeCurrentMember = id => {
     var array = [...this.state.currentMembers];
-    var filteredArray = array.filter(function (el) { return el.id != id; });
+    var filteredArray = array.filter(function (el) { return el.id !== id; });
     this.setState({ currentMembers: filteredArray });
   }
 
@@ -131,7 +122,7 @@ class TeamForm extends Component {
         internId: intern.id,
         teamObject: { id: data._id || this.state.id, name: data.name || this.state.name }
       }
-      axios.post(INTERN_UPDATE_TEAM_API, teamToUpdate);
+      axios.post(API.INTERN_ADD_TEAM_API, teamToUpdate);
     })
   }
 
@@ -142,7 +133,7 @@ class TeamForm extends Component {
         internId: intern.id,
         teamId: this.state.id
       }
-      axios.post(INTERN_DELETE_TEAM_API, teamToUpdate);
+      axios.post(API.INTERN_DELETE_TEAM_API, teamToUpdate);
     })
   }
 
@@ -159,7 +150,7 @@ class TeamForm extends Component {
       }
 
       //post to team api 
-      axios.post(TEAM_POST_API, teamToCreate)
+      axios.post(API.TEAM_POST_API, teamToCreate)
         .then(res => {
           this.state.members.length > 0 && this.addTeamToInterns(res.data);
           this.props.updateParent();
@@ -182,7 +173,7 @@ class TeamForm extends Component {
       }
 
       // post the basic data to the team update API
-      axios.post(TEAM_UPDATE_API, teamToUpdate)
+      axios.post(API.TEAM_UPDATE_API, teamToUpdate)
         .then(res => {
           // remove team members no longer attached
           let diffArray = this.state.oldMembers.filter(x => !this.state.currentMembers.includes(x));

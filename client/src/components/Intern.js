@@ -9,12 +9,7 @@ import { getAllInterns } from '../utils/index.js';
 import moment from 'moment';
 import { Jumbotron, Container, Row, Button, Col, Card, Modal, Form } from 'react-bootstrap';
 
-const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
-const TEAMS_GET_SINGLE_API = 'http://localhost:5000/api/teams/get/single';
-const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
-const INTERNS_DELETE_API = 'http://localhost:5000/api/interns/delete';
-const INTERNS_DELETE_FROM_TEAM_API = 'http://localhost:5000/api/teams/delete-intern';
-const INTERNS_DELETE_FROM_TASK_API = 'http://localhost:5000/api/tasks/delete-intern';
+import * as API from '../utils/api';
 
 const MASTER_KEY = 'paolo';
 
@@ -77,7 +72,7 @@ class Intern extends Component {
 
   // get intern data and set the state
   getIntern = () => {
-    axios.post(INTERN_GET_SINGLE_API, { id: this.state.internId })
+    axios.post(API.INTERN_GET_SINGLE_API, { id: this.state.internId })
       .then(res => {
         this.setState({ 
           intern: res.data ,
@@ -95,21 +90,21 @@ class Intern extends Component {
   getInternTasks = () => {
     // first, get all tasks directly associated with the intern
     this.state.intern.tasks.forEach(task => {
-      axios.post(TASK_GET_SINGLE_API, { id: task.id })
+      axios.post(API.TASK_GET_SINGLE_API, { id: task.id })
         .then(res => {
           this.setState({ tasks: [...this.state.tasks, res.data]});
         })
         .then(() => {
         // then get all tasks assigned to the teams of the intern
           this.state.intern.teams.forEach(team => {
-            axios.post(TEAMS_GET_SINGLE_API, { id: team.id })
+            axios.post(API.TEAM_GET_SINGLE_API, { id: team.id })
               .then(res => {
                 // loop through each team's tasks
                 res.data.tasks.forEach(task => {
                   // for each task, if it was already assigned to the intern
                   // individually then we skip it
                   if (!this.state.tasks.some(e => e._id === task.id)) {
-                    axios.post(TASK_GET_SINGLE_API, { id: task.id })
+                    axios.post(API.TASK_GET_SINGLE_API, { id: task.id })
                       .then(res => {
                         this.setState({ tasks: [...this.state.tasks, res.data]});
                       })
@@ -128,7 +123,7 @@ class Intern extends Component {
         internId: internId,
         taskId: task.id
       };
-      axios.post(INTERNS_DELETE_FROM_TASK_API, internToDelete);
+      axios.post(API.TASK_DELETE_INTERN_API, internToDelete);
     })
   }
 
@@ -139,18 +134,17 @@ class Intern extends Component {
         internId: internId,
         teamId: team.id
       }
-      axios.post(INTERNS_DELETE_FROM_TEAM_API, internToDelete);
+      axios.post(API.TEAM_DELETE_MEMBER_API, internToDelete);
     })
   }
 
   // delete intern document from collection 
   deleteIntern = internId => {
-    axios.post(INTERNS_DELETE_API, { id: internId })
+    axios.post(API.INTERN_DELETE_API, { id: internId })
   }
 
   // when called, delete systematically from task, team, and then intern collections
   deleteInternFull = async(internId) => {
-    const confirmed = await this.handleDelete();
     this.deleteInternFromTask(internId);
     this.deleteInternFromTeam(internId);
     this.deleteIntern(internId);

@@ -2,11 +2,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
 import moment from 'moment';
-import { Form, Modal, Col, Button } from 'react-bootstrap';
-import DateTimePicker from 'react-datetime-picker';
-import { mapToDatabaseReadable } from '../utils';
+import { Form, Modal, Button } from 'react-bootstrap';
 
-const INTERN_UPDATE_WORK_API = 'http://localhost:5000/api/interns/update-work';
+import * as API from '../utils/api';
 
 class ActivityForm extends Component {
   constructor(props) {
@@ -44,7 +42,7 @@ class ActivityForm extends Component {
       workObject: workObject
     }
 
-    axios.post(INTERN_UPDATE_WORK_API, newActivity)
+    axios.post(API.INTERN_UPDATE_WORK_API, newActivity)
       .then(() => {
         this.handleCloseModal();
         this.props.updateParent();
