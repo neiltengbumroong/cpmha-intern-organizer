@@ -62,7 +62,6 @@ router.post('/api/tasks/get/single', (req, res) => {
 
 // edit task
 router.post('/api/tasks/update', (req, res) => {
-  console.log("editing task: ", req.body);
   Task.updateOne(
     { _id: req.body.id },
     { $set:
@@ -83,7 +82,6 @@ router.post('/api/tasks/update', (req, res) => {
 
 // remove single intern from task 
 router.post('/api/tasks/delete/intern', (req, res) => {
-  console.log("deleting intern: ", req.body);
   Task.findByIdAndUpdate(
     { _id: req.body.taskId },
     { $pull: { assignedTo: { id: req.body.internId } } },
@@ -95,7 +93,6 @@ router.post('/api/tasks/delete/intern', (req, res) => {
 
 // remove single team from task
 router.post('/api/tasks/delete/team', (req, res) => {
-  console.log("deleting team: ", req.body);
   Task.findByIdAndUpdate(
     { _id: req.body.internId },
     { $pull: { assignedToTeam: { id: req.body.teamId } } },

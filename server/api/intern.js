@@ -61,7 +61,6 @@ router.post('/api/interns/update', (req, res) => {
 
 // update intern's activity
 router.post('/api/interns/update/work', (req, res) => {
-  console.log("Adding work: ", req.body);
   Intern.findOneAndUpdate(
     { _id: req.body.id },
     { 
@@ -76,7 +75,6 @@ router.post('/api/interns/update/work', (req, res) => {
 
 // push task onto tasks array for intern
 router.post('/api/interns/add/task', (req, res) => {
-  console.log("Adding task: ", req.body);
   Intern.findOneAndUpdate(
     { _id: req.body.internId },
     { $push: { tasks: req.body.taskObject } },
@@ -96,7 +94,6 @@ router.post('/api/interns/delete', (req, res) => {
 
 // push team onto teams array for intern
 router.post('/api/interns/add/team', (req, res) => {
-  console.log("adding team: ", req.body);
   Intern.findOneAndUpdate(
     { _id: req.body.internId },
     { $addToSet: { teams: req.body.teamObject } },
@@ -108,7 +105,6 @@ router.post('/api/interns/add/team', (req, res) => {
 
 // remove single task from intern
 router.post('/api/interns/delete/task', (req, res) => {
-  console.log("removing task: ", req.body);
   Intern.findByIdAndUpdate(
     { _id: req.body.internId },
     { $pull: { tasks: { id: req.body.taskId } } },
@@ -120,7 +116,6 @@ router.post('/api/interns/delete/task', (req, res) => {
 
 // remove single team from intern
 router.post('/api/interns/delete/team', (req, res) => {
-  console.log("deleting team: ", req.body);
   Intern.findByIdAndUpdate(
     { _id: req.body.internId },
     { $pull: { teams: { id: req.body.teamId } } },

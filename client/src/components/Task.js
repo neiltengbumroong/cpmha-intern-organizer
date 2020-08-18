@@ -6,8 +6,7 @@ import { Button, Modal, Form, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import * as API from '../utils/api';
-
-const MASTER_KEY = 'paolo';
+import MASTER_KEY from '../utils/key';
 
 class Task extends Component {
   constructor(props) {

@@ -10,7 +10,6 @@ import AnnounceForm from './AnnounceForm';
 import { Card, Container, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-import '../css/Main.css';
 import * as API from '../utils/api';
 
 class Main extends Component {

@@ -10,8 +10,7 @@ import moment from 'moment';
 import { Jumbotron, Container, Row, Button, Col, Card, Modal, Form } from 'react-bootstrap';
 
 import * as API from '../utils/api';
-
-const MASTER_KEY = 'paolo';
+import MASTER_KEY from '../utils/key';
 
 class Intern extends Component {
   constructor(props) {

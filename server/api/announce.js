@@ -4,7 +4,6 @@ const router = express.Router();
 
 // post a single announcement
 router.post('/api/announcements/post', (req, res) => {
-  console.log("posting announcement: ", req.body);
   const announce = new Announce({
     subject: req.body.subject,
     name: req.body.name,

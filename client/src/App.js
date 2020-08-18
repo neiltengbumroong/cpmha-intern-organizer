@@ -5,6 +5,7 @@ import Main from './components/Main';
 import Calendar from './components/Calendar';
 import ContactList from './components/ContactList';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import './css/Main.css';
 
 
 function App() {

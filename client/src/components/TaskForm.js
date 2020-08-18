@@ -6,8 +6,7 @@ import DateTimePicker from 'react-datetime-picker';
 import { mapToDatabaseReadable } from '../utils';
 
 import * as API from '../utils/api';
-
-const MASTER_KEY = 'paolo';
+import MASTER_KEY from '../utils/key';
 
 class TaskForm extends Component {
   constructor(props) {

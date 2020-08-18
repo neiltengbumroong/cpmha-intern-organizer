@@ -17,7 +17,8 @@ class EventForm extends Component {
       end: '',
       description: '',
       link: '',
-      errors: []
+      errors: [],
+      showModal: false
     }
   }
 
@@ -95,7 +96,7 @@ class EventForm extends Component {
   }
 
   editEvent = async () => {
-    const validated = this.handleValidation();
+    const validated = await this.handleValidation();
     if (validated) {
       const eventToUpdate = {
         id: this.props.id,
@@ -106,7 +107,6 @@ class EventForm extends Component {
         link: this.state.link
       }
       axios.post(API.EVENT_UPDATE_API, eventToUpdate);
-      this.handleCloseModal();
       this.props.loadData();
       this.props.closeModal();
     }
@@ -207,7 +207,7 @@ class EventForm extends Component {
                   />          
               </Form.Group> 
               <Modal.Footer>
-                <Button variant="info" type="button" onClick={this.handleCloseModal}>Close</Button>
+                <Button variant="danger" type="button" onClick={this.handleCloseModal}>Close</Button>
                 {this.props.type === 'edit' ?
                   <Button variant="primary" type="button" onClick={this.editEvent}>Save Changes</Button>
                   :        
