@@ -35,7 +35,9 @@
 .scroll-column {
   max-height: 150vh;
   overflow: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
+  background-color: white;
+  /* background-color: white; */
 }
 
 .activity-scroll-column {
@@ -90,7 +92,7 @@ background: linear-gradient(90deg, rgba(106,50,171,1) 0%, rgba(156,131,244,1) 10
 }
 
 .team-link {
-  color: #33b1d8;
+  color: #0da4d6;
 }
 
 .team-link:hover {

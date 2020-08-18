@@ -15,6 +15,8 @@ const TEAM_UPDATE_TASK_API = 'http://localhost:5000/api/teams/add-task';
 const TASKS_DELETE_FROM_INTERN_API = 'http://localhost:5000/api/interns/delete-task';
 const TASKS_DELETE_FROM_TEAM_API = 'http://localhost:5000/api/teams/delete-task';
 
+const MASTER_KEY = 'paolo';
+
 class TaskForm extends Component {
   constructor(props) {
     super(props);
@@ -36,7 +38,9 @@ class TaskForm extends Component {
       interns: [],
       teams: [],
       isLoading: true,
-      errors: []
+      errors: [],
+      key: '',
+      confirmKey: false
     }
   }
 
@@ -66,6 +70,15 @@ class TaskForm extends Component {
   }
   handleLinkChange = event => {
     this.setState({ link: event.target.value });
+  }
+  handleKeyChange = event => {
+    this.setState({ key: event.target.value }, () => {
+      if (this.state.key === MASTER_KEY) {
+        this.setState({ confirmKey: true });
+      } else {
+        this.setState({ confirmKey: false });
+      }
+    });
   }
 
   handleOpenModal = () => {
@@ -190,7 +203,7 @@ class TaskForm extends Component {
         })
 
       this.handleCloseModal();
-      window.location.reload();
+      // window.location.reload();
     }
   }
 
@@ -413,7 +426,7 @@ class TaskForm extends Component {
               <Form.Group>
                 <h5>Currently Assigned (Individuals)</h5>
                 {currentAssigned}
-                <Form.Label>Assign to (Individual)</Form.Label>     
+                <br/>    
                 <Select
                   options={internOptions}
                   isMulti={true}
@@ -424,7 +437,7 @@ class TaskForm extends Component {
               <Form.Group>
                 <h5>Currently Assigned (Teams)</h5>
                 {currentTeams}
-                <Form.Label>Assign to (Team)</Form.Label>
+                <br/>
                 <Select
                   options={teamOptions}
                   isMulti={true}
@@ -432,24 +445,41 @@ class TaskForm extends Component {
                   isSearchable={true}
                 />
               </Form.Group>
-              <Form.Group>
-                <Form.Label>Link</Form.Label>
-                <Form.Control
+              <Form.Group as={Row}>
+                <Col sm={8}>
+                  <Form.Label>Link</Form.Label>
+                  <Form.Control
+                    size="md"
+                    type="text"
+                    placeholder="Google Drive, Website, etc... (optional)"
+                    defaultValue={this.props.type === 'edit' ? this.state.link : ''}
+                    onChange={this.handleLinkChange}
+                  />
+                </Col>
+                <Col sm={4}>
+                  <Form.Label>Master Key</Form.Label>
+                  <Form.Control
+                  type="password"
                   size="md"
-                  type="text"
-                  placeholder="Google Drive, Website, etc..."
-                  defaultValue={this.props.type === 'edit' ? this.state.link : ''}
-                  onChange={this.handleLinkChange}
+                  placeholder="Code"
+                  onChange={this.handleKeyChange}
                 />
+                </Col>              
               </Form.Group>
             </Form>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="danger" type="button" onClick={this.handleCloseModal}>Cancel</Button>
-            {this.props.type === 'edit' ?
+            {this.state.confirmKey ? 
+              (this.props.type === 'edit' ?
               <Button variant="primary" type="button" onClick={this.editTask}>Save Changes</Button>
               :
-              <Button variant="primary" type="button" onClick={this.createTask}>Create Task</Button>
+              <Button variant="primary" type="button" onClick={this.createTask}>Create Task</Button>)
+              :
+              (this.props.type === 'edit' ?
+              <Button variant="primary" type="button" disabled>Save Changes</Button>
+              :
+              <Button variant="primary" type="button" disabled>Create Task</Button>)
             }
           </Modal.Footer>
         </Modal>

@@ -7,7 +7,7 @@ import Task from './Task';
 import { Link } from "react-router-dom";
 import { getAllInterns } from '../utils/index.js';
 import moment from 'moment';
-import { Jumbotron, Container, Row, Button, Col, Card } from 'react-bootstrap';
+import { Jumbotron, Container, Row, Button, Col, Card, Modal, Form } from 'react-bootstrap';
 
 const INTERN_GET_SINGLE_API = 'http://localhost:5000/api/interns/get/single';
 const TEAMS_GET_SINGLE_API = 'http://localhost:5000/api/teams/get/single';
@@ -15,6 +15,8 @@ const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
 const INTERNS_DELETE_API = 'http://localhost:5000/api/interns/delete';
 const INTERNS_DELETE_FROM_TEAM_API = 'http://localhost:5000/api/teams/delete-intern';
 const INTERNS_DELETE_FROM_TASK_API = 'http://localhost:5000/api/tasks/delete-intern';
+
+const MASTER_KEY = 'paolo';
 
 class Intern extends Component {
   constructor(props) {
@@ -24,23 +26,63 @@ class Intern extends Component {
       interns: [],
       tasks: [],
       internId: props.location.state.id,
-      showModal: false
+      showModal: false,
+      showDeleteModal: false,
+      delete: '',
+      confirmDelete: false,
+      key: '',
+      confirmKey: false
     }
+  }
+
+  handleKeyChange = event => {
+    this.setState({ key: event.target.value }, () => {
+      if (this.state.key === MASTER_KEY) {
+        this.setState({ confirmKey: true });
+      } else {
+        this.setState({ confirmKey: false });
+      }
+    });
+  }
+
+  handleDeleteChange = event => {
+    this.setState({ delete: event.target.value }, () => {
+      if (this.state.delete === this.state.intern.name) {
+        this.setState({ confirmDelete: true });
+      } else {
+        this.setState({ confirmDelete: false });
+      }
+    });
   }
 
   handleOpenModal = () => {
     this.setState({ showModal: true });
   }
-  
   handleCloseModal = () => {
     this.setState({ showModal: false });
+  }
+  handleOpenDeleteModal = () => {
+    this.setState({ showDeleteModal: true });
+  }
+  handleCloseDeleteModal = () => {
+    this.setState({ showDeleteModal: false });
+  }
+
+  handleDelete = () => {
+    if (this.state.delete === this.state.intern.name) {
+      return true;
+    }
+    return false;
   }
 
   // get intern data and set the state
   getIntern = () => {
     axios.post(INTERN_GET_SINGLE_API, { id: this.state.internId })
       .then(res => {
-        this.setState({ intern: res.data });
+        this.setState({ 
+          intern: res.data ,
+          internId: res.data._id
+        });
         this.getInternTasks();
       })
     getAllInterns()
@@ -107,7 +149,8 @@ class Intern extends Component {
   }
 
   // when called, delete systematically from task, team, and then intern collections
-  deleteInternFull = internId => {
+  deleteInternFull = async(internId) => {
+    const confirmed = await this.handleDelete();
     this.deleteInternFromTask(internId);
     this.deleteInternFromTeam(internId);
     this.deleteIntern(internId);
@@ -263,32 +306,76 @@ class Intern extends Component {
               </Card.Body>
             </Card>
             </Col>
-            <Col md={4} sm={12} className="text-left scroll-column">
+            <Col md={4} sm={12} className="text-center scroll-column border pt-2">
               <h2>Pending Tasks</h2>
               {internIncomplete.length > 0 ? internIncomplete.map((task, i) => (
-              <div className="mt-3 mb-3" key={i}>
+              <div className="text-left mt-3 mb-3" key={i}>
                 {i > 0 && <hr/>}
-                <Task id={task._id} view={'other'}></Task>
-                
+                <Task id={task._id} view={'other'}></Task>    
               </div>
             ))
-            : <p>This intern currently has no pending tasks.</p>}
+            : <p className="mt-2">This intern currently has no pending tasks.</p>}
             </Col>
-            <Col md={4} sm={12} className="text-left scroll-column">
+            <Col md={4} sm={12} className="text-center scroll-column border pt-2">
               <h2>Completed Tasks</h2>
               {internComplete.length > 0 ? internComplete.map((task, i) => (
-              <div className="mt-3 mb-3" key={i}>
+              <div className="mt-3 mb-3 text-left" key={i}>
                 {i > 0 && <hr/>}
                 <Task id={task._id} view={'other'}></Task>
               </div>
             ))
-            : <p>This intern has no completed tasks.</p>}
+            : <p className="mt-2">This intern has no completed tasks.</p>}
             </Col>
           </Row>
-          <hr/>
           <Row className="p-5 justify-content-center">
-             <Link to="/"><Button type="button" variant="danger"onClick={() => this.deleteInternFull(internData._id)}>Delete Intern</Button></Link>
+             <Button type="button" variant="danger" onClick={this.handleOpenDeleteModal}>Delete Intern</Button>
           </Row>
+          <Modal
+            show={this.state.showDeleteModal}
+            onHide={this.handleCloseDeleteModal}
+            keyboard={false}
+            backdrop="static"
+            size="lg"
+          >
+            <Modal.Header>
+              <Modal.Title>Delete Intern</Modal.Title>
+            </Modal.Header>         
+            <Modal.Body>
+              <h5>Are you sure you want to delete this intern? This action cannot be undone.</h5>
+              <p>Deleting this intern will also subsequently remove them from all teams and tasks associated with them in the database. <strong>If this intern is the leader of a team, please make sure to change the leader before continuing as this may cause unexpected errors.</strong></p>
+              <Form>
+                <Form.Group as={Row}>
+                  <Col sm={12} lg={9}>
+                    <Form.Label>If you wish to continue, please type in the intern's name to confirm.</Form.Label>
+                    <Form.Control
+                      size="md"
+                      type="text"
+                      placeholder={this.state.intern.name}
+                      onChange={this.handleDeleteChange}
+                      required
+                    />
+                  </Col>
+                  <Col sm={12} lg={3}>
+                    <Form.Label>Master Key</Form.Label>
+                      <Form.Control
+                        type="password"
+                        size="md"
+                        placeholder="Code"
+                        onChange={this.handleKeyChange}
+                      />
+                  </Col>
+                </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="primary" onClick={this.handleCloseDeleteModal}>Cancel</Button>
+              {this.state.confirmDelete && this.state.confirmKey ? 
+                <Link to="/"><Button variant="danger" onClick={() => this.deleteInternFull(this.state.internId)}>Confirm</Button></Link>
+                :
+                <Button variant="danger" disabled>Confirm</Button>
+              }        
+            </Modal.Footer>
+          </Modal>
         </Container>
         </>
         : 

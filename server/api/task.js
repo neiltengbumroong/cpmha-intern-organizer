@@ -32,7 +32,7 @@ router.post('/api/tasks/delete', (req, res) => {
 
 // return all tasks
 router.get('/api/tasks/get', (req, res) => {
-  Task.find()
+  Task.find().sort({'deadline': -1})
   .then(tasks => {
     res.json(tasks);
   })

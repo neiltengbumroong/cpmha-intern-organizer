@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import TaskForm from './TaskForm';
-import Button from 'react-bootstrap/Button';
+import { Button, Modal, Form, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
@@ -12,19 +12,50 @@ const TASKS_DELETE_API = 'http://localhost:5000/api/tasks/delete';
 const TASKS_DELETE_FROM_TEAM_API = 'http://localhost:5000/api/teams/delete-task';
 const TASKS_DELETE_FROM_INTERN_API = 'http://localhost:5000/api/interns/delete-task';
 
+const MASTER_KEY = 'paolo';
+
 class Task extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      task: [],
+      task: '',
       completed: false,
-      isLoading: true
+      isLoading: true,
+      showDeleteModal: false,
+      showCompleteModal: false,
+      key: '',
+      confirmKey: false
     }
+  }
+
+  handleOpenDeleteModal = () => {
+    this.setState({ showDeleteModal: true });
+  }
+  handleCloseDeleteModal = () => {
+    this.setState({ showDeleteModal: false });
+  }
+  handleOpenCompleteModal = () => {
+    this.setState({ showCompleteModal: true });
+  }
+  handleCloseCompleteModal = () => {
+    this.setState({ showCompleteModal: false });
+  }
+  handleKeyChange = event => {
+    this.setState({ key: event.target.value }, () => {
+      if (this.state.key === MASTER_KEY) {
+        this.setState({ confirmKey: true });
+      } else {
+        this.setState({ confirmKey: false });
+      }
+    });
   }
 
   // get task data to display and update state
   getTask = () => {
-    this.setState({ isLoading: true });
+    this.setState({ 
+      isLoading: true,
+      task: ''
+    });
     axios.post(TASK_GET_SINGLE_API, { id: this.props.id })
       .then(res => {
         this.setState({ 
@@ -66,7 +97,6 @@ class Task extends Component {
     axios.post(TASKS_DELETE_API, id)
       .then(() => {
         this.props.updateParent();
-        window.location.reload();
       })
   }
 
@@ -124,7 +154,6 @@ class Task extends Component {
         {taskData.assignedTo ? 
           <div>
             <h4>{taskData.task}</h4>
-            <hr/>
             <p className="p-task">{taskData.description}</p>
             <p className="p-task">Deadline: {moment(taskData.deadline).format('LLLL')}</p>
             <p className="p-task">Assigned to: {assignedTo.concat(assignedToTeam)}</p>
@@ -132,16 +161,69 @@ class Task extends Component {
             {this.props.view === 'other' ? 
               taskData.completed ? 
               null :
-              <Button className="btn-sm" variant="success" onClick={this.toggleCompleted}>Complete</Button> :
+              <Button className="btn-sm" variant="success" onClick={this.handleOpenCompleteModal}>Complete</Button> :
             <>
               <TaskForm
                 type={"edit"}
                 id={taskData._id}
-                updateParent={this.props.updateParent}
+                updateParent={this.getTask}
               />
-              <Button className="btn-sm" variant="danger" type="button" onClick={() => this.deleteTaskFull(taskData._id)}>Delete Task</Button>
+              <Button className="btn-sm" variant="danger" type="button" onClick={this.handleOpenDeleteModal}>Delete Task</Button>
               </>
             }
+            <Modal
+              show={this.state.showDeleteModal}
+              onHide={this.handleCloseDeleteModal}
+              keyboard={false}
+              backdrop="static"
+              size="lg"
+            >
+              <Modal.Header>
+                <Modal.Title>Delete Task</Modal.Title>
+              </Modal.Header>         
+              <Modal.Body>
+                <h5>Are you sure you want to delete this task?</h5>
+                <p>This task will also be removed from all associated interns and teams in the database.</p>
+                <Row>
+                  <Col sm={3}>
+                    <Form.Label>Master Key</Form.Label>
+                    <Form.Control
+                      type="password"
+                      size="md"
+                      placeholder="Code"
+                      onChange={this.handleKeyChange}
+                    />
+                  </Col>            
+                </Row>            
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="primary" onClick={this.handleCloseDeleteModal}>Cancel</Button>
+                {this.state.confirmKey ? 
+                  <Button variant="danger" onClick={() => this.deleteTaskFull(taskData._id)}>Confirm</Button>
+                  :
+                  <Button variant="danger" disabled>Confirm</Button> 
+                }         
+              </Modal.Footer>
+            </Modal>
+            <Modal
+              show={this.state.showCompleteModal}
+              onHide={this.handleCloseCompleteModal}
+              keyboard={false}
+              backdrop="static"
+              size="lg"
+            >
+              <Modal.Header>
+                <Modal.Title>Complete Task</Modal.Title>
+              </Modal.Header>         
+              <Modal.Body>
+                <h5>Are you sure you want to complete this task?</h5>
+                <p>Make sure to double check with other teammates and/or assignees. You will still be able to log hours on completed tasks.</p>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="danger" onClick={this.handleCloseCompleteModal}>Cancel</Button>
+                <Button variant="success" onClick={this.toggleCompleted}>Confirm</Button>     
+              </Modal.Footer>
+            </Modal>
           </div>
           : null
         }

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import TeamForm from './TeamForm';
 import Task from './Task';
 import moment from 'moment';
-import { Jumbotron, Container, Row, Button, Col, Card } from 'react-bootstrap';
+import { Jumbotron, Container, Row, Button, Col, Card, Modal, Form } from 'react-bootstrap';
 
 const TEAMS_GET_SINGLE_API = 'http://localhost:5000/api/teams/get/single';
 const TASK_GET_SINGLE_API = 'http://localhost:5000/api/tasks/get/single';
@@ -13,6 +13,8 @@ const TEAMS_DELETE_API = 'http://localhost:5000/api/teams/delete';
 const TEAMS_DELETE_FROM_TASK_API = 'http://localhost:5000/api/tasks/delete-team';
 const TEAMS_DELETE_FROM_INTERN_API = 'http://localhost:5000/api/interns/delete-team';
 const TEAM_GET_API = 'http://localhost:5000/api/teams/get';
+
+const MASTER_KEY = 'paolo';
 
 class Team extends Component {
   constructor(props) {
@@ -22,15 +24,49 @@ class Team extends Component {
       teams: [],
       tasks: [],
       teamId: props.location.state.id,
-      showModal: false
+      showModal: false,
+      showDeleteModal: false,
+      delete: '',
+      confirmDelete: false,
+      key: '',
+      confirmKey: false
     }
+  }
+
+  handleKeyChange = event => {
+    this.setState({ key: event.target.value }, () => {
+      if (this.state.key === MASTER_KEY) {
+        this.setState({ confirmKey: true });
+      } else {
+        this.setState({ confirmKey: false });
+      }
+    });
+  }
+
+  handleDeleteChange = event => {
+    this.setState({ delete: event.target.value }, () => {
+      if (this.state.delete === this.state.team.name) {
+        this.setState({ confirmDelete: true });
+      } else {
+        this.setState({ confirmDelete: false });
+      }
+    });
+  }
+  handleOpenDeleteModal = () => {
+    this.setState({ showDeleteModal: true });
+  }
+  handleCloseDeleteModal = () => {
+    this.setState({ showDeleteModal: false });
   }
 
   // get team data and set state
   getTeam = () => {
     axios.post(TEAMS_GET_SINGLE_API, { id: this.state.teamId })
       .then(res => {
-        this.setState({ team: res.data });
+        this.setState({ 
+          team: res.data,
+          teamId: res.data._id
+        });
         this.getAllTeams();
         this.getTeamTasks();
       })
@@ -211,7 +247,7 @@ class Team extends Component {
                   </Card.Body>
                 </Card>
               </Col>
-              <Col className="col-4 text-left scroll-column">
+              <Col md={4} sm={12} className="text-center scroll-column border pt-2">
                 <h2>Pending Tasks</h2>
                 {teamIncomplete.length > 0 ? teamIncomplete.map((task, i) => (
                 <div className="mt-3 mb-3" key={i}>
@@ -219,23 +255,69 @@ class Team extends Component {
                   <hr/>
                 </div>
                 ))
-                : <p>This team currently has no pending tasks.</p>}
+                : <p className="mt-2">This team currently has no pending tasks.</p>}
               </Col>
-              <Col className="col-4 text-left scroll-column">
+              <Col md={4} sm={12} className="text-center scroll-column border pt-2">
                 <h2>Completed Tasks</h2>
                 {teamComplete.length > 0 ? teamComplete.map((task, i) => (
                 <div className="mb-5" key={i}>
                   <Task id={task._id} view={'other'}></Task>
                 </div>
                 ))
-                : <p>This team has no completed tasks.</p>}
+                : <p className="mt-2">This team has no completed tasks.</p>}
               </Col>
             </Row>
           </Container>
           <hr/>
           <Row className="p-5 justify-content-center">
-             <Link to="/"><Button type="button" variant="danger"onClick={() => this.deleteTeamFull(teamData._id)}>Delete Team</Button></Link>
+            <Button type="button" variant="danger"onClick={this.handleOpenDeleteModal}>Delete Team</Button>
           </Row>
+          <Modal
+            show={this.state.showDeleteModal}
+            onHide={this.handleCloseDeleteModal}
+            keyboard={false}
+            backdrop="static"
+            size="lg"
+          >
+            <Modal.Header>
+              <Modal.Title>Delete Team</Modal.Title>
+            </Modal.Header>         
+            <Modal.Body>
+              <h5>Are you sure you want to delete this team? This action cannot be undone.</h5>
+              <p>Deleting this team will also subsequently remove them from all interns and tasks associated with it in the database.</p>
+              <Form>
+                <Form.Group as={Row}>
+                  <Col sm={12} lg={9}>
+                    <Form.Label>If you wish to continue, please type in the team's name to confirm.</Form.Label>
+                    <Form.Control
+                      size="md"
+                      type="text"
+                      placeholder={this.state.team.name}
+                      onChange={this.handleDeleteChange}
+                      required
+                    />
+                  </Col>
+                  <Col sm={12} lg={3}>
+                    <Form.Label>Master Key</Form.Label>
+                      <Form.Control
+                        type="password"
+                        size="md"
+                        placeholder="Code"
+                        onChange={this.handleKeyChange}
+                      />
+                  </Col>
+                </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="primary" onClick={this.handleCloseDeleteModal}>Cancel</Button>
+              {this.state.confirmDelete ? 
+                <Link to="/"><Button variant="danger" onClick={() => this.deleteTeamFull(this.state.teamId)}>Confirm</Button></Link>
+                :
+                <Button variant="danger" disabled>Confirm</Button>
+              }        
+            </Modal.Footer>
+          </Modal>
         </>
         : 
         <h1>Loading</h1>}  

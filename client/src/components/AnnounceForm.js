@@ -87,7 +87,7 @@ class AnnounceForm extends Component {
               <Form.Group>
                 <Form.Label>Name</Form.Label>
                 <Form.Control 
-                  maxLength="20"
+                  maxLength="50"
                   size="md"
                   type="text" 
                   placeholder="John Doe"
@@ -101,7 +101,7 @@ class AnnounceForm extends Component {
               <Form.Group>
                 <Form.Label>Subject</Form.Label>
                 <Form.Control
-                  maxLength="50"
+                  maxLength="75"
                   size="md"
                   type="text" 
                   placeholder="Weekly Reminder"
@@ -114,8 +114,7 @@ class AnnounceForm extends Component {
               </Form.Group>         
               <Form.Group>
                 <Form.Label>Announcement</Form.Label>
-                <Form.Control 
-                  maxLength="1000"
+                <Form.Control
                   size="md"
                   as="textarea" 
                   placeholder="Update for this week, etc..."
