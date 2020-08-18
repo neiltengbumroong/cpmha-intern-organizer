@@ -12,6 +12,8 @@ app.use(require('./api/event'));
 app.use(require('./api/team'));
 app.use(require('./api/announce'));
 
+app.use(express.static(path.join(__dirname, '../client/build')));
+
 const port = process.env.PORT || 5000;
 const connection = process.env.MONGO_URI || 'mongodb://localhost:27017/cpmha';
 
