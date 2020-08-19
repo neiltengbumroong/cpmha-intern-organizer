@@ -4,6 +4,7 @@ import InternForm from './InternForm';
 import ActivityForm from './ActivityForm';
 import Header from './Header';
 import Task from './Task';
+import Loader from './Loader';
 import { Link } from "react-router-dom";
 import moment from 'moment';
 import { Jumbotron, Container, Row, Button, Col, Card, Modal, Form } from 'react-bootstrap';
@@ -29,6 +30,7 @@ class Intern extends Component {
   }
 
   handleKeyChange = event => {
+    console.log("Master Key: ", MASTER_KEY);
     this.setState({ key: event.target.value }, () => {
       if (this.state.key === MASTER_KEY) {
         this.setState({ confirmKey: true });
@@ -371,7 +373,7 @@ class Intern extends Component {
         </Container>
         </>
         : 
-        <h1>Loading</h1>}
+        <Loader/>}
       </div>
     )
   }

@@ -4,6 +4,7 @@ import Header from './Header';
 import { Link } from "react-router-dom";
 import TeamForm from './TeamForm';
 import Task from './Task';
+import Loader from './Loader';
 import moment from 'moment';
 import { Jumbotron, Container, Row, Button, Col, Card, Modal, Form } from 'react-bootstrap';
 
@@ -314,7 +315,7 @@ class Team extends Component {
           </Modal>
         </>
         : 
-        <h1>Loading</h1>}  
+        <Loader/>}  
       </div>
     )
   }

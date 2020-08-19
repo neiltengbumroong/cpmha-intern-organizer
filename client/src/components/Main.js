@@ -7,6 +7,7 @@ import TeamForm from './TeamForm';
 import TaskForm from './TaskForm';
 import Header from './Header';
 import AnnounceForm from './AnnounceForm';
+import Loader from './Loader';
 import { Card, Container, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -62,7 +63,6 @@ class Main extends Component {
      
   }
 
-
   updateMain = () => {
     this.setState({ update: true });
   }
@@ -107,7 +107,7 @@ class Main extends Component {
                       date={announcement.date}
                     />
                   ))
-                  : null
+                  : <Loader/>
                 }
                 </Row>
               </Container>
@@ -144,7 +144,7 @@ class Main extends Component {
                 <InternForm updateParent={this.loadData} type="create"/>
                 <Card.Body>
                   <Card.Title><h3>Interns</h3></Card.Title>
-                  {this.state.interns.map((intern, i) => (
+                  {this.state.interns ? this.state.interns.map((intern, i) => (
                     <div key={i} className="pb-1">
                       <Link to={{
                         pathname: '/interns/' + intern.name,
@@ -154,6 +154,7 @@ class Main extends Component {
                       </Link>
                     </div>
                     ))
+                    : <Loader/>
                   }
                 </Card.Body>
               </Card>
@@ -161,7 +162,7 @@ class Main extends Component {
                 <TeamForm updateParent={this.loadData} type="create"/>
                 <Card.Body>
                   <Card.Title><h3>Teams</h3></Card.Title>
-                  {this.state.teams.map((team, i) => (
+                  {this.state.teams ? this.state.teams.map((team, i) => (
                     <div key={i} className="pb-1">
                       <Link className="team-link" to={{
                         pathname: '/teams/' + team.name,
@@ -171,6 +172,8 @@ class Main extends Component {
                       </Link>
                     </div>
                     ))
+                    :
+                    <Loader/>
                   }    
                 </Card.Body>
               </Card>
