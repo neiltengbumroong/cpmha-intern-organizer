@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -30,16 +31,12 @@ db.once('open', _ => {
   console.log('Connected to CPMHA database.');
 });
 
-
-
 // GET route
 app.get('/', (req, res) => {
   res.send('Server running on port 5000!');
 });
 
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
-});
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.listen(port, () => {
   console.log("listening on port 5000!");
