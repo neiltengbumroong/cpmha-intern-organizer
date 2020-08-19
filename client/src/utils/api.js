@@ -1,4 +1,4 @@
-const BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : 'https://cpmhamanager.herokuapp/api';
+const BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : 'https://cpmhamanager.herokuapp.com/api';
 
 // announcements
 export const ANNOUNCEMENT_POST_API = BASE_URL + '/announcements/post';

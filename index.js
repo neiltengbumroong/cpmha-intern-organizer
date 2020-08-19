@@ -17,6 +17,12 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 
 const port = process.env.PORT || 5000;
+
+// basic listening connection
+app.listen(port, () => {
+  console.log("Listening on port", port);
+});
+
 const connection = process.env.MONGO_URI || 'mongodb://localhost:27017/cpmha';
 
 mongoose.connect(connection, { useNewUrlParser: true, useUnifiedTopology: true })
