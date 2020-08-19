@@ -175,17 +175,17 @@ class EventForm extends Component {
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Row>
-                <Col>
-                <Form.Group>
-                  <Form.Label>Start &nbsp;</Form.Label>
-                  <DateTimePicker
-                    onChange={this.handleStartChange}
-                    value={new Date(this.state.start)}
-                    disableClock={true}
-                  />
-                </Form.Group>
+                <Col lg={6} md={12}>
+                  <Form.Group>
+                    <Form.Label>Start &nbsp;</Form.Label>
+                    <DateTimePicker
+                      onChange={this.handleStartChange}
+                      value={new Date(this.state.start)}
+                      disableClock={true}
+                    />
+                  </Form.Group>
                 </Col>
-                <Col>
+                <Col lg={6} md={12}>
                   <Form.Group>
                     <Form.Label>End &nbsp;</Form.Label>
                     <DateTimePicker

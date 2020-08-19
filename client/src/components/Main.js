@@ -134,7 +134,7 @@ class Main extends Component {
                       <Task updateParent={this.loadTask} id={task._id} view={'main'}></Task>
                     </div>
                     ))
-                    : <p className="text-center mt-3">There are no completed tasks.</p>}
+                    : <p className="text-center mt-3">There are currently no completed tasks.</p>}
                   </Col>
                 </Row>
               </Container>            
@@ -180,7 +180,7 @@ class Main extends Component {
                   <p>- Deleting an intern who is currently leading a team will cause an error</p>
                   <p>- Some pages won't update after user action (editing, submitting, etc.), simply refresh page but please still document below</p>
                   <p>- Calendar sometimes displays tasks and events as two-day events when they are single day events, or in the tasks' case not events at all</p>
-                  <a href="https://docs.google.com/document/d/1DKajjcdVYzG0nmLjwyYfKFkQBSFlJVDN6W6F2jAfpQA/edit" className="btn-link">https://docs.google.com/document/d/1DKajjcdVYzG0nmLjwyYfKFkQBSFlJVDN6W6F2jAfpQA/edit</a>
+                  <a href="https://docs.google.com/document/d/1DKajjcdVYzG0nmLjwyYfKFkQBSFlJVDN6W6F2jAfpQA/edit" target ="_blank" rel="noopener noreferrer" className="btn-link">https://docs.google.com/document/d/1DKajjcdVYzG0nmLjwyYfKFkQBSFlJVDN6W6F2jAfpQA/edit</a>
                 </Card.Body>
               </Card>
             </Col> 

@@ -317,7 +317,7 @@ class Intern extends Component {
                 <Task id={task._id} view={'other'}></Task>
               </div>
             ))
-            : <p className="mt-2">This intern has no completed tasks.</p>}
+            : <p className="mt-2">This intern currently has no completed tasks.</p>}
             </Col>
           </Row>
           <Row className="p-5 justify-content-center">
