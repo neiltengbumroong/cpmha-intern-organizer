@@ -37,8 +37,3 @@ const db = mongoose.connection;
 app.get('/', (req, res) => {
   res.send('Server running on port 5000!');
 });
-
-
-app.listen(port, () => {
-  console.log("listening on port 5000!");
-})
