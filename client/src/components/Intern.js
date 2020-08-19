@@ -151,7 +151,6 @@ class Intern extends Component {
 
   componentDidMount() {
     this.getIntern();
-    console.log(this.props.location);
   }
 
   componentDidUpdate() {

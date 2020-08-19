@@ -21,25 +21,30 @@ class Main extends Component {
       announcements: [],
       interns: [],
       teams: [],
-      tasks: []
+      tasks: [],
+      taskLoading: true,
+      isLoading: true
     }
   }
 
   loadTask = () => {
     this.setState({
-      tasks: []
+      tasks: [],
+      taskLoading: true
     }, () => {
       axios.get(API.TASK_GET_API)
       .then(res => {
         this.setState({
-          tasks: res.data
+          tasks: res.data,
+          taskLoading: false
         })
       })
     }) 
   }
 
   loadData = () => {
-    this.setState({ 
+    this.setState({
+      isLoading: true,
       interns: [],
       teams: [],
       tasks: [],
@@ -56,7 +61,8 @@ class Main extends Component {
           teams: res[0].data,
           interns: res[1].data,
           announcements: res[2].data,
-          tasks: res[3].data
+          tasks: res[3].data,
+          isLoading: false
         })
       })  
     })
@@ -97,7 +103,7 @@ class Main extends Component {
                 </Row>
                 <hr/>
                 <Row className="mb-5 ml-1 mr-2">
-                {this.state.announcements ? 
+                {!this.state.isLoading ? 
                   this.state.announcements.map((announcement, i) => ( 
                     <Announcement
                       key={i}
@@ -107,7 +113,7 @@ class Main extends Component {
                       date={announcement.date}
                     />
                   ))
-                  : <Loader/>
+                  : <Col className="align-items-center"><Loader/></Col>
                 }
                 </Row>
               </Container>
@@ -120,21 +126,21 @@ class Main extends Component {
                 <Row className="mb-4 ml-2">
                   <Col sm={12} md={6} className="text-left scroll-column border-right">
                     <h3 className="text-center">Pending</h3>
-                    {incompleteTasks.length > 0 ? incompleteTasks.slice(0).reverse().map((task, i) => (
+                    {!this.state.isLoading ? (incompleteTasks.length > 0 ? incompleteTasks.slice(0).reverse().map((task, i) => (
                     <div className="mt-3 mb-3" key={i}>
                       <Task updateParent={this.loadTask} id={task._id} view={'main'}></Task>
                     </div>
                     ))
-                    : <p className="text-center mt-3">There are currently no pending tasks.</p>}
+                    : <p className="text-center mt-3">There are currently no pending tasks.</p>) : <Loader/>}
                   </Col>
                   <Col sm={12} md={6} className="text-left scroll-column">
                     <h3 className="text-center">Completed</h3>
-                    {completeTasks.length > 0 ? completeTasks.slice(0).reverse().map((task, i) => (
+                    {!this.state.isLoading ? (completeTasks.length > 0 ? completeTasks.slice(0).reverse().map((task, i) => (
                     <div className="mb-5" key={i}>
                       <Task updateParent={this.loadTask} id={task._id} view={'main'}></Task>
                     </div>
                     ))
-                    : <p className="text-center mt-3">There are currently no completed tasks.</p>}
+                    : <p className="text-center mt-3">There are currently no completed tasks.</p>) : <Loader/>}
                   </Col>
                 </Row>
               </Container>            
@@ -144,7 +150,7 @@ class Main extends Component {
                 <InternForm updateParent={this.loadData} type="create"/>
                 <Card.Body>
                   <Card.Title><h3>Interns</h3></Card.Title>
-                  {this.state.interns ? this.state.interns.map((intern, i) => (
+                  {!this.state.isLoading ? this.state.interns.map((intern, i) => (
                     <div key={i} className="pb-1">
                       <Link to={{
                         pathname: '/interns/' + intern.name,
@@ -162,7 +168,7 @@ class Main extends Component {
                 <TeamForm updateParent={this.loadData} type="create"/>
                 <Card.Body>
                   <Card.Title><h3>Teams</h3></Card.Title>
-                  {this.state.teams ? this.state.teams.map((team, i) => (
+                  {!this.state.isLoading ? this.state.teams.map((team, i) => (
                     <div key={i} className="pb-1">
                       <Link className="team-link" to={{
                         pathname: '/teams/' + team.name,
@@ -190,7 +196,6 @@ class Main extends Component {
           </Row> 
         </Container>
       </div>
-      
     )
   }
 }

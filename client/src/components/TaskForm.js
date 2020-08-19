@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
+import moment from 'moment';
 import { Form, Modal, Col, Button, Container, Row } from 'react-bootstrap';
 import DateTimePicker from 'react-datetime-picker';
 import { mapToDatabaseReadable } from '../utils';
@@ -138,7 +139,7 @@ class TaskForm extends Component {
       .then(res => {
         this.setState({
           task: res.data.task,
-          deadline: res.data.deadline,
+          deadline: moment(res.data.deadline).toDate(),
           description: res.data.description,
           assignedToCurrent: res.data.assignedTo,
           assignedToOld: res.data.assignedTo,
