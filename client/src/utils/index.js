@@ -5,4 +5,4 @@ function mapToDatabaseReadable(obj) {
   }
 }
 
-export { mapToDatabaseReadable, getAllInterns };
+export { mapToDatabaseReadable };
