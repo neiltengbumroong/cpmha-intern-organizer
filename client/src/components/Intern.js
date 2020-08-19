@@ -31,6 +31,7 @@ class Intern extends Component {
 
   handleKeyChange = event => {
     console.log("Master Key: ", MASTER_KEY);
+    console.log("Direct key: ", process.env.REACT_APP_MASTER_KEY);
     this.setState({ key: event.target.value }, () => {
       if (this.state.key === MASTER_KEY) {
         this.setState({ confirmKey: true });
