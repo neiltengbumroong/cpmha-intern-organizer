@@ -5,7 +5,6 @@ import ActivityForm from './ActivityForm';
 import Header from './Header';
 import Task from './Task';
 import { Link } from "react-router-dom";
-import { getAllInterns } from '../utils/index.js';
 import moment from 'moment';
 import { Jumbotron, Container, Row, Button, Col, Card, Modal, Form } from 'react-bootstrap';
 

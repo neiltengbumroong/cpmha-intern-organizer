@@ -125,7 +125,7 @@ class Main extends Component {
                       <Task updateParent={this.loadTask} id={task._id} view={'main'}></Task>
                     </div>
                     ))
-                    : <p className="text-center mt-3">There are currently has no pending tasks.</p>}
+                    : <p className="text-center mt-3">There are currently no pending tasks.</p>}
                   </Col>
                   <Col sm={12} md={6} className="text-left scroll-column">
                     <h3 className="text-center">Completed</h3>

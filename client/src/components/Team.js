@@ -258,7 +258,7 @@ class Team extends Component {
                   <Task id={task._id} view={'other'}></Task>
                 </div>
                 ))
-                : <p className="mt-2">This team has no completed tasks.</p>}
+                : <p className="mt-2">This team currently has no completed tasks.</p>}
               </Col>
             </Row>
           </Container>
