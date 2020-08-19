@@ -81,7 +81,7 @@ class Intern extends Component {
       })
     axios.get(API.INTERN_GET_API)
       .then(res => {
-        this.setState({ interns: res });
+        this.setState({ interns: res.data });
       })
 
   }
