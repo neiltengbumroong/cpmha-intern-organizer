@@ -13,7 +13,8 @@ app.use(require('./api/event'));
 app.use(require('./api/team'));
 app.use(require('./api/announce'));
 
-// app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(express.static(path.join(__dirname, 'client/build')));
+
 
 const port = process.env.PORT || 5000;
 const connection = process.env.MONGO_URI || 'mongodb://localhost:27017/cpmha';
@@ -26,17 +27,11 @@ mongoose.connect(connection, { useNewUrlParser: true, useUnifiedTopology: true }
 mongoose.set('useFindAndModify', false);
 const db = mongoose.connection;
 
-
-db.once('open', _ => {
-  console.log('Connected to CPMHA database.');
-});
-
 // GET route
 app.get('/', (req, res) => {
   res.send('Server running on port 5000!');
 });
 
-app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.listen(port, () => {
   console.log("listening on port 5000!");
