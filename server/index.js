@@ -37,6 +37,10 @@ app.get('/', (req, res) => {
   res.send('Server running on port 5000!');
 });
 
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+});
+
 app.listen(port, () => {
   console.log("listening on port 5000!");
 })

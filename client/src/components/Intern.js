@@ -79,7 +79,7 @@ class Intern extends Component {
         });
         this.getInternTasks();
       })
-    getAllInterns()
+    axios.get(API.INTERN_GET_API)
       .then(res => {
         this.setState({ interns: res });
       })
