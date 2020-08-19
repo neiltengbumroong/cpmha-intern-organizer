@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import { Form, Col, Button, Modal } from 'react-bootstrap';
-import "../../../server/node_modules/react-datepicker/dist/react-datepicker.css";
+import "react-datepicker/dist/react-datepicker.css";
 import '../css/custom.scss';
 
 import * as API from '../utils/api';
