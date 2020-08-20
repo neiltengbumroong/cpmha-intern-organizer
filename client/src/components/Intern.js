@@ -283,22 +283,22 @@ class Intern extends Component {
                 </Card.Body>
               </Card>
               <Card className="mt-5 mb-5">
-              <Card.Body>
-                <Card.Title><h3>Other Interns</h3></Card.Title>
-                  {this.state.interns.map((intern, i) => (
-                    intern._id === this.state.internId ? '' : 
-                    <div key={i}>
-                      <Link to={{
-                        pathname: '/interns/' + intern.name,
-                        state: { id: intern._id }
-                      }}>
-                        {intern.name}
-                      </Link>
-                    </div>
-                    ))
-                  }       
-              </Card.Body>
-            </Card>
+                <Card.Body>
+                  <Card.Title><h3>Other Interns</h3></Card.Title>
+                    {this.state.interns.map((intern, i) => (
+                      intern._id === this.state.internId ? '' : 
+                      <div key={i}>
+                        <Link to={{
+                          pathname: '/interns/' + intern.name,
+                          state: { id: intern._id }
+                        }}>
+                          {intern.name}
+                        </Link>
+                      </div>
+                      ))
+                    }       
+                </Card.Body>
+              </Card>
             </Col>
             <Col md={4} sm={12} className="text-center scroll-column border pt-2">
               <h2>Pending Tasks</h2>
@@ -307,8 +307,9 @@ class Intern extends Component {
                 {i > 0 && <hr/>}
                 <Task id={task._id} view={'other'}></Task>    
               </div>
-            ))
-            : <p className="mt-2">This intern currently has no pending tasks.</p>}
+              ))
+                : <p className="mt-2">This intern currently has no pending tasks.</p>
+              }
             </Col>
             <Col md={4} sm={12} className="text-center scroll-column border pt-2">
               <h2>Completed Tasks</h2>
@@ -317,8 +318,9 @@ class Intern extends Component {
                 {i > 0 && <hr/>}
                 <Task id={task._id} view={'other'}></Task>
               </div>
-            ))
-            : <p className="mt-2">This intern currently has no completed tasks.</p>}
+              ))
+              : <p className="mt-2">This intern currently has no completed tasks.</p>
+              }
             </Col>
           </Row>
           <Row className="p-5 justify-content-center">
