@@ -89,10 +89,13 @@ class TaskForm extends Component {
     if (!this.state.description) {
       errors["description"] = "Task description is required.";
     }
+    if (!this.state.deadline) {
+      errors["deadline"] = "Task deadline is required.";
+    }
 
     this.setState({ errors: errors });
 
-    if (errors["name"] || errors["description"]) {
+    if (errors["name"] || errors["description"] || errors["deadline"]) {
       return false;
     } 
     return true;
@@ -411,6 +414,7 @@ class TaskForm extends Component {
                   onChange={this.handleDeadlineChange}
                   value={this.state.deadline}
                   disableClock={true}
+                  clearIcon={null}
                 />
               </Form.Group>
               <Form.Group>

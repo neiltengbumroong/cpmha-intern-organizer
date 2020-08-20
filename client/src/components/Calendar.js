@@ -6,8 +6,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from "@fullcalendar/interaction";
 import moment from 'moment';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import { Modal, Button, Row, Col } from 'react-bootstrap';
 import TaskForm from './TaskForm';
 import EventForm from './EventForm';
 import Header from './Header';
@@ -77,8 +76,8 @@ class Calendar extends Component {
         eventType: event.extendedProps.type,
         eventId: event.extendedProps.id,
         eventName: event.extendedProps.name,
-        eventStart: event.start,
-        eventEnd: event.end,
+        eventStart: moment(event.start).format('LLLL'),
+        eventEnd: moment(event.extendedProps.end).format('LLLL'),
         eventDescription: event.extendedProps.description,
         eventLink: event.extendedProps.link,
         showModal: true 
@@ -91,8 +90,10 @@ class Calendar extends Component {
     let tasks = this.state.tasks;
     tasks.forEach(task => {
       tasksArr.push({
+        allDay: false,
         title: task.task,
-        start: task.deadline,
+        start: moment(task.deadline).toDate(),
+        end: moment(task.deadline).toDate(),
         color: 'rgb(71,55,193)',
         extendedProps: {
           type: 'task',
@@ -108,6 +109,7 @@ class Calendar extends Component {
     let events = this.state.events;
     events.forEach(event => {
       eventsArr.push({
+        allDay: false,
         title: event.event,
         start: event.start,
         end: event.end,
@@ -115,6 +117,7 @@ class Calendar extends Component {
         extendedProps: {
           type: 'event',
           id: event._id,
+          end: event.end,
           name: event.event,
           description: event.description,
           link: event.link
@@ -132,6 +135,8 @@ class Calendar extends Component {
           <EventForm loadData={this.loadData} />
           <div style={{padding: "5%"}}>
             <FullCalendar
+              defaultTimedEventDuration='00:00'
+              defaultAllDay={false}
               plugins={[ interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin ]}
               initialView="dayGridMonth"
               headerToolbar={{
@@ -155,12 +160,14 @@ class Calendar extends Component {
                 {this.state.eventType === 'task' ?
                   <>
                     <Modal.Body>
-                      <div>
-                        <h4>{this.state.eventName}</h4>
-                        <p>{this.state.eventDescription}</p>
-                        <p>Due by {this.state.eventEnd}</p>
-                        <a target="_blank" rel="noopener noreferrer" href={this.state.eventLink}>{this.state.eventLink}</a>
-                      </div>
+                      <Row>
+                        <Col xs={12}>
+                          <h4>{this.state.eventName}</h4>
+                          <p>{this.state.eventDescription}</p>
+                          <p>Due by {this.state.eventEnd}</p>
+                          <p style={{whiteSpace: "normal", wordWrap: "break-word"}}><a target="_blank" rel="noopener noreferrer" href={this.state.eventLink}>{this.state.eventLink}</a></p>
+                        </Col>
+                      </Row>
                     </Modal.Body>
                     <Modal.Footer>
                       <Button variant="danger" type="button" onClick={this.handleCloseModal}>Close</Button>
@@ -169,12 +176,14 @@ class Calendar extends Component {
                   :
                   <>
                     <Modal.Body>
-                      <div>
-                        <h4>{this.state.eventName}</h4>
-                        <p>{moment(this.state.eventStart).format('LLLL')} - {moment(this.state.eventEnd).format('LLLL')}</p>
-                        <p>{this.state.eventDescription}</p>
-                        <a target="_blank" rel="noopener noreferrer" href={this.state.eventLink}>{this.state.eventLink}</a>
-                      </div>
+                      <Row>
+                        <Col>
+                          <h4>{this.state.eventName}</h4>
+                          <p>{moment(this.state.eventStart).format('LLLL')} - {moment(this.state.eventEnd).format('LLLL')}</p>
+                          <p>{this.state.eventDescription}</p>
+                          <p style={{whiteSpace: "normal", wordWrap: "break-word"}}><a target="_blank" rel="noopener noreferrer" href={this.state.eventLink}>{this.state.eventLink}</a></p>
+                        </Col>
+                      </Row>
                     </Modal.Body>
                     <Modal.Footer>
                       <EventForm 

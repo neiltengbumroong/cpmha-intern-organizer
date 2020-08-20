@@ -182,6 +182,7 @@ class EventForm extends Component {
                       onChange={this.handleStartChange}
                       value={new Date(this.state.start)}
                       disableClock={true}
+                      clearIcon={null}
                     />
                   </Form.Group>
                 </Col>
@@ -192,6 +193,7 @@ class EventForm extends Component {
                       onChange={this.handleEndChange}
                       value={new Date(this.state.end)}
                       disableClock={true}
+                      clearIcon={null}
                     />
                   </Form.Group>
                 </Col>
