@@ -162,12 +162,12 @@ class TaskForm extends Component {
     if (validated) {
       const taskToUpdate = {
         id: this.props.id,
-        task: this.state.task,
+        task: this.state.task.trim(),
         deadline: this.state.deadline,
-        description: this.state.description,
+        description: this.state.description.trim(),
         assignedTo: this.state.assignedTo.map(mapToDatabaseReadable).concat(this.state.assignedToCurrent),
         assignedToTeam: this.state.assignedToTeam.map(mapToDatabaseReadable).concat(this.state.assignedToTeamCurrent),
-        link: this.state.link
+        link: this.state.link.trim()
       }
       axios.post(API.TASK_UPDATE_API, taskToUpdate)
         .then(res => {
@@ -251,14 +251,13 @@ class TaskForm extends Component {
     const validated = await this.handleValidation();
     if (validated) {
       const taskToCreate = {
-        task: this.state.task,
+        task: this.state.task.trim(),
         deadline: this.state.deadline,
-        priority: this.state.priority,
         dateAssigned: this.state.dateAssigned,
-        description: this.state.description,
+        description: this.state.description.trim(),
         assignedTo: this.state.assignedTo ? this.state.assignedTo.map(mapToDatabaseReadable) : [],
         assignedToTeam: this.state.assignedToTeam ? this.state.assignedToTeam.map(mapToDatabaseReadable) : [],
-        link: this.state.link
+        link: this.state.link.trim()
       }
       
       // post task and then add the response to teams and interns

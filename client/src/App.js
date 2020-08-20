@@ -4,6 +4,7 @@ import Team from './components/Team';
 import Main from './components/Main';
 import Calendar from './components/Calendar';
 import ContactList from './components/ContactList';
+import ErrorPage from './components/ErrorPage';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './css/Main.css';
 
@@ -19,6 +20,7 @@ function App() {
           <Route exact path='/interns/:internId' component={Intern}/>
           <Route exact path='/teams/:teamId' component={Team}/>
           <Route exact path='/ContactList' component={ContactList}/>
+          <Route component={ErrorPage}/>
         </Switch>
       </Router>
     </div>

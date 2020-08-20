@@ -153,7 +153,7 @@ class Main extends Component {
                   {!this.state.isLoading ? this.state.interns.map((intern, i) => (
                     <div key={i} className="pb-1">
                       <Link to={{
-                        pathname: '/interns/' + intern.name,
+                        pathname: '/interns/' + intern.name.replace(/\s/g, ""),
                         state: { id: intern._id }
                       }}>
                         {intern.name}
@@ -171,7 +171,7 @@ class Main extends Component {
                   {!this.state.isLoading ? this.state.teams.map((team, i) => (
                     <div key={i} className="pb-1">
                       <Link className="team-link" to={{
-                        pathname: '/teams/' + team.name,
+                        pathname: '/teams/' + team.name.replace(/\s/g, ""),
                         state: { id: team._id }
                       }}>
                         {team.name}

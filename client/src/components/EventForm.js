@@ -77,11 +77,11 @@ class EventForm extends Component {
     const validated = await this.handleValidation();
     if (validated) {
       const eventToCreate = {
-        event: this.state.event,
+        event: this.state.event.trim(),
         start: this.state.start,
         end: this.state.end,
-        description: this.state.description,
-        link: this.state.link
+        description: this.state.description.trim(),
+        link: this.state.link.trim()
       }
       axios.post(API.EVENT_POST_API, eventToCreate)
         .then(() => {
@@ -100,11 +100,11 @@ class EventForm extends Component {
     if (validated) {
       const eventToUpdate = {
         id: this.props.id,
-        event: this.state.event,
+        event: this.state.event.trim(),
         start: this.state.start,
         end: this.state.end,
-        description: this.state.description,
-        link: this.state.link
+        description: this.state.description.trim(),
+        link: this.state.link.trim()
       }
       axios.post(API.EVENT_UPDATE_API, eventToUpdate);
       this.props.loadData();

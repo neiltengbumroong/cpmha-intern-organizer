@@ -55,9 +55,9 @@ class AnnounceForm extends Component {
     const validated = await this.handleValidation();
     if (validated) {
       const newAnnounce = {
-        subject: this.state.subject,
-        name: this.state.name,
-        announcement: this.state.announcement,
+        subject: this.state.subject.trim(),
+        name: this.state.name.trim(),
+        announcement: this.state.announcement.trim(),
         date: new Date()
       }
       axios.post(API.ANNOUNCEMENT_POST_API, newAnnounce)

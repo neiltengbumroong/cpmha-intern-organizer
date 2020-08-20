@@ -77,12 +77,12 @@ class TeamForm extends Component {
     axios.post(API.TEAM_GET_SINGLE_API, { id: this.props.id })
       .then(res => {
         this.setState({
-          name: res.data.name,
+          name: res.data.name.trim(),
           currentMembers: res.data.members,
           oldMembers: res.data.members,
           leader: res.data.leader,
           currentLeader: res.data.leader || '',
-          description: res.data.description,
+          description: res.data.description.trim(),
           tasks: res.data.tasks,
           created: res.data.created
         })
@@ -142,10 +142,10 @@ class TeamForm extends Component {
     const validated = await this.handleValidation();
     if (validated) {
       const teamToCreate = {
-        name: this.state.name,
+        name: this.state.name.trim(),
         members: this.state.members ? this.state.members.map(mapToDatabaseReadable) : [],
         leader: this.state.leader,
-        description: this.state.description,
+        description: this.state.description.trim(),
         created: this.state.created
       }
 
@@ -165,10 +165,10 @@ class TeamForm extends Component {
     if (validated) {
       const teamToUpdate = {
         id: this.state.id,
-        name: this.state.name,
+        name: this.state.name.trim(),
         members: this.state.members.map(mapToDatabaseReadable).concat(this.state.currentMembers),
         leader: this.state.leader,
-        description: this.state.description,
+        description: this.state.description.trim(),
         created: this.state.created
       }
 

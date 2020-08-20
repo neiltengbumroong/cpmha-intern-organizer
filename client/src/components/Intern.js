@@ -173,7 +173,7 @@ class Intern extends Component {
 
 
   render() {
-    const internData = this.state.intern;
+    let internData = this.state.intern;
     let internTeams = [];
     let internComplete = [];
     let internIncomplete = [];

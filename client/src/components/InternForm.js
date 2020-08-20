@@ -87,10 +87,10 @@ class InternForm extends Component {
     axios.post(API.INTERN_GET_SINGLE_API, { id: this.props.id })
       .then((res) => {
         this.setState({
-          name: res.data.name,
-          email: res.data.email,
-          school: res.data.school,
-          major: res.data.major,
+          name: res.data.name.trim(),
+          email: res.data.email.trim(),
+          school: res.data.school.trim(),
+          major: res.data.major.trim(),
           dateJoined: res.data.joined,
           phone: res.data.phone
         })
@@ -106,10 +106,10 @@ class InternForm extends Component {
     if (validated) {
       const internToCreate = {
         id: this.state.id,
-        name: this.state.name,
-        school: this.state.school,
-        major: this.state.major,
-        email: this.state.email,
+        name: this.state.name.trim(),
+        school: this.state.school.trim(),
+        major: this.state.major.trim(),
+        email: this.state.email.trim(),
         joined: this.state.dateJoined,
         phone: this.state.phone,
         teams: [],
@@ -128,10 +128,10 @@ class InternForm extends Component {
     if (validated) {
       const internToEdit = {
         id: this.state.id,
-        name: this.state.name,
-        school: this.state.school,
-        major: this.state.major,
-        email: this.state.email,
+        name: this.state.name.trim(),
+        school: this.state.school.trim(),
+        major: this.state.major.trim(),
+        email: this.state.email.trim(),
         joined: this.state.dateJoined,
         phone: this.state.phone
       }
