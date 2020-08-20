@@ -66,8 +66,8 @@
 }
 
 .header-bg {
-background: rgb(106,50,171);
-background: linear-gradient(90deg, rgba(106,50,171,1) 0%, rgba(156,131,244,1) 100%);
+  background: rgb(106,50,171);
+  background: linear-gradient(90deg, rgba(106,50,171,1) 0%, rgba(156,131,244,1) 100%);
   width: 100%;
   z-index: 100;
 }
@@ -93,7 +93,7 @@ background: linear-gradient(90deg, rgba(106,50,171,1) 0%, rgba(156,131,244,1) 10
 }
 
 .team-link {
-  color: #0da4d6;
+  color: #139cca;
 }
 
 .team-link:hover {

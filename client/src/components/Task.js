@@ -7,7 +7,7 @@ import { Button, Modal, Form, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import * as API from '../utils/api';
-import MASTER_KEY from '../utils/key';
+import { TASK_KEY } from '../utils/key';
 
 class Task extends Component {
   constructor(props) {
@@ -37,7 +37,7 @@ class Task extends Component {
   }
   handleKeyChange = event => {
     this.setState({ key: event.target.value }, () => {
-      if (this.state.key === MASTER_KEY) {
+      if (this.state.key === TASK_KEY) {
         this.setState({ confirmKey: true });
       } else {
         this.setState({ confirmKey: false });
@@ -183,7 +183,7 @@ class Task extends Component {
                 <p>This task will also be removed from all associated interns and teams in the database.</p>
                 <Row>
                   <Col sm={3}>
-                    <Form.Label>Master Key</Form.Label>
+                    <Form.Label>Task Key</Form.Label>
                     <Form.Control
                       type="password"
                       size="md"

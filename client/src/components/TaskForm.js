@@ -7,7 +7,7 @@ import DateTimePicker from 'react-datetime-picker';
 import { mapToDatabaseReadable } from '../utils';
 
 import * as API from '../utils/api';
-import MASTER_KEY from '../utils/key';
+import { TASK_KEY } from '../utils/key';
 
 class TaskForm extends Component {
   constructor(props) {
@@ -65,7 +65,7 @@ class TaskForm extends Component {
   }
   handleKeyChange = event => {
     this.setState({ key: event.target.value }, () => {
-      if (this.state.key === MASTER_KEY) {
+      if (this.state.key === TASK_KEY) {
         this.setState({ confirmKey: true });
       } else {
         this.setState({ confirmKey: false });
@@ -447,7 +447,7 @@ class TaskForm extends Component {
                   />
                 </Col>
                 <Col sm={4}>
-                  <Form.Label>Master Key</Form.Label>
+                  <Form.Label>Task Key</Form.Label>
                   <Form.Control
                   type="password"
                   size="md"
