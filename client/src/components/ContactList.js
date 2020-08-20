@@ -7,8 +7,7 @@ import * as API from '../utils/api';
 
 const BOARD_MEMBER_DATA = [
   { name: 'Paolo Dell Aquila', phone: '(561)-827-4111', email: 'pd@cpmha.com' },
-  { name: 'Alexander Dwork', phone: '(561)-876-1668', email: 'ad@cpmha.com' },
-  { name: 'Annushka Zaman', phone: '', email: 'az@cpmha.com' }
+  { name: 'Alexander Dwork', phone: '(561)-876-1668', email: 'ad@cpmha.com' }
 ]
 
 class ContactList extends Component {

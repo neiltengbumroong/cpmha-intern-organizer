@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import TaskForm from './TaskForm';
+import Loader from './Loader';
 import { Button, Modal, Form, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -146,25 +147,27 @@ class Task extends Component {
     return (
       <div>
         {taskData.assignedTo ? 
-          <div>
-            <h4>{taskData.task}</h4>
-            <p className="p-task">{taskData.description}</p>
-            <p className="p-task">Deadline: {moment(taskData.deadline).format('LLLL')}</p>
-            <p className="p-task">Assigned to: {assignedTo.concat(assignedToTeam)}</p>
-            <p className="p-task">Link: <a href={taskData.link} target="_blank" rel="noopener noreferrer">{taskData.link}</a></p>
-            {this.props.view === 'other' ? 
-              taskData.completed ? 
-              null :
-              <Button className="btn-sm" variant="success" onClick={this.handleOpenCompleteModal}>Complete</Button> :
-            <>
-              <TaskForm
-                type={"edit"}
-                id={taskData._id}
-                updateParent={this.getTask}
-              />
-              <Button className="btn-sm" variant="danger" type="button" onClick={this.handleOpenDeleteModal}>Delete Task</Button>
-              </>
-            }
+          <Row>
+            <Col xs={12}>
+              <h4>{taskData.task}</h4>
+              <p className="p-task">{taskData.description}</p>
+              <p className="p-task">Deadline: {moment(taskData.deadline).format('LLLL')}</p>
+              <p className="p-task">Assigned to: {assignedTo.concat(assignedToTeam)}</p>
+              <p className="p-task" style={{whiteSpace: "normal", wordWrap: "break-word"}}>Link: <a href={taskData.link} target="_blank" rel="noopener noreferrer">{taskData.link}</a></p>
+              {this.props.view === 'other' ? 
+                taskData.completed ? 
+                null :
+                <Button className="btn-sm" variant="success" onClick={this.handleOpenCompleteModal}>Complete</Button> :
+              <>
+                <TaskForm
+                  type={"edit"}
+                  id={taskData._id}
+                  updateParent={this.getTask}
+                />
+                <Button className="btn-sm" variant="danger" type="button" onClick={this.handleOpenDeleteModal}>Delete Task</Button>
+                </>
+              }
+            </Col>    
             <Modal
               show={this.state.showDeleteModal}
               onHide={this.handleCloseDeleteModal}
@@ -218,8 +221,8 @@ class Task extends Component {
                 <Button variant="success" onClick={this.toggleCompleted}>Confirm</Button>     
               </Modal.Footer>
             </Modal>
-          </div>
-          : null
+          </Row>
+          : <Loader/>
         }
       </div>
     )

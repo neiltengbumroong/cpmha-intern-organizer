@@ -75,7 +75,8 @@ class Intern extends Component {
       .then(res => {
         this.setState({ 
           intern: res.data ,
-          internId: res.data._id
+          internId: res.data._id,
+          tasks: []
         });
         this.getInternTasks();
       })
