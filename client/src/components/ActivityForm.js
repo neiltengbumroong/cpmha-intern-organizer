@@ -102,6 +102,7 @@ class ActivityForm extends Component {
                   isMulti={false}
                   onChange={this.handleWorkChange}
                   isSearchable={true}
+                  defaultValue={options.length > 0 ? options[0] : { label: "Other", value: "Other "}}
                 />
               </Form.Group>
               <Form.Group>

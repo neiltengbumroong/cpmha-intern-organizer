@@ -212,7 +212,7 @@ class Intern extends Component {
         }
       })
       internWork = internData.work.map((work, i) => (
-        <p key={i}>{moment(moment(work.date).utc(), "YYYYMMDD").fromNow()}: Spent <strong>{work.hours}</strong> {work.hours > 1 ? "hours" : "hour"} on <strong>{work.work}</strong></p>
+        <p key={i}>{moment(moment(work.date).utc(), "YYYYMMDD").fromNow()}: Spent <strong>{work.hours}</strong> {work.hours === 1 ? "hour" : "hours"} on <strong>{work.work}</strong></p>
       ))
     }
 
