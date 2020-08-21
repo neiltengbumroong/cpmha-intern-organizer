@@ -185,15 +185,15 @@ class Team extends Component {
                 </Col>
               </Row>
               <Row className="pt-3 pb-3">
-                <Col className="pl-5 ml-5">
+                <Col xs={4}>
                   <h1>{teamData.members.length}</h1>
                   <p>Members</p>  
                 </Col>
-                <Col>
+                <Col xs={4}>
                   <h1>{teamComplete.length}</h1>
                   <p>Tasks Completed</p>
                 </Col>
-                <Col className="pr-5 mr-5">
+                <Col xs={4}>
                   <h1>{Math.round(moment.duration(moment(new Date()).diff(teamData.created)).asDays())}</h1>
                   <p>Days Old</p>
                 </Col>
@@ -207,7 +207,7 @@ class Team extends Component {
           </Jumbotron>
           <Container className="pb-5" fluid>
             <Row>
-              <Col className="col-4">
+              <Col md={4} sma={12}>
                 <Card>
                   <Card.Body>
                     <Card.Title><h3>Team Details</h3></Card.Title>
@@ -224,7 +224,7 @@ class Team extends Component {
                     <p><strong>Created: </strong> {moment(teamData.created).format('MMMM Do, YYYY')}</p>
                   </Card.Body>
                 </Card>
-                <Card className="mt-5">
+                <Card className="mt-5 mb-5">
                   <Card.Body>
                     <Card.Title><h3>Other Teams</h3></Card.Title>
                       {this.state.teams.map((team, i) => (

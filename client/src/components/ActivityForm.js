@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
+import CreatableSelect from 'react-select/creatable';
 import moment from 'moment';
 import { Form, Modal, Button } from 'react-bootstrap';
 
@@ -21,6 +22,13 @@ class ActivityForm extends Component {
     this.setState({ hours: parseFloat(event.target.value) });
   }
   handleWorkChange = event => {
+    if (event) {
+      this.setState({ work: event.label });
+    } else {
+      this.setState({ work: ''});
+    }
+  }
+  handleInputChange = event => {
     this.setState({ work: event.label });
   }
   handleOpenModal = () => {
@@ -59,11 +67,6 @@ class ActivityForm extends Component {
       })
     });
 
-    options.push({
-      value: 'other',
-      label: 'Other'
-    });
-
     return (
       <>
         <Button variant="info" onClick={this.handleOpenModal}>Log Hours</Button>
@@ -97,13 +100,16 @@ class ActivityForm extends Component {
               </Form.Group>
               <Form.Group>
                 <Form.Label>Select Task or Work</Form.Label>
-                <Select
-                  options={options}
-                  isMulti={false}
+                <CreatableSelect
+                  isClearable
+                  placeholder="Select or Type..."
                   onChange={this.handleWorkChange}
+                  options={options}
                   isSearchable={true}
-                  defaultValue={options.length > 0 ? options[0] : { label: "Other", value: "Other "}}
                 />
+                <Form.Text className="text-muted">
+                  You can also type in your own work!
+                </Form.Text>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Hours Worked</Form.Label>

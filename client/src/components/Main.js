@@ -93,10 +93,10 @@ class Main extends Component {
     return (
       <div className="main-background">
         <Header/>
-        <Container className="pb-5 pl-2" fluid>
+        <Container className="pb-5 pl-4" fluid>
           <Row className="pt-4">
             <Col sm={12} md={9}>
-              <Container className="bg-white mb-5 ml-2 mr-2 pl-4 pr-4 pt-3 border" fluid>
+              <Container className="bg-white mb-5 pl-4 pr-4 pt-3 border" fluid>
                 <Row className="justify-content-between ml-1 mb-2">
                   <h2>Announcements</h2>
                   <AnnounceForm updateMain={this.loadData}/>
@@ -117,15 +117,16 @@ class Main extends Component {
                 }
                 </Row>
               </Container>
-              <Container className="bg-white m-2 pl-4 pr-4 border">
+              <Container className="bg-white pl-4 pr-4 border">
                 <Row className="pt-4 ml-2 justify-content-between">
                   <h2>Tasks</h2>
                   <TaskForm type="create" updateParent={this.loadTask}/>
                 </Row>
                 <hr/>
-                <Row className="mb-4 ml-2">
+                <Row className="mb-4">
                   <Col sm={12} md={6} className="text-left scroll-column border-right">
                     <h3 className="text-center">Pending</h3>
+                    <hr/>
                     {!this.state.isLoading ? (incompleteTasks.length > 0 ? incompleteTasks.slice(0).reverse().map((task, i) => (
                     <div className="mt-3 mb-3" key={i}>
                       <Task updateParent={this.loadTask} id={task._id} view={'main'}></Task>
@@ -135,6 +136,7 @@ class Main extends Component {
                   </Col>
                   <Col sm={12} md={6} className="text-left scroll-column">
                     <h3 className="text-center">Completed</h3>
+                    <hr/>
                     {!this.state.isLoading ? (completeTasks.length > 0 ? completeTasks.slice(0).reverse().map((task, i) => (
                     <div className="mb-5" key={i}>
                       <Task updateParent={this.loadTask} id={task._id} view={'main'}></Task>
@@ -187,8 +189,6 @@ class Main extends Component {
                 <Card.Body>
                   <Card.Title><h3>Known Issues</h3></Card.Title>
                   <p>- Deleting an intern who is currently leading a team will cause an error</p>
-                  <p>- Some pages won't update after user action (editing, submitting, etc.), simply refresh page but please still document below</p>
-                  <p>- Calendar sometimes displays tasks and events as two-day events when they are single day events, or in the tasks' case not events at all</p>
                   <a href="https://docs.google.com/document/d/1DKajjcdVYzG0nmLjwyYfKFkQBSFlJVDN6W6F2jAfpQA/edit" target ="_blank" rel="noopener noreferrer" className="btn-link">https://docs.google.com/document/d/1DKajjcdVYzG0nmLjwyYfKFkQBSFlJVDN6W6F2jAfpQA/edit</a>
                 </Card.Body>
               </Card>
