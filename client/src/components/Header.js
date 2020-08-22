@@ -10,7 +10,7 @@ const Header = () => (
         <Link to="/"><Image className="img-responsive" src={Logo}></Image></Link>
       </Col>
       <Col md={5} sm={12} className="mt-auto mb-auto mr-5 text-center">
-        <ButtonToolbar>
+        <ButtonToolbar className="header-button-toolbar">
           <Link to="/"><Button variant="cpmha-dark-purple" className="mr-2 mb-2">Home</Button></Link>
           <Link to="/calendar"><Button variant="cpmha-dark-purple" className="mr-2 mb-2">Calendar</Button></Link>
           <Link to="/contactlist"><Button variant="cpmha-dark-purple" className="mr-2 mb-2">Contact List</Button></Link>

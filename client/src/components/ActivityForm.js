@@ -28,13 +28,9 @@ class ActivityForm extends Component {
       this.setState({ work: ''});
     }
   }
-  handleInputChange = event => {
-    this.setState({ work: event.label });
-  }
   handleOpenModal = () => {
     this.setState({ showModal: true });
   }
-
   handleCloseModal = () => {
     this.setState({ showModal: false });
   }
@@ -117,7 +113,7 @@ class ActivityForm extends Component {
                   size="md"
                   type="number"
                   min="0.25"
-                  placeholder="Ex. 0.25, 0.5, 1"
+                  placeholder="Ex. 0.5, 1.25, 2"
                   onChange={this.handleHoursChange}
                 />
               </Form.Group>
