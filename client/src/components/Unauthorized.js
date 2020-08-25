@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 const Unauthorized = () => (
   <>
-    <Header/>
+    <Header auth={false}/>
     <Container className="main-background" fluid>
       <Row className="pt-5 justify-content-center">
         <Col md={4} sm={8} className="text-center">
