@@ -33,12 +33,12 @@ class Header extends Component {
               </Col>
               <Col md={6} sm={12} className="mt-auto mb-auto text-center">
                 <ButtonToolbar className="header-button-toolbar">
-                  <Link to="/"><Button variant="cpmha-dark-purple" className="mr-1 mb-2">Home</Button></Link>
+                  <Link to="/main"><Button variant="cpmha-dark-purple" className="mr-1 mb-2">Home</Button></Link>
                   <Link to="/calendar"><Button variant="cpmha-dark-purple" className="mr-1 mb-2">Calendar</Button></Link>
                   <Link to="/contactlist"><Button variant="cpmha-dark-purple" className="mr-1 mb-2">Contact List</Button></Link>
                   <a href="https://concussionspainmentalhealth.com/" target="_blank" rel="noopener noreferrer"><Button variant="cpmha-dark-purple" className="mr-1 mb-2">CPMHA Site</Button></a>
                   <a href="https://drive.google.com/drive/folders/1NBTSBZjj27tcAtP_-PUA5j0puta_aXzY?usp=sharing" target="_blank" rel="noopener noreferrer"><Button variant="cpmha-dark-purple" className="mr-1 mb-2">Google Drive</Button></a>
-                  {/* <Link to="/logout"><Button onClick={this.handleLogOut} variant="cpmha-dark-purple" >Log Out</Button></Link> */}
+                  <Link to="/logout"><Button onClick={this.handleLogOut} variant="cpmha-dark-purple" >Log Out</Button></Link>
                 </ButtonToolbar>           
               </Col>
               </>

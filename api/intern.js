@@ -1,6 +1,12 @@
 const Intern = require('../models/intern');
 const express = require('express');
 const router = express.Router();
+const rateLimit = require("express-rate-limit");
+
+const apiLimiter = rateLimit({
+  windowMs: 10 * 1000, 
+  max: 1
+});
 
 
 // post a single intern
@@ -60,7 +66,7 @@ router.post('/api/interns/update', (req, res) => {
 })
 
 // update intern's activity
-router.post('/api/interns/update/work', (req, res) => {
+router.post('/api/interns/update/work', apiLimiter, (req, res) => {
   Intern.findOneAndUpdate(
     { _id: req.body.id },
     { 

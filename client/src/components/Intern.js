@@ -366,7 +366,7 @@ class Intern extends Component {
             <Modal.Footer>
               <Button variant="primary" onClick={this.handleCloseDeleteModal}>Cancel</Button>
               {this.state.confirmDelete && this.state.confirmKey ? 
-                <Link to="/"><Button variant="danger" onClick={() => this.deleteInternFull(this.state.internId)}>Confirm</Button></Link>
+                <Link to="/main"><Button variant="danger" onClick={() => this.deleteInternFull(this.state.internId)}>Confirm</Button></Link>
                 :
                 <Button variant="danger" disabled>Confirm</Button>
               }        

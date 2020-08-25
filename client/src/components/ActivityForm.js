@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import moment from 'moment';
 import { Form, Modal, Button } from 'react-bootstrap';
@@ -51,6 +50,12 @@ class ActivityForm extends Component {
         this.handleCloseModal();
         this.props.updateParent();
       })
+      // typical use case: user tries to log hours repeatedly after failing to 
+      // load the new work hours, triggering an error with the express rate limiter. 
+      // In this case, a simple page refresh should fix the issue
+      .catch(error => {
+        window.location.reload();
+      }) 
   }
 
   render() {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import LoaderSVG from '../images/Loader.svg';
 import { Row, Col } from 'react-bootstrap';
 

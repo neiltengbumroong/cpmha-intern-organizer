@@ -307,7 +307,7 @@ class Team extends Component {
             <Modal.Footer>
               <Button variant="primary" onClick={this.handleCloseDeleteModal}>Cancel</Button>
               {this.state.confirmDelete && this.state.confirmKey ? 
-                <Link to="/"><Button variant="danger" onClick={() => this.deleteTeamFull(this.state.teamId)}>Confirm</Button></Link>
+                <Link to="/main"><Button variant="danger" onClick={() => this.deleteTeamFull(this.state.teamId)}>Confirm</Button></Link>
                 :
                 <Button variant="danger" disabled>Confirm</Button>
               }        
